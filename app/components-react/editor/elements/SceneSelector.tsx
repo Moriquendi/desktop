@@ -97,7 +97,7 @@ function SceneSelector() {
     const name = scene.name;
     remote.dialog
       .showMessageBox(remote.getCurrentWindow(), {
-        title: 'Streamlabs Desktop',
+        title: 'Buffed Desktop',
         type: 'warning',
         message: $t('Are you sure you want to remove %{sceneName}?', { sceneName: name }),
         buttons: [$t('Cancel'), $t('OK')],
@@ -106,7 +106,7 @@ function SceneSelector() {
         if (!response) return;
         if (!ScenesService.canRemoveScene()) {
           remote.dialog.showMessageBox({
-            title: 'Streamlabs Desktop',
+            title: 'Buffed Desktop',
             message: $t('There needs to be at least one scene.'),
           });
           return;
