@@ -272,7 +272,7 @@ export class DiagnosticsService extends PersistentStatefulService<IDiagnosticsSe
     // All diagnostic reports include a cache upload
     const cacheId = await this.cacheUploaderService.uploadCache();
 
-    return new Section('Streamlabs Desktop Diagnostic Report', {
+    return new Section('Buffed Desktop Diagnostic Report', {
       Version: Utils.env.SLOBS_VERSION,
       Bundle: SLOBS_BUNDLE_ID,
       Date: new Date().toString(),

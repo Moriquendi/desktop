@@ -85,7 +85,7 @@ export class VirtualWebcamService extends StatefulService<IVirtualWebcamServiceS
   start() {
     if (this.state.running) return;
 
-    obs.NodeObs.OBS_service_createVirtualWebcam('Streamlabs Desktop Virtual Webcam');
+    obs.NodeObs.OBS_service_createVirtualWebcam('Buffed Desktop Virtual Webcam');
     obs.NodeObs.OBS_service_startVirtualWebcam();
 
     this.SET_RUNNING(true);

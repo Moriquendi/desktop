@@ -47,7 +47,7 @@ export async function makeScreenshots(t: TExecutionContext, title = '') {
   // AudioSources causes a different volmeter level
   audioService.getSources().forEach(audioSource => audioSource.setMuted(true));
   // main window title may contain different project version
-  windowService.updateMainWindowOptions({ title: 'Streamlabs Desktop - screentest' });
+  windowService.updateMainWindowOptions({ title: 'Buffed Desktop - screentest' });
 
   const windowId = await getFocusedWindowId(t);
 

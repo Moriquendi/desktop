@@ -860,7 +860,7 @@ export class UserService extends PersistentStatefulService<IUserServiceState> {
       await this.logOut();
     }
     await remote.dialog.showMessageBox({
-      title: 'Streamlabs Desktop',
+      title: 'Buffed Desktop',
       message: $t(
         'Your login has expired. Please reauthenticate to continue using Streamlabs Desktop.',
       ),

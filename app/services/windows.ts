@@ -205,7 +205,7 @@ export class WindowsService extends StatefulService<IWindowsState> {
       scaleFactor: 1,
       isShown: true,
       hideStyleBlockers: true,
-      title: `Streamlabs Desktop - ${Utils.env.SLOBS_VERSION}`,
+      title: `Buffed Desktop - ${Utils.env.SLOBS_VERSION}`,
     },
     child: {
       componentName: '',
