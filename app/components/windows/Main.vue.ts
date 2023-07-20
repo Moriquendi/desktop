@@ -224,7 +224,7 @@ export default class Main extends Vue {
     if (files.length > 1 || isDirectory) {
       remote.dialog
         .showMessageBox(remote.getCurrentWindow(), {
-          title: 'Streamlabs Desktop',
+          title: 'Buffed Desktop',
           message: $t('Are you sure you want to import multiple files?'),
           type: 'warning',
           buttons: [$t('Cancel'), $t('OK')],

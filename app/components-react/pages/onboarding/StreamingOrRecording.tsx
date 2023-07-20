@@ -45,8 +45,8 @@ export function StreamingOrRecording() {
         <img src={$i('images/onboarding/splash.png')} />
       </div>
       <div className={styles.titleContainer}>
-        <h1 className={styles.title}>{$t('Welcome to Streamlabs')}</h1>
-        <h3 className={styles.subtitle}>{$t('How do you plan to use Streamlabs Desktop?')}</h3>
+        <h1 className={styles.title}>{$t('Welcome to Buffed')}</h1>
+        <h3 className={styles.subtitle}>{$t('How do you plan to use Buffed Desktop?')}</h3>
         <div className={styles.optionContainer}>
           <div
             className={cx(styles.option, { [styles.active]: active === 'streaming' })}
