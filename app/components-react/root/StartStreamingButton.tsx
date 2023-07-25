@@ -156,7 +156,7 @@ function StreamButtonLabel(p: {
   delayEnabled: boolean;
 }) {
   if (p.streamingStatus === EStreamingState.Live) {
-    return <>{$t('End Stream')}</>;
+    return <>{$t('End')}</>;
   }
 
   if (p.streamingStatus === EStreamingState.Starting) {
@@ -179,5 +179,5 @@ function StreamButtonLabel(p: {
     return <>{$t('Reconnecting')}</>;
   }
 
-  return <>{$t('Go Live')}</>;
+  return <>{$t('Start Game Capture')}</>;
 }

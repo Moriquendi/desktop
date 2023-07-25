@@ -102,7 +102,7 @@ export default function StudioFooterComponent() {
   return (
     <div className={cx('footer', styles.footer)}>
       <div className={cx('flex flex--center flex--grow flex--justify-start', styles.footerLeft)}>
-        <Tooltip placement="left" title={$t('Open Performance Window')}>
+        {/* <Tooltip placement="left" title={$t('Open Performance Window')}>
           <i
             className={cx(
               'icon-leaderboard-4',
@@ -112,9 +112,9 @@ export default function StudioFooterComponent() {
             )}
             onClick={openMetricsWindow}
           />
-        </Tooltip>
-        <PerformanceMetrics mode="limited" className="performance-metrics" />
-        <NotificationsArea />
+        </Tooltip> */}
+        {/* <PerformanceMetrics mode="limited" className="performance-metrics" /> */}
+        {/* <NotificationsArea /> */}
       </div>
 
       <div className={styles.navRight}>
@@ -124,7 +124,7 @@ export default function StudioFooterComponent() {
             {$t('Looking to stream?')}
           </button>
         )}
-        {!recordingModeEnabled && <RecordingButton />}
+        {/* {!recordingModeEnabled && <RecordingButton />} */}
         {replayBufferEnabled && replayBufferOffline && (
           <div className={styles.navItem}>
             <Tooltip placement="left" title={$t('Start Replay Buffer')}>
@@ -279,6 +279,7 @@ class FooterModule {
   }
 
   get recordingModeEnabled() {
+    return false;
     return Services.RecordingModeService.views.isRecordingModeEnabled;
   }
 }

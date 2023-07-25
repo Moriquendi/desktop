@@ -249,6 +249,8 @@ class VideoSettingsModule {
   }
 
   setResolution(key: string, value: string) {
+    console.log(`SET RES: ${key} ${value}`);
+
     const display = this.state.display;
     if (key === 'outputRes') {
       this.state.setCustomOutputResValue(value);
@@ -265,6 +267,8 @@ class VideoSettingsModule {
   }
 
   selectResolution(key: string, value: string) {
+    console.log(`SELECT RES: ${key} ${value}`);
+
     if (value === 'custom') {
       this.setCustomResolution(key, true);
       this.setResolution(key, '');
@@ -275,6 +279,8 @@ class VideoSettingsModule {
   }
 
   setCustomResolution(key: string, value: boolean) {
+    console.log(`SET CUSTOM RES: ${key} ${value}`);
+
     if (key === 'baseRes') {
       this.state.setCustomBaseRes(value);
     } else {
@@ -283,6 +289,7 @@ class VideoSettingsModule {
   }
 
   setFPSType(value: obs.EFPSType) {
+    console.log(`SET fpsType: ${value}`);
     const display = this.state.display;
     this.service.actions.setVideoSetting('fpsType', value, display);
     this.service.actions.setVideoSetting('fpsNum', 30, display);
@@ -290,6 +297,7 @@ class VideoSettingsModule {
   }
 
   setCommonFPS(value: string) {
+    console.log(`SET commonFPS: ${value}`);
     const display = this.state.display;
     const [fpsNum, fpsDen] = value.split('-');
     this.service.actions.setVideoSetting('fpsNum', Number(fpsNum), display);
@@ -297,6 +305,7 @@ class VideoSettingsModule {
   }
 
   setIntegerFPS(value: string) {
+    console.log(`SET xFPS: ${value}`);
     const display = this.state.display;
     this.state.setFpsInt(Number(value));
     if (Number(value) > 0 && Number(value) < 1001) {
@@ -306,6 +315,7 @@ class VideoSettingsModule {
   }
 
   setFPS(key: 'fpsNum' | 'fpsDen', value: string) {
+    console.log(`SET elo FPS: ${value}`);
     const display = this.state.display;
     if (key === 'fpsNum') {
       this.state.setFpsNum(Number(value));

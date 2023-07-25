@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import styles from './Connect.m.less';
 import commonStyles from './Common.m.less';
 import { $t } from 'services/i18n';
@@ -13,6 +13,7 @@ import PlatformLogo from 'components-react/shared/PlatformLogo';
 import { EAuthProcessState } from 'services/user';
 import { ListInput } from 'components-react/shared/inputs';
 import Form from 'components-react/shared/inputs/Form';
+import { BuffedPlatformConnect } from './BuffedPlatformConnect';
 
 export function Connect() {
   const {
@@ -26,7 +27,12 @@ export function Connect() {
   const { next } = useModule(OnboardingModule);
   const { UsageStatisticsService, OnboardingService, RecordingModeService } = Services;
 
+  useEffect(() => {
+    setExtraPlatform('buffed');
+  }, []);
+
   if (selectedExtraPlatform) {
+    return <BuffedPlatformConnect />;
     return <ExtraPlatformConnect />;
   }
 
@@ -57,17 +63,11 @@ export function Connect() {
   return (
     <div className={styles.pageContainer}>
       <div className={styles.container}>
-        <h1 className={commonStyles.titleContainer}>{$t('Connect')}</h1>
-        {!isRelog && (
-          <p style={{ marginBottom: 80 }}>
-            {$t('Sign in with your content platform to get started with Streamlabs')}
-          </p>
-        )}
+        <h1 className={commonStyles.titleContainer}>{$t('Sign in to Buffed')}</h1>
+        {/* {!isRelog && <p style={{ marginBottom: 80 }}>{$t('Sign in to Buffed')}</p>} */}
         {isRelog && (
           <h3 style={{ marginBottom: '16px' }}>
-            {$t(
-              'Your login has expired. Please reauthenticate to continue using Streamlabs Desktop.',
-            )}
+            {$t('Your login has expired. Please reauthenticate to continue using Buffed.')}
           </h3>
         )}
         <div className={styles.signupButtons}>
@@ -115,6 +115,11 @@ export function Connect() {
                 label: 'NimoTV',
                 image: require('../../../../media/images/platforms/nimo-logo-small.png'),
               },
+              {
+                value: 'buffed',
+                label: 'Buffed',
+                image: require('../../../../media/images/platforms/buffed-logo.png'),
+              },
             ]}
           />
         </Form>
@@ -129,7 +134,7 @@ export function Connect() {
   );
 }
 
-type TExtraPlatform = 'nimotv' | 'dlive';
+type TExtraPlatform = 'nimotv' | 'dlive' | 'buffed';
 
 export class LoginModule {
   state = injectState({
