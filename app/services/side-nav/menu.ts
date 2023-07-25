@@ -89,7 +89,7 @@ export class SideNavService extends PersistentStatefulService<ISideNavServiceSta
   @Inject() platformAppsService: PlatformAppsService;
 
   static defaultState: ISideNavServiceState = {
-    isOpen: false,
+    isOpen: true,
     showCustomEditor: true,
     hasLegacyMenu: true,
     currentMenuItem: EMenuItemKey.Editor,

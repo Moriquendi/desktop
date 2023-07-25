@@ -9,14 +9,15 @@ import { createProps } from 'components/tsx-component';
 export default class Default extends BaseLayout {
   async mounted() {
     this.mountResize();
-    this.setMins(['1'], ['2'], ['3', '4', '5']);
+    //this.setMins(['1'], ['3', '4', '5']);
+    this.setMins(['1'], ['4', '5']);
   }
   destroyed() {
     this.destroyResize();
   }
 
   get vectors() {
-    return ['1', '2', ['3', '4', '5']] as ILayoutSlotArray;
+    return ['1', ['4', '5']] as ILayoutSlotArray;
   }
 
   get bottomSection() {
@@ -25,7 +26,7 @@ export default class Default extends BaseLayout {
         class={styles.segmented}
         style={{ height: `${this.resizes.bar2 * 100}%`, padding: '0 8px' }}
       >
-        {['3', '4', '5'].map(slot => (
+        {['4', '5'].map(slot => (
           <div class={cx(styles.cell, 'no-top-padding')}>{this.$slots[slot]}</div>
         ))}
       </div>
@@ -51,13 +52,13 @@ export default class Default extends BaseLayout {
           min={this.mins.bar1}
           reverse={true}
         />
-        <div
+        {/* <div
           style={{ height: `${this.resizes.bar1 * 100}%` }}
           class={cx(styles.cell, 'no-top-padding')}
         >
           {this.$slots['2']}
-        </div>
-        <ResizeBar
+        </div> */}
+        {/* <ResizeBar
           position="top"
           value={this.bar2}
           onInput={(value: number) => this.setBar('bar2', value)}
@@ -66,7 +67,7 @@ export default class Default extends BaseLayout {
           max={this.calculateMax(this.mins.rest + this.mins.bar1)}
           min={this.mins.bar2}
           reverse={true}
-        />
+        /> */}
         {this.bottomSection}
       </div>
     );

@@ -163,7 +163,7 @@ class OnboardingViews extends ViewHandler<IOnboardingServiceState> {
       steps.push(ONBOARDING_STEPS()[EOnboardingSteps.MacPermissions]);
     }
 
-    steps.push(ONBOARDING_STEPS()[EOnboardingSteps.SteamingOrRecording]);
+    //steps.push(ONBOARDING_STEPS()[EOnboardingSteps.SteamingOrRecording]);
 
     steps.push(ONBOARDING_STEPS()[EOnboardingSteps.Connect]);
 
@@ -171,34 +171,34 @@ class OnboardingViews extends ViewHandler<IOnboardingServiceState> {
       steps.push(ONBOARDING_STEPS()[EOnboardingSteps.PrimaryPlatformSelect]);
     }
 
-    if (isOBSinstalled && !recordingModeEnabled) {
-      steps.push(ONBOARDING_STEPS()[EOnboardingSteps.FreshOrImport]);
-    }
+    // if (isOBSinstalled && !recordingModeEnabled) {
+    //   steps.push(ONBOARDING_STEPS()[EOnboardingSteps.FreshOrImport]);
+    // }
 
-    if (this.state.importedFromObs && isOBSinstalled) {
-      steps.push(ONBOARDING_STEPS()[EOnboardingSteps.ObsImport]);
-    } else {
-      steps.push(ONBOARDING_STEPS()[EOnboardingSteps.HardwareSetup]);
-    }
+    // if (this.state.importedFromObs && isOBSinstalled) {
+    //   steps.push(ONBOARDING_STEPS()[EOnboardingSteps.ObsImport]);
+    // } else {
+    steps.push(ONBOARDING_STEPS()[EOnboardingSteps.HardwareSetup]);
+    // }
 
-    if (
-      !this.state.existingSceneCollections &&
-      !this.state.importedFromObs &&
-      !recordingModeEnabled &&
-      ((userViews.isLoggedIn &&
-        getPlatformService(userViews.platform.type).hasCapability('themes')) ||
-        !userViews.isLoggedIn)
-    ) {
-      steps.push(ONBOARDING_STEPS()[EOnboardingSteps.ThemeSelector]);
-    }
+    // if (
+    //   !this.state.existingSceneCollections &&
+    //   !this.state.importedFromObs &&
+    //   !recordingModeEnabled &&
+    //   ((userViews.isLoggedIn &&
+    //     getPlatformService(userViews.platform.type).hasCapability('themes')) ||
+    //     !userViews.isLoggedIn)
+    // ) {
+    //   steps.push(ONBOARDING_STEPS()[EOnboardingSteps.ThemeSelector]);
+    // }
 
     if (userViews.isTwitchAuthed || userViews.isYoutubeAuthed || recordingModeEnabled) {
       steps.push(ONBOARDING_STEPS()[EOnboardingSteps.Optimize]);
     }
 
-    if (!userViews.isPrime) {
-      steps.push(ONBOARDING_STEPS()[EOnboardingSteps.Prime]);
-    }
+    // if (!userViews.isPrime) {
+    //   steps.push(ONBOARDING_STEPS()[EOnboardingSteps.Prime]);
+    // }
 
     return steps;
   }

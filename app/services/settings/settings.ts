@@ -27,6 +27,8 @@ import { SceneCollectionsService } from 'services/scene-collections';
 import * as remote from '@electron/remote';
 import fs from 'fs';
 import path from 'path';
+import { Services } from 'components-react/service-provider';
+import { BuffedSettingsController } from './BuffedSettingsController';
 
 export interface ISettingsValues {
   General: {
@@ -295,6 +297,12 @@ export class SettingsService extends StatefulService<ISettingsServiceState> {
   }
 
   showSettings(categoryName?: string) {
+    console.log(`Show settings.`);
+
+    ////////////////////////////////////////////////
+    // new BuffedSettingsController().setBuffedDetaultSettings();
+    ////////////////////////////////////////////////
+
     this.windowsService.showWindow({
       componentName: 'Settings',
       title: $t('Settings'),
@@ -312,34 +320,57 @@ export class SettingsService extends StatefulService<ISettingsServiceState> {
 
   getCategories(): string[] {
     let categories: string[] = obs.NodeObs.OBS_settings_getListCategories();
+
+    console.log(`node categories:`);
+    console.log(categories);
+
+    categories = [
+      'General',
+      'Stream',
+      'StreamSecond',
+      'Output',
+      'Audio',
+      'Video',
+      // 'Hotkeys',
+      'Advanced',
+    ];
+
+    ////////////////////////////////////
+    // OVERRIDE
+    // categories = ['General', 'StreamSecond', 'Output', 'Audio', 'Video'];
+    ////////////////////////////////////
+
     // insert 'Multistreaming' after 'General'
-    categories.splice(1, 0, 'Multistreaming');
+    //categories.splice(1, 0, 'Multistreaming');
     categories = categories.concat([
-      'Scene Collections',
+      // 'Scene Collections',
       'Notifications',
       'Appearance',
-      'Remote Control',
-      'Virtual Webcam',
+      // 'Remote Control',
+      // 'Virtual Webcam',
     ]);
 
     // Platform-specific categories
     byOS({
       [OS.Mac]: () => {},
       [OS.Windows]: () => {
-        categories = categories.concat(['Game Overlay']);
+        //categories = categories.concat(['Game Overlay']);
       },
     });
 
     if (this.advancedSettingEnabled() || this.platformAppsService.state.devMode) {
-      categories = categories.concat('Developer');
-      categories = categories.concat(['Experimental']);
+      // categories = categories.concat('Developer');
+      //categories = categories.concat(['Experimental']);
     }
 
     if (this.platformAppsService.state.loadedApps.filter(app => !app.unpacked).length > 0) {
-      categories = categories.concat('Installed Apps');
+      //categories = categories.concat('Installed Apps');
     }
 
     categories.push('Get Support');
+
+    console.log(`Settt categoies:`);
+    console.log(categories);
 
     return categories;
   }

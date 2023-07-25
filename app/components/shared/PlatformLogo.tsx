@@ -5,7 +5,7 @@ import styles from './PlatformLogo.m.less';
 import { TPlatform } from 'services/platforms';
 
 class LogoProps {
-  platform: TPlatform | 'nimotv' | 'dlive' | 'streamlabs' = 'twitch';
+  platform: TPlatform | 'nimotv' | 'dlive' | 'buffed' | 'streamlabs' = 'twitch';
   size?: number = 0;
 }
 
@@ -21,6 +21,7 @@ export default class PlatformLogo extends TsxComponent<LogoProps> {
       nimotv: 'nimotv',
       streamlabs: 'icon-streamlabs',
       trovo: 'trovo',
+      buffed: 'buffed',
     }[this.props.platform];
   }
 

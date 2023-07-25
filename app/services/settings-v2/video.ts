@@ -222,6 +222,8 @@ export class VideoSettingsService extends StatefulService<IVideoSetting> {
   }
 
   setVideoSetting(key: string, value: unknown, display: TDisplayType = 'horizontal') {
+    console.log(`>>>>>> SETTING ${key} to ${value} for ${display}`);
+
     this.SET_VIDEO_SETTING(key, value, display);
     this.updateObsSettings(display);
 

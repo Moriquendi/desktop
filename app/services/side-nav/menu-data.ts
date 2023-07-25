@@ -130,7 +130,7 @@ export const SideBarBottomNavData = (): IMenu => ({
   name: ENavName.BottomNav,
   menuItems: [
     SideNavMenuItems()[EMenuItemKey.DevTools],
-    SideNavMenuItems()[EMenuItemKey.GetPrime],
+    // SideNavMenuItems()[EMenuItemKey.GetPrime],
     SideNavMenuItems()[EMenuItemKey.Dashboard],
     SideNavMenuItems()[EMenuItemKey.GetHelp],
     SideNavMenuItems()[EMenuItemKey.Settings],

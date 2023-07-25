@@ -8,10 +8,10 @@ const pjson = require('./package.json');
 if (pjson.env === 'production') {
   process.env.NODE_ENV = 'production';
 }
-if (pjson.name === 'slobs-client-preview') {
+if (pjson.name === 'buffed-client-preview') {
   process.env.SLOBS_PREVIEW = true;
 }
-if (pjson.name === 'slobs-client-ipc') {
+if (pjson.name === 'buffed-client-ipc') {
   process.env.SLOBS_IPC = true;
 }
 process.env.SLOBS_VERSION = pjson.version;
@@ -43,7 +43,7 @@ if (process.env.SLOBS_CACHE_DIR) {
   app.setPath('appData', process.env.SLOBS_CACHE_DIR);
 }
 
-app.setPath('userData', path.join(app.getPath('appData'), 'slobs-client'));
+app.setPath('userData', path.join(app.getPath('appData'), 'slobs-client')); // TODO:
 
 if (process.argv.includes('--clearCacheDir')) {
   try {
@@ -213,9 +213,11 @@ app.on('ready', () => {
       // This error code indicates a read only file system
       if (e.code === 'EROFS') {
         dialog.showErrorBox(
-          'Streamlabs Desktop',
-          'Please run Streamlabs Desktop from your Applications folder. Streamlabs Desktop cannot run directly from this disk image.',
+          'Buffed Desktop',
+          'Please run Buffed Desktop from your Applications folder. Buffed Desktop cannot run directly from this disk image.',
         );
+
+        console.log(`App exit 1.`);
         app.exit();
       }
     }
@@ -248,9 +250,11 @@ let allowMainWindowClose = false;
 let shutdownStarted = false;
 let appShutdownTimeout;
 
+console.log(`Main: indexurl will set to: file://${__dirname}/index.html`);
 global.indexUrl = `file://${__dirname}/index.html`;
 
 function openDevTools() {
+  console.log(`Main: openDevTools`);
   childWindow.webContents.openDevTools({ mode: 'undocked' });
   mainWindow.webContents.openDevTools({ mode: 'undocked' });
   workerWindow.webContents.openDevTools({ mode: 'undocked' });
@@ -262,6 +266,8 @@ const waitingVuexStores = [];
 let workerInitFinished = false;
 
 async function startApp() {
+  console.log(`Main: startApp inside func.`);
+
   const crashHandler = require('crash-handler');
   const isDevMode = process.env.NODE_ENV !== 'production' && process.env.NODE_ENV !== 'test';
   const crashHandlerLogPath = app.getPath('userData');
@@ -270,16 +276,18 @@ async function startApp() {
     overlay = require('game_overlay');
   }
 
+  console.log(`Main: Start bundle updater`);
   await bundleUpdater(__dirname);
 
-  crashHandler.startCrashHandler(
-    app.getAppPath(),
-    process.env.SLOBS_VERSION,
-    isDevMode.toString(),
-    crashHandlerLogPath,
-    process.env.IPC_UUID,
-  );
-  crashHandler.registerProcess(pid, false);
+  console.log(`Main: Start crash handler`);
+  // crashHandler.startCrashHandler(
+  //   app.getAppPath(),
+  //   process.env.SLOBS_VERSION,
+  //   isDevMode.toString(),
+  //   crashHandlerLogPath,
+  //   process.env.IPC_UUID,
+  // );
+  // crashHandler.registerProcess(pid, false);
 
   ipcMain.on('register-in-crash-handler', (event, arg) => {
     crashHandler.registerProcess(arg.pid, arg.critical);
@@ -289,6 +297,7 @@ async function startApp() {
     crashHandler.unregisterProcess(arg.pid);
   });
 
+  console.log(`Main: Start remote`);
   remote.initialize();
 
   const Raven = require('raven');
@@ -296,41 +305,44 @@ async function startApp() {
   function handleFinishedReport() {
     dialog.showErrorBox(
       'Something Went Wrong',
-      'An unexpected error occured and Streamlabs Desktop must be shut down.\n' +
+      'An unexpected error occured and Buffed Desktop must be shut down.\n' +
         'Please restart the application.',
     );
 
+    console.log(`App exit 2.`);
     app.exit();
   }
 
   if (pjson.env === 'production') {
-    Raven.config(pjson.sentryFrontendDSN, {
-      release: process.env.SLOBS_VERSION,
-    }).install((err, initialErr, eventId) => {
-      handleFinishedReport();
-    });
+    console.log(`Main: Start sentry`);
+    // Raven.config(pjson.sentryFrontendDSN, {
+    //   release: process.env.SLOBS_VERSION,
+    // }).install((err, initialErr, eventId) => {
+    //   handleFinishedReport();
+    // });
 
-    const submitURL = process.env.SLOBS_PREVIEW
-      ? pjson.sentryBackendClientPreviewURL
-      : pjson.sentryBackendClientURL;
+    // const submitURL = process.env.SLOBS_PREVIEW
+    //   ? pjson.sentryBackendClientPreviewURL
+    //   : pjson.sentryBackendClientURL;
 
-    if (submitURL) {
-      crashReporter.start({
-        productName: 'streamlabs-obs',
-        companyName: 'streamlabs',
-        ignoreSystemCrashHandler: true,
-        submitURL,
-        extra: {
-          processType: 'main',
-        },
-        globalExtra: {
-          'sentry[release]': pjson.version,
-          'sentry[user][ip]': '{{auto}}',
-        },
-      });
-    }
+    // if (submitURL) {
+    //   crashReporter.start({
+    //     productName: 'streamlabs-obs',
+    //     companyName: 'streamlabs',
+    //     ignoreSystemCrashHandler: true,
+    //     submitURL,
+    //     extra: {
+    //       processType: 'main',
+    //     },
+    //     globalExtra: {
+    //       'sentry[release]': pjson.version,
+    //       'sentry[user][ip]': '{{auto}}',
+    //     },
+    //   });
+    // }
   }
 
+  console.log(`Main: Start worker window`);
   workerWindow = new BrowserWindow({
     show: false,
     webPreferences: { nodeIntegration: true, contextIsolation: false },
@@ -365,7 +377,7 @@ async function startApp() {
     show: false,
     frame: false,
     titleBarStyle: 'hidden',
-    title: 'Streamlabs Desktop',
+    title: 'Buffed Desktop',
     backgroundColor: '#17242D',
     webPreferences: {
       nodeIntegration: true,
@@ -374,6 +386,7 @@ async function startApp() {
     },
   });
 
+  console.log(`Main: enable remote x`);
   remote.enable(mainWindow.webContents);
 
   // setTimeout(() => {
@@ -385,6 +398,8 @@ async function startApp() {
   mainWindow.removeMenu();
 
   mainWindow.on('close', e => {
+    console.log(`Main: mainWindow.on('close')`);
+
     if (!shutdownStarted) {
       shutdownStarted = true;
       workerWindow.send('shutdown');
@@ -405,6 +420,7 @@ async function startApp() {
   // we need it to properly handle App.stop() in tests
   // since it tries to close all windows
   workerWindow.on('close', e => {
+    console.log(`Main: workerWindow.on('close')`);
     if (!shutdownStarted) {
       e.preventDefault();
       mainWindow.close();
@@ -413,6 +429,7 @@ async function startApp() {
 
   // This needs to be explicitly handled on Mac
   app.on('before-quit', e => {
+    console.log(`Main: app.on('before-quit')`);
     if (!shutdownStarted) {
       e.preventDefault();
       mainWindow.close();
@@ -420,16 +437,19 @@ async function startApp() {
   });
 
   ipcMain.on('acknowledgeShutdown', () => {
+    console.log(`Main: acknowledgeShutdown`);
     if (appShutdownTimeout) clearTimeout(appShutdownTimeout);
   });
 
   ipcMain.on('shutdownComplete', () => {
+    console.log(`Main: shutdownComplete`);
     allowMainWindowClose = true;
     mainWindow.close();
     workerWindow.close();
   });
 
   workerWindow.on('closed', () => {
+    console.log(`Main: workerWindow.on('closed')`);
     session.defaultSession.flushStorageData();
     session.defaultSession.cookies.flushStore().then(() => app.quit());
   });
@@ -465,7 +485,9 @@ async function startApp() {
     }
   });
 
-  if (process.env.SLOBS_PRODUCTION_DEBUG) openDevTools();
+  // console.log(`Main: Show dev tools: ${process.env.SLOBS_PRODUCTION_DEBUG}`);
+  // if (process.env.SLOBS_PRODUCTION_DEBUG) openDevTools();
+  openDevTools();
 
   // simple messaging system for services between windows
   // WARNING! renderer windows use synchronous requests and will be frozen
@@ -473,6 +495,7 @@ async function startApp() {
   const requests = {};
 
   function sendRequest(request, event = null, async = false) {
+    console.log(`Main: sendRequest`);
     if (workerWindow.isDestroyed()) {
       console.log('Tried to send request but worker window was missing...');
       return;
@@ -495,6 +518,7 @@ async function startApp() {
   }
 
   ipcMain.on('AppInitFinished', () => {
+    console.log(`Main: AppInitFinished`);
     workerInitFinished = true;
 
     waitingVuexStores.forEach(winId => {
@@ -507,14 +531,17 @@ async function startApp() {
   });
 
   ipcMain.on('services-request', (event, payload) => {
+    console.log(`Main: services-request`);
     sendRequest(payload, event);
   });
 
   ipcMain.on('services-request-async', (event, payload) => {
+    console.log(`Main: services-request-async`);
     sendRequest(payload, event, true);
   });
 
   ipcMain.on('services-response', (event, response) => {
+    console.log(`Main: services-response`);
     if (!requests[response.id]) return;
 
     if (requests[response.id].async) {
@@ -526,6 +553,7 @@ async function startApp() {
   });
 
   ipcMain.on('services-message', (event, payload) => {
+    console.log(`Main: services-message`);
     const windows = BrowserWindow.getAllWindows();
     windows.forEach(window => {
       if (window.id === workerWindow.id || window.isDestroyed()) return;
@@ -543,17 +571,19 @@ async function startApp() {
     //   openDevTools();
     // }, 10 * 1000);
   }
+
+  console.log(`Main: End startApp`);
 }
 
 const haDisableFile = path.join(app.getPath('userData'), 'HADisable');
 if (fs.existsSync(haDisableFile)) app.disableHardwareAcceleration();
 
-app.setAsDefaultProtocolClient('slobs');
+app.setAsDefaultProtocolClient('buffed');
 
 app.on('second-instance', (event, argv, cwd) => {
   // Check for protocol links in the argv of the other process
   argv.forEach(arg => {
-    if (arg.match(/^slobs:\/\//)) {
+    if (arg.match(/^buffed:\/\//)) {
       workerWindow.send('protocolLink', arg);
     }
   });
@@ -567,6 +597,8 @@ app.on('second-instance', (event, argv, cwd) => {
     mainWindow.focus();
   } else if (!shutdownStarted) {
     // This instance is a zombie and we should shut down.
+
+    console.log(`App exit 3.`);
     app.exit();
   }
 });
@@ -588,6 +620,8 @@ ipcMain.on('protocolLinkReady', () => {
   if (pendingLink) workerWindow.send('protocolLink', pendingLink);
 });
 
+console.log(`Main: app.on('ready')`);
+
 app.on('ready', () => {
   if (
     !process.argv.includes('--skip-update') &&
@@ -607,12 +641,16 @@ app.on('ready', () => {
         versionFileName: `${releaseChannel}.json`,
       };
 
+      console.log(`Main: bootstrap`);
       bootstrap(updateInfo, startApp, app.exit);
     } else {
+      console.log(`Main: updater`);
       new Updater(startApp, releaseChannel).run();
     }
   } else {
+    console.log(`Main: startApp`);
     startApp();
+    console.log(`Main: started end.`);
   }
 });
 
@@ -808,3 +846,5 @@ function measure(msg, time) {
 }
 
 ipcMain.handle('DESKTOP_CAPTURER_GET_SOURCES', (event, opts) => desktopCapturer.getSources(opts));
+
+console.log(`Main: End file`);

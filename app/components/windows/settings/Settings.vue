@@ -43,14 +43,14 @@
               />
             </div>
           </NavItem>
-          <NavItem
+          <!-- <NavItem
             key="Prime"
             to="Ultra"
             :ultra="true"
             :class="{ disabled: searchStr && !searchResultPages.includes('ultra') }"
           >
             Ultra
-          </NavItem>
+          </NavItem> -->
           <div
             class="settings-auth"
             @click="handleAuth()"
