@@ -1,6 +1,8 @@
 /*global SLOBS_BUNDLE_ID*/
 /*global SLD_SENTRY_BACKEND_SERVER_URL, SLD_SENTRY_FRONTEND_DSN, SLD_SENTRY_BACKEND_SERVER_PREVIEW_URL*/
 
+console.log(`app.ts top file`);
+
 import { I18nService, $t } from 'services/i18n';
 
 // eslint-disable-next-line
@@ -38,12 +40,15 @@ import { MetricsService } from 'services/metrics';
 import { UsageStatisticsService } from 'services/usage-statistics';
 import * as remote from '@electron/remote';
 
+console.log(`app: Let's go`);
+
 const { ipcRenderer } = electron;
 const slobsVersion = Utils.env.SLOBS_VERSION;
 const isProduction = Utils.env.NODE_ENV === 'production';
 const isPreview = !!Utils.env.SLOBS_PREVIEW;
 
 if (isProduction) {
+  console.log(`app: is production, add window parameter`);
   electron.crashReporter.addExtraParameter('windowId', Utils.getWindowId());
 }
 
@@ -51,6 +56,7 @@ let usingSentry = false;
 const windowId = Utils.getWindowId();
 
 // TODO: Remove after 1.6.0
+console.log(`app: stylesheets`);
 const styleSheets = document.styleSheets;
 
 for (let i = 0; i < styleSheets.length; i++) {
@@ -60,6 +66,7 @@ for (let i = 0; i < styleSheets.length; i++) {
     break;
   }
 }
+console.log(`app: stylesheets done`);
 
 function wrapLogFn(fn: string) {
   const old: Function = console[fn];
@@ -125,10 +132,16 @@ if (isProduction || process.env.SLOBS_REPORT_TO_SENTRY) {
   const bundles = ['renderer.js', 'vendors~renderer.js'];
   const bundleNames = electron.ipcRenderer.sendSync('getBundleNames', bundles);
 
+  console.log(
+    `app: init Sentry with ${SLD_SENTRY_FRONTEND_DSN}, release: ${slobsVersion}-${SLOBS_BUNDLE_ID}`,
+  );
+
   Sentry.init({
     dsn: SLD_SENTRY_FRONTEND_DSN,
     release: `${slobsVersion}-${SLOBS_BUNDLE_ID}`,
     beforeSend: (event, hint) => {
+      console.log(`app: Sentry before send`);
+
       // Because our URLs are local files and not publicly
       // accessible URLs, we simply truncate and send only
       // the filename.  Unfortunately sentry's electron support
@@ -159,6 +172,7 @@ if (isProduction || process.env.SLOBS_REPORT_TO_SENTRY) {
         event.request.url = normalize(event.request.url);
       }
 
+      console.log(`app: Sentry before send 2`);
       return isSampled || event.tags?.feature === 'highlighter' ? event : null;
     },
     integrations: [new Integrations.Vue({ Vue })],
@@ -238,13 +252,13 @@ document.addEventListener('contextmenu', () => {
 export const apiInitErrorResultToMessage = (resultCode: obs.EVideoCodes) => {
   switch (resultCode) {
     case obs.EVideoCodes.NotSupported: {
-      return 'Failed to initialize Streamlabs Desktop. Your video drivers may be out of date, or Streamlabs Desktop may not be supported on your system.';
+      return 'Failed to initialize Buffed Desktop. Your video drivers may be out of date, or Buffed Desktop may not be supported on your system.';
     }
     case obs.EVideoCodes.ModuleNotFound: {
       return 'DirectX could not be found on your system. Please install the latest version of DirectX for your machine here <https://www.microsoft.com/en-us/download/details.aspx?id=35?> and try again.';
     }
     default: {
-      return 'An unknown error was encountered while initializing Streamlabs Desktop.';
+      return 'An unknown error was encountered while initializing Buffed Desktop.';
     }
   }
 };
@@ -319,6 +333,8 @@ document.addEventListener('DOMContentLoaded', async () => {
       electron.ipcRenderer.send('shutdownComplete');
       return;
     }
+
+    console.log(`app: 22`);
 
     ipcRenderer.on('closeWindow', () => windowsService.closeMainWindow());
     I18nService.instance.load();

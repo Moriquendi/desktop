@@ -183,7 +183,7 @@ export class UsageStatisticsService extends Service {
     const analyticsEvent: IAnalyticsEvent = {
       event,
       value,
-      product: 'SLOBS',
+      product: 'BUFFED',
       version: this.version,
       count: 1,
       uuid: this.userService.getLocalUserId(),

@@ -236,7 +236,7 @@ export class YoutubeService
     const host = this.hostsService.streamlabs;
     return (
       `https://${host}/slobs/login?_=${Date.now()}` +
-      '&skip_splash=true&external=electron&youtube&force_verify&origin=slobs'
+      '&skip_splash=true&external=electron&youtube&force_verify&origin=buffed'
     );
   }
 

@@ -45,7 +45,7 @@ export class ObsUserPluginsService extends Service {
   }
 
   private get pluginsBaseDir() {
-    return path.join(this.appData, 'slobs-plugins');
+    return path.join(this.appData, 'buffed-plugins');
   }
 
   private get obsPluginsDir() {

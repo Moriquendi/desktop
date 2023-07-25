@@ -50,7 +50,7 @@ export class ProtocolLinksService extends Service {
     byOS({
       [OS.Windows]: () => {
         argv.forEach(arg => {
-          if (arg.match(/^slobs:\/\//)) this.handleLink(arg);
+          if (arg.match(/^buffed:\/\//)) this.handleLink(arg);
         });
       },
       [OS.Mac]: () => {

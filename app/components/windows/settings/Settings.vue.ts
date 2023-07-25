@@ -187,6 +187,11 @@ export default class Settings extends Vue {
   }
 
   save(settingsData: ISettingsSubCategory[]) {
+    settingsData.forEach(setting => {
+      console.log(`\n\nSaving: ${setting.nameSubCategory}`);
+      console.log(`Data:`, JSON.stringify(setting.parameters));
+    });
+
     this.settingsService.setSettings(this.categoryName, settingsData);
   }
 

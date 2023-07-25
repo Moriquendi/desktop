@@ -1,8 +1,8 @@
 const signtool = require('signtool');
 
 const base = {
-  appId: 'com.streamlabs.slobs',
-  productName: 'Streamlabs Desktop',
+  appId: 'com.me.buffed.desktop',
+  productName: 'Buffed Desktop',
   icon: 'media/images/icon.ico',
   files: [
     'bundles',
@@ -30,13 +30,19 @@ const base = {
     allowToChangeInstallationDirectory: true,
     include: 'installer.nsh',
   },
-  asarUnpack : ["**/node-libuiohook/**", "**/node-fontinfo/**", "**/font-manager/**", "**/game_overlay/**","**/color-picker/**"],
+  asarUnpack: [
+    '**/node-libuiohook/**',
+    '**/node-fontinfo/**',
+    '**/font-manager/**',
+    '**/game_overlay/**',
+    '**/color-picker/**',
+  ],
   publish: {
     provider: 'generic',
     url: 'https://slobs-cdn.streamlabs.com',
   },
   win: {
-    executableName: 'Streamlabs OBS',
+    executableName: 'Buffed OBS',
     extraFiles: ['LICENSE', 'AGREEMENT', 'shared-resources/**/*', '!shared-resources/README'],
     rfc3161TimeStampServer: 'http://timestamp.digicert.com',
     timeStampServer: 'http://timestamp.digicert.com',
@@ -84,8 +90,8 @@ const base = {
     extendInfo: {
       CFBundleURLTypes: [
         {
-          CFBundleURLName: 'Streamlabs OBS Link',
-          CFBundleURLSchemes: ['slobs'],
+          CFBundleURLName: 'Buffed OBS Link',
+          CFBundleURLSchemes: ['buffed'],
         },
       ],
     },

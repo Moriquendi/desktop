@@ -4,7 +4,7 @@ const path = require('path');
 
 function signAndCheck(filePath) {
   console.log(`Signing: ${filePath}`);
-  cp.execSync(`codesign -fs "Developer ID Application: Streamlabs LLC (UT675MBB9Q)" "${filePath}"`);
+  cp.execSync(`codesign -fs "Developer ID Application: Pompom, Inc. (6FNBN24NZY)" "${filePath}"`);
 
   // All files need to be writable for update to succeed on mac
   console.log(`Checking Writable: ${filePath}`);
@@ -49,7 +49,7 @@ function signBinaries(directory) {
   }
 }
 
-exports.default = async function(context) {
+exports.default = async function (context) {
   if (process.platform !== 'darwin') return;
 
   console.log('Updating dependency paths');

@@ -29,6 +29,14 @@ module.exports = async (basePath: string) => {
   const bundlesBaseDirectory = path.join(electron.app.getPath('userData'), 'bundles');
   const bundleDirectory = path.join(bundlesBaseDirectory, process.env.SLOBS_VERSION!);
 
+  console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>');
+  console.log('Bundle directory:', bundleDirectory);
+  console.log(`cdnBase: ${cdnBase}`);
+  console.log(`localBase: ${localBase}`);
+  console.log(`Bundles base directory: ${bundlesBaseDirectory}`);
+  console.log(`Bundle directory: ${bundleDirectory}`);
+  console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>');
+
   let updaterWindow: electron.BrowserWindow;
   let updaterWindowSuccessfulClose = false;
 
@@ -278,6 +286,7 @@ module.exports = async (basePath: string) => {
     // Check the server
     const serverPath = `${cdnBase}${bundle}`;
     const downloadPath = path.join(bundleDirectory, bundle);
+
     console.log(`Attempting to download bundle ${bundle}`);
     ensureBundlesDirectory();
     await retryWithTimeout(() => downloadFile(serverPath, downloadPath));
@@ -301,8 +310,6 @@ module.exports = async (basePath: string) => {
 
   const localManifest: IManifest = require(path.join(`${basePath}/bundles/manifest.json`));
 
-  console.log('Local bundle info:', localManifest);
-
   // Check if bundle updates are available
   let serverManifest: IManifest | undefined;
 
@@ -311,6 +318,7 @@ module.exports = async (basePath: string) => {
       const remoteManifestName = process.argv.includes('--bundle-qa')
         ? 'manifest-qa.json'
         : 'manifest.json';
+
       const response = await fetch(`${cdnBase}${remoteManifestName}`);
 
       if (response.status / 100 >= 4) {
@@ -354,10 +362,8 @@ module.exports = async (basePath: string) => {
       }, 10 * 1000);
 
       await Promise.all(promises);
-
       // Everything was successful, so cache the manifest for next time
       cacheManifest(serverManifest);
-
       clearTimeout(timeout);
       closeUpdaterWindow();
     } catch (e: unknown) {
@@ -407,6 +413,7 @@ module.exports = async (basePath: string) => {
 
   electron.session.defaultSession?.protocol.registerFileProtocol('slbundle', (request, cb) => {
     const url = new URL(request.url);
+
     const bundleName = url.pathname.replace('/', '') as TBundleName;
 
     if (!useLocalBundles && bundlePathsMap[bundleName]) {
@@ -414,13 +421,13 @@ module.exports = async (basePath: string) => {
       return;
     }
 
-    console.log(`Using local bundle for ${bundleName}`);
     cb({ path: path.join(localBase, localManifest[bundleName]) });
   });
 
   // Use a local web server to serve source maps in development.
   // This is needed because chromium no longer uses the redirect
   // URL when looking for source maps.
+
   if (!['production', 'test'].includes(process.env.NODE_ENV ?? '')) {
     const handler = require('serve-handler');
 
@@ -483,8 +490,8 @@ module.exports = async (basePath: string) => {
     });
 
     electron.dialog.showErrorBox(
-      'Streamlabs Desktop',
-      'Streamlabs Desktop failed to start. Please try launching Streamlabs Desktop again. If this issue persists, please visit support.streamlabs.com for help.',
+      'Buffed Desktop',
+      'Buffed Desktop failed to start. Please try launching Buffed Desktop again. If this issue persists, please visit support.streamlabs.com for help.',
     );
   });
 };

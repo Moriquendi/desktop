@@ -112,6 +112,7 @@ export class SceneCollectionsService extends Service implements ISceneCollection
     await this.stateService.loadManifestFile();
     await this.migrateOS();
     await this.safeSync();
+
     if (this.activeCollection && this.activeCollection.operatingSystem === getOS()) {
       await this.load(this.activeCollection.id, true);
     } else if (this.loadableCollections.length > 0) {
@@ -129,6 +130,7 @@ export class SceneCollectionsService extends Service implements ISceneCollection
     } else {
       await this.create({ auto: true });
     }
+
     this.collectionInitialized.next();
   }
 
@@ -188,7 +190,7 @@ export class SceneCollectionsService extends Service implements ISceneCollection
       } else {
         console.warn(`Unsuccessful recovery of scene collection ${id} attempted`);
         remote.dialog.showMessageBox(Utils.getMainWindow(), {
-          title: 'Streamlabs Desktop',
+          title: 'Buffed Desktop',
           message: $t('Failed to load scene collection.  A new one will be created instead.'),
         });
         await this.create();
