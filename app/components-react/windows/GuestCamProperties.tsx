@@ -790,7 +790,7 @@ function FirstTimeModalContent() {
       />
       <a
         style={{ display: 'inline-block', marginTop: 10 }}
-        onClick={() => remote.shell.openExternal('https://streamlabs.com/collab-cam')}
+        onClick={() => remote.shell.openExternal('https://buffed.me/collab-cam')}
       >
         {$t('Learn More')}
       </a>

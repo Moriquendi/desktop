@@ -295,6 +295,6 @@ export function $i(mediaPath: string) {
 
     return localMediaPath;
   } catch (e: unknown) {
-    return `https://slobs-cdn.streamlabs.com/media/${mediaPath}`;
+    return `https://buffed-cdn.buffed.me/media/${mediaPath}`;
   }
 }

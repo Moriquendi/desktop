@@ -78,10 +78,10 @@ export function UniversityCard(p: { progress: IUniversityProgress }) {
     'Professional streamers are now able to earn large amounts of money while entertaining people and creating their own brand. But how does one become a professional streamer? Streamlabs University is our answer to this question. In this course, we’ll walk you through everything you need to know to become a successful streamer and turn your passion into a profession.',
   );
   let buttonText = $t('Open Streamlabs University');
-  let imageUrl = 'https://slobs-cdn.streamlabs.com/media/grow/streamlabs_university.png';
+  let imageUrl = 'https://buffed-cdn.buffed.me/media/grow/streamlabs_university.png';
 
   function openLink() {
-    const url = p.progress.stopped_at?.url || 'https://streamlabs.com/university';
+    const url = p.progress.stopped_at?.url || 'https://buffed.me/university';
     remote.shell.openExternal(url);
   }
 
@@ -131,7 +131,7 @@ export function ContentHubCard() {
       );
     }
 
-    remote.shell.openExternal('https://streamlabs.com/content-hub');
+    remote.shell.openExternal('https://buffed.me/content-hub');
   }
 
   return (
@@ -150,7 +150,7 @@ export function ContentHubCard() {
       </div>
       <img
         className={styles.cardImage}
-        src="https://slobs-cdn.streamlabs.com/media/grow/content_hub.png"
+        src="https://buffed-cdn.buffed.me/media/grow/content_hub.png"
       />
     </div>
   );

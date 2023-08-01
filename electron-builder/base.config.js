@@ -39,7 +39,7 @@ const base = {
   ],
   publish: {
     provider: 'generic',
-    url: 'https://slobs-cdn.streamlabs.com',
+    url: 'https://buffed-cdn.buffed.me',
   },
   win: {
     executableName: 'Buffed OBS',
@@ -57,7 +57,7 @@ const base = {
         return;
       }
 
-      console.log(`Signing ${config.hash} ${config.path}`);
+      console.log(`Signing [${config.hash} ${config.path}]`);
       await signtool.sign(config.path, {
         subject: 'Streamlabs (General Workings, Inc.)',
         rfcTimestamp: 'http://timestamp.digicert.com',

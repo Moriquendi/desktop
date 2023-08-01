@@ -630,7 +630,7 @@ app.on('ready', () => {
     // Windows uses our custom update, Mac uses electron-updater
     if (process.platform === 'win32') {
       const updateInfo = {
-        baseUrl: 'https://slobs-cdn.streamlabs.com',
+        baseUrl: 'https://buffed-cdn.buffed.me',
         version: pjson.version,
         exec: process.argv,
         cwd: process.cwd(),

@@ -37,7 +37,7 @@ class RemoteControlModule {
   get qrCodeValue() {
     if (!this.state.qrcodeIsVisible) return 'This is totally fake data';
     const encodedData = encodeURIComponent(JSON.stringify(this.state.qrCodeData));
-    return `https://streamlabs.page.link/?link=https://streamlabs.com/mobile-app&data=${encodedData}&apn=com.me.buffed.desktoprc&isi=1476615877&ibi=com.me.buffed.desktoprc&utm_source=slobs`;
+    return `https://buffed.page.link/?link=https://buffed.me/mobile-app&data=${encodedData}&apn=com.me.buffed.desktoprc&isi=1476615877&ibi=com.me.buffed.desktoprc&utm_source=slobs`;
   }
 
   private get TcpServerService() {

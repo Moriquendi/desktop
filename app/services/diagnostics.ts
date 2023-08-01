@@ -256,7 +256,7 @@ export class DiagnosticsService extends PersistentStatefulService<IDiagnosticsSe
     formData.append('content', await this.generateReport());
 
     return jfetch<{ success: boolean; report_code: string }>(
-      'https://streamlabs.com/api/v6/desktop/reports',
+      'https://buffed.me/api/v6/desktop/reports',
       {
         method: 'POST',
         body: formData,

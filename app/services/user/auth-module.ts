@@ -80,7 +80,7 @@ export class AuthModule {
 
         if (parsed) {
           response.writeHead(302, {
-            Location: 'https://streamlabs.com/streamlabs-obs/login-success',
+            Location: 'https://buffed.me/buffed-obs/login-success',
           });
           response.end();
 

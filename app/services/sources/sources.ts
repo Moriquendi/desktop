@@ -522,7 +522,7 @@ export class SourcesService extends StatefulService<ISourcesState> {
     if (type === 'browser_source') {
       if (resolvedSettings.shutdown === void 0) resolvedSettings.shutdown = true;
       if (resolvedSettings.url === void 0) {
-        resolvedSettings.url = 'https://streamlabs.com/browser-source';
+        resolvedSettings.url = 'https://buffed.me/browser-source';
       }
     }
 

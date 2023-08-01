@@ -200,7 +200,7 @@ export class ApplicationMenuService extends Service {
           {
             label: 'Buffed Desktop Support',
             click: () => {
-              remote.shell.openExternal('https://support.streamlabs.com');
+              remote.shell.openExternal('https://support.buffed.me');
             },
           },
         ],

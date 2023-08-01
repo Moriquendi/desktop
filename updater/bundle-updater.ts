@@ -22,7 +22,7 @@ type TExecutor = () => [Promise<unknown>, () => void];
 const BUNDLE_NAMES = ['renderer.js', 'vendors~renderer.js'] as const;
 
 module.exports = async (basePath: string) => {
-  const cdnBase = `https://slobs-cdn.streamlabs.com/${process.env.SLOBS_VERSION}${
+  const cdnBase = `https://buffed-cdn.buffed.me/${process.env.SLOBS_VERSION}${
     process.platform === 'darwin' ? '-mac' : ''
   }/bundles/`;
   const localBase = path.join(basePath, 'bundles');

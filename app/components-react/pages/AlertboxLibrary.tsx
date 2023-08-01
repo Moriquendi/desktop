@@ -49,7 +49,7 @@ export default function AlertboxLibrary(p: { params: { id?: string } }) {
   ) {
     for (const url of urls) {
       const host = new urlLib.URL(url).hostname;
-      const trustedHosts = ['cdn.streamlabs.com'];
+      const trustedHosts = ['cdn.buffed.me'];
 
       if (!trustedHosts.includes(host)) {
         console.error(`Ignoring widget install from untrusted host: ${host}`);

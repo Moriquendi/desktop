@@ -80,7 +80,7 @@ export default function SideNav() {
   function openHelp() {
     UsageStatisticsService.actions.recordClick('SideNav2', 'help');
     remote.shell.openExternal(
-      'https://streamlabs.com/content-hub/support/support-streamlabs-desktop',
+      'https://buffed.me/content-hub/support/support-streamlabs-desktop',
     );
   }
 
@@ -89,7 +89,7 @@ export default function SideNav() {
     if (isLoggedIn) {
       MagicLinkService.linkToPrime('slobs-side-nav');
     } else {
-      remote.shell.openExternal('https://streamlabs.com/ultra?checkout=1&refl=slobs-side-nav');
+      remote.shell.openExternal('https://buffed.me/ultra?checkout=1&refl=slobs-side-nav');
     }
   }
 

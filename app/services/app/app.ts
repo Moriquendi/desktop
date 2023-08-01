@@ -42,6 +42,7 @@ import { SettingsService } from '../settings';
 import { OS, getOS } from 'util/operating-systems';
 import * as remote from '@electron/remote';
 import { VideoSettingsService } from 'services/settings-v2/video';
+import { BuffedSettingsController } from 'services/settings/BuffedSettingsController';
 
 interface IAppState {
   loading: boolean;
@@ -277,7 +278,7 @@ export class AppService extends StatefulService<IAppState> {
   private async downloadAutoGameCaptureConfig() {
     // download game-list for auto game capture
     await downloadFile(
-      'https://slobs-cdn.streamlabs.com/configs/game_capture_list.json',
+      'https://buffed-cdn.buffed.me/configs/game_capture_list.json',
       `${this.appDataDirectory}/game_capture_list.json`,
     );
   }

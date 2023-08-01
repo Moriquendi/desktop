@@ -80,7 +80,7 @@ export default function ManageSceneCollections() {
       MagicLinkService.linkToPrime('slobs-scene-collections');
     } else {
       remote.shell.openExternal(
-        'https://streamlabs.com/ultra?checkout=1&refl=slobs-scene-collections',
+        'https://buffed.me/ultra?checkout=1&refl=slobs-scene-collections',
       );
     }
   }
