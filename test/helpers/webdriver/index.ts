@@ -251,7 +251,7 @@ export function useWebdriver(options: ITestRunnerOptions = {}) {
           args: [
             ...appArgs,
             '--app=test-main.js',
-            `user-data-dir=${path.join(t.context.cacheDir, 'slobs-client')}`,
+            `user-data-dir=${path.join(t.context.cacheDir, 'buffed-client')}`,
           ],
         },
       },
@@ -463,7 +463,7 @@ export function useWebdriver(options: ITestRunnerOptions = {}) {
   }
 
   function readLogs(): string {
-    const filePath = path.join(lastCacheDir, 'slobs-client', 'app.log');
+    const filePath = path.join(lastCacheDir, 'buffed-client', 'app.log');
     if (!fs.existsSync(filePath)) return;
     return fs.readFileSync(filePath).toString();
   }

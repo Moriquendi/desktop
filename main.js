@@ -43,7 +43,7 @@ if (process.env.SLOBS_CACHE_DIR) {
   app.setPath('appData', process.env.SLOBS_CACHE_DIR);
 }
 
-app.setPath('userData', path.join(app.getPath('appData'), 'slobs-client')); // TODO:
+app.setPath('userData', path.join(app.getPath('appData'), 'buffed-client')); // TODO:
 
 if (process.argv.includes('--clearCacheDir')) {
   try {
@@ -194,7 +194,7 @@ function humanFileSize(bytes, si) {
 }
 
 console.log('=================================');
-console.log('Streamlabs Desktop');
+console.log('Buffed Desktop');
 console.log(`Version: ${process.env.SLOBS_VERSION}`);
 console.log(`OS: ${os.platform()} ${os.release()}`);
 console.log(`Arch: ${process.arch}`);
