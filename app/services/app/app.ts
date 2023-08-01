@@ -169,6 +169,12 @@ export class AppService extends StatefulService<IAppState> {
       this.applicationMenuService;
     }
 
+    ////////////////////////////////////////////////
+    console.log(`start`);
+    await new BuffedSettingsController().setBuffedDetaultSettings();
+    console.log(`end kasd`);
+    ////////////////////////////////////////////
+
     ipcRenderer.send('AppInitFinished');
     this.metricsService.recordMetric('sceneCollectionLoadingTime');
   }

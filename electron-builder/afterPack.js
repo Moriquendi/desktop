@@ -50,6 +50,8 @@ function signBinaries(directory) {
 }
 
 exports.default = async function (context) {
+  console.log(`Platform is : ${process.platform}`);
+
   if (process.platform !== 'darwin') return;
 
   console.log('Updating dependency paths');
