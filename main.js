@@ -623,6 +623,7 @@ ipcMain.on('protocolLinkReady', () => {
 console.log(`Main: app.on('ready')`);
 
 app.on('ready', () => {
+  /*
   if (
     !process.argv.includes('--skip-update') &&
     (process.env.NODE_ENV === 'production' || process.env.SLOBS_FORCE_AUTO_UPDATE)
@@ -648,10 +649,10 @@ app.on('ready', () => {
       new Updater(startApp, releaseChannel).run();
     }
   } else {
+    */
     console.log(`Main: startApp`);
     startApp();
-    console.log(`Main: started end.`);
-  }
+  /*}*/
 });
 
 ipcMain.on('openDevTools', () => {

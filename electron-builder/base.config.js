@@ -48,6 +48,7 @@ const base = {
     timeStampServer: 'http://timestamp.digicert.com',
     signDlls: true,
     async sign(config) {
+      return;
       if (process.env.SLOBS_NO_SIGN) return;
 
       if (
