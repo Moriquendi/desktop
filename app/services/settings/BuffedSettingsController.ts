@@ -83,7 +83,7 @@ export class BuffedSettingsController {
     // const source = SourcesService.createSource('Screen Capture', 'screen_capture', {}, {});
     // SourcesService.addSource('Screen Capture', {}, {})
     
-    await SourcesService.createSource(
+    const source = await SourcesService.createSource(
       'Game Capture',
       'game_capture',
       {},
@@ -92,6 +92,13 @@ export class BuffedSettingsController {
         propertiesManagerSettings: {}
       }
       );
+
+    const sourceProperties = source.getPropertiesFormData()
+
+    console.log(`Source properties:`)
+    console.log(sourceProperties)
+    
+    
 
     /*
     const name = 'Screen Capture A';
