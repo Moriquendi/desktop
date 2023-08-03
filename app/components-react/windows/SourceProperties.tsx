@@ -47,6 +47,12 @@ export default function SourceProperties() {
       UsageStatisticsService.actions.recordFeatureUsage('DShowConfigureVideo');
     }
 
+    console.log(`>>>. properties Call:`)
+    console.log(properties)
+    console.log(formData)
+    console.log(changedInd)
+    console.log('--------')
+
     // save source settings
     EditorCommandsService.executeCommand('EditSourcePropertiesCommand', source.sourceId, [
       formData[changedInd],

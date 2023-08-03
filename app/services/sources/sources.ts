@@ -464,6 +464,8 @@ export class SourcesService extends StatefulService<ISourcesState> {
   }
 
   addFile(path: string): Source | null {
+    console.log('z: addFile')
+    
     const realpath = fs.realpathSync(path);
     const SUPPORTED_EXT = {
       image_source: ['png', 'jpg', 'jpeg', 'tga', 'bmp'],
