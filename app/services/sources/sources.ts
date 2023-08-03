@@ -661,6 +661,9 @@ export class SourcesService extends StatefulService<ISourcesState> {
   }
 
   showSourceProperties(sourceId: string) {
+
+    console.log('showSourceProperties')
+
     const source = this.views.getSource(sourceId);
     if (!source) return;
 
@@ -727,6 +730,9 @@ export class SourcesService extends StatefulService<ISourcesState> {
   }
 
   showWidgetProperties(source: Source) {
+
+    console.log('showWidgetProperties')
+
     if (!this.userService.isLoggedIn) return;
     const platform = this.userService.views.platform;
     assertIsDefined(platform);
@@ -790,6 +796,9 @@ export class SourcesService extends StatefulService<ISourcesState> {
   }
 
   showPlatformAppPage(source: Source) {
+
+    console.log('showPlatformAppPage')
+
     const settings = source.getPropertiesManagerSettings();
     const app = this.platformAppsService.views.getApp(settings.appId);
 
@@ -838,6 +847,10 @@ export class SourcesService extends StatefulService<ISourcesState> {
 
   showScreenCaptureProperties(source: Source) {
     const propertiesName = SourceDisplayData()[source.type].name;
+
+    console.log(`Show screen capture: ${source.type}`)
+    console.log(`Properties: ${propertiesName}`)
+
     this.windowsService.showWindow({
       componentName: 'ScreenCaptureProperties',
       title: $t('Settings for %{sourceName}', { sourceName: propertiesName }),
@@ -850,6 +863,7 @@ export class SourcesService extends StatefulService<ISourcesState> {
   }
 
   showGuestCamProperties(source?: Source) {
+    console.log('showGuestCamProperties')
     this.windowsService.showWindow({
       componentName: 'GuestCamProperties',
       title: $t('Collab Cam Properties', { sourceName: $t('Collab Cam') }),
