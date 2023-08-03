@@ -97,7 +97,13 @@ export class BuffedSettingsController {
 
     console.log(`Source properties:`)
     console.log(sourceProperties)
-    
+
+    const captureModeProp = sourceProperties.find((v) => v.name === "capture_mode")
+    console.log(`Would set this:`)
+    console.log(captureModeProp)
+    // EditorCommandsService.executeCommand('EditSourcePropertiesCommand', source.sourceId, [
+    //   captureModeProp,
+    // ]);
     
 
     /*
