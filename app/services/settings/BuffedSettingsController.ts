@@ -79,6 +79,13 @@ export class BuffedSettingsController {
     }
 
     const activeSceneId = ScenesService.views.activeSceneId;
+    
+    // const source = SourcesService.createSource('Screen Capture', 'screen_capture', {}, {});
+    // SourcesService.addSource('Screen Capture', {}, {})
+    
+    // await SourcesService.createSource('Game Capture', 'game_capture', {}, {});
+
+    /*
     const name = 'Screen Capture A';
     const sourceType: TSourceType = 'screen_capture';
     const settings: Dictionary<any> = {};
@@ -88,7 +95,6 @@ export class BuffedSettingsController {
       propertiesManagerSettings: {},
       //guestCamStreamId: //sourceAddOptions.guestCamStreamId,
     };
-
     const item = await EditorCommandsService.actions.return.executeCommand(
       'CreateNewItemCommand',
       activeSceneId,
@@ -119,5 +125,6 @@ export class BuffedSettingsController {
       },
     );
     console.log(`result: ${result}`);
+    */
   }
 }

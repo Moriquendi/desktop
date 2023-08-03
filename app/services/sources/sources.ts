@@ -296,6 +296,11 @@ export class SourcesService extends StatefulService<ISourcesState> {
     settings: Dictionary<any> = {},
     options: ISourceAddOptions = {},
   ): Source {
+
+    console.log(`y: creating source: `)
+    console.log(`y: settings: ${JSON.stringify(settings)}`)
+    console.log(`y: options: ${JSON.stringify(options)}`)
+
     const id: string = options.sourceId || `${type}_${uuid()}`;
     const obsInputSettings = this.getObsSourceCreateSettings(type, settings);
 
@@ -334,6 +339,11 @@ export class SourcesService extends StatefulService<ISourcesState> {
   }
 
   addSource(obsInput: obs.IInput, name: string, options: ISourceAddOptions = {}) {
+    console.log('y: add source')
+    console.log(`y: obsInput: ${JSON.stringify(obsInput)}`)
+    console.log(`y: name: ${name}`)
+    console.log(`y: options: ${JSON.stringify(options)}`)
+
     if (options.channel !== void 0) {
       obs.Global.setOutputSource(options.channel, obsInput);
     }
