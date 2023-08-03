@@ -69,7 +69,7 @@ export class BuffedSettingsController {
     console.log(nested);
 
     const hasAddedSources =
-      ScenesService.views.activeScene.getNestedSources().filter(s => s.type === 'screen_capture')
+      ScenesService.views.activeScene.getNestedSources().filter(s => s.type === 'screen_capture' || s.type === 'game_capture')
         .length > 0;
     if (hasAddedSources) {
       console.log(`Sources are added. Skipping...`);
