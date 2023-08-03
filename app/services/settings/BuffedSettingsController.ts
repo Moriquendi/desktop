@@ -83,15 +83,21 @@ export class BuffedSettingsController {
     // const source = SourcesService.createSource('Screen Capture', 'screen_capture', {}, {});
     // SourcesService.addSource('Screen Capture', {}, {})
     
-    const source = await SourcesService.createSource(
-      'Game Capture',
-      'game_capture',
-      {},
-      {
-        propertiesManager: 'default',
-        propertiesManagerSettings: {}
-      }
-      );
+    const scene = ScenesService.views.activeScene
+    const item = scene.createAndAddSource('Game Capture', 'game_capture', {}, {})
+    const sourceId = item.sourceId
+
+    const source = SourcesService.views.getSource(sourceId)!;
+
+    // const source = await SourcesService.createSource(
+    //   'Game Capture',
+    //   'game_capture',
+    //   {},
+    //   {
+    //     propertiesManager: 'default',
+    //     propertiesManagerSettings: {}
+    //   }
+    //   );
 
     const sourceProperties = source.getPropertiesFormData()
 
@@ -99,11 +105,13 @@ export class BuffedSettingsController {
     console.log(sourceProperties)
 
     const captureModeProp = sourceProperties.find((v) => v.name === "capture_mode")
+    captureModeProp.value = "any_fullscreen"
     console.log(`Would set this:`)
     console.log(captureModeProp)
-    // EditorCommandsService.executeCommand('EditSourcePropertiesCommand', source.sourceId, [
-    //   captureModeProp,
-    // ]);
+    EditorCommandsService.executeCommand('EditSourcePropertiesCommand', source.sourceId, [
+      captureModeProp,
+    ]);
+
     
 
     /*
