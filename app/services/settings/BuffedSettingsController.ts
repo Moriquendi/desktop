@@ -105,12 +105,14 @@ export class BuffedSettingsController {
     console.log(sourceProperties)
 
     const captureModeProp = sourceProperties.find((v) => v.name === "capture_mode")
-    captureModeProp.value = "any_fullscreen"
-    console.log(`Would set this:`)
-    console.log(captureModeProp)
-    EditorCommandsService.executeCommand('EditSourcePropertiesCommand', source.sourceId, [
-      captureModeProp,
-    ]);
+    if (captureModeProp) {
+      captureModeProp.value = "any_fullscreen"
+      console.log(`Would set this:`)
+      console.log(captureModeProp)
+      EditorCommandsService.executeCommand('EditSourcePropertiesCommand', source.sourceId, [
+        captureModeProp,
+      ]);
+    }
 
     
 
