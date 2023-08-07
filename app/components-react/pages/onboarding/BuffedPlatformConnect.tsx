@@ -3,7 +3,7 @@ import PlatformLogo from 'components-react/shared/PlatformLogo';
 import React, { useState } from 'react';
 import { $t } from 'services/i18n';
 import { LoginModule } from './Connect';
-import styles from './Connect.m.less';
+import styles from './BuffedPlatformConnect.m.less';
 import * as remote from '@electron/remote';
 import { TextInput } from 'components-react/shared/inputs/TextInput';
 import { OnboardingModule } from './Onboarding';
@@ -75,54 +75,65 @@ export function BuffedPlatformConnect() {
   };
 
   return (
-    <div>
-      <div className={styles.container} style={{ height: '50%' }}>
-        <p>
-          <PlatformLogo platform={'buffed'} />
-        </p>
-        <h1>{$t('Connect to %{platform}', { platform: platformDefinition.name })}</h1>
+    <div className={styles.rootContainer}>
+      
+      <div className={styles.fancyContainerBackground}> </div>
 
-        <div className="section">
-          <Form>
-            <TextInput
-              label={$t('Email')}
-              value={email}
-              onChange={setEmail}
-              isPassword={false}
-              uncontrolled={false}
-            />
-            <TextInput
-              label={$t('Password')}
-              value={password}
-              onChange={setPassword}
-              isPassword={true}
-              uncontrolled={false}
-            />
-          </Form>
-        </div>
+      <div style={{position: "relative", height: "100%" }}>
+        <div className={styles.fancyContainer} style={{height: "100%"}}>
+            {/* <p>
+              <PlatformLogo platform={'buffed'} />
+            </p>
+            <h1>{$t('Connect to %{platform}', { platform: platformDefinition.name })}</h1> */}
 
-        <p>
-          <button
-            className="button button--action"
-            onClick={onFinish}
-            disabled={!(email.trim().length > 0 && password.trim().length > 0)}
-          >
-            {$t('Sign In')}
-          </button>
-        </p>
+            <div className="flex flex--center flex--column">
+              <Form>
+                <TextInput
+                  label={$t('Email')}
+                  value={email}
+                  onChange={setEmail}
+                  isPassword={false}
+                  uncontrolled={false}
+                />
+                <TextInput
+                  label={$t('Password')}
+                  value={password}
+                  onChange={setPassword}
+                  isPassword={true}
+                  uncontrolled={false}
+                />
+              </Form>
 
-        <p>
-          {/* <a className={styles['link-button']} onClick={() => next()}>
-            {$t('Skip')}
-          </a> */}
 
-          {/* <span style={{ display: 'inline-block', width: 32 }}> </span> */}
+            <p>
+              <button
+                className="button button--action"
+                onClick={onFinish}
+                disabled={!(email.trim().length > 0 && password.trim().length > 0)}
+                style={{minWidth: "300px"}}
+              >
+                {$t('Sign In')}
+              </button>
+            </p>
+            </div>
 
-          {/* <a className={styles['link-button']} onClick={() => setExtraPlatform(undefined)}>
-            {$t('Back')}
-          </a> */}
-        </p>
+
+
+            <p>
+              {/* <a className={styles['link-button']} onClick={() => next()}>
+                {$t('Skip')}
+              </a> */}
+
+              {/* <span style={{ display: 'inline-block', width: 32 }}> </span> */}
+
+              {/* <a className={styles['link-button']} onClick={() => setExtraPlatform(undefined)}>
+                {$t('Back')}
+              </a> */}
+            </p>
+          </div>
       </div>
+
+      
     </div>
   );
 }
