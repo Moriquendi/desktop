@@ -451,7 +451,7 @@ function StudioControls() {
         <i className="icon-add-circle icon-button icon-button--lg" onClick={addSource} />
       </Tooltip>
 
-      <Tooltip title={$t('Toggle Selective Recording')} placement="bottomRight">
+      {/* <Tooltip title={$t('Toggle Selective Recording')} placement="bottomRight">
         <i
           className={cx('icon-smart-record icon-button icon-button--lg', {
             active: selectiveRecordingEnabled,
@@ -459,10 +459,10 @@ function StudioControls() {
           })}
           onClick={toggleSelectiveRecording}
         />
-      </Tooltip>
-      <Tooltip title={addGroupTooltip} placement="bottomRight">
+      </Tooltip> */}
+      {/* <Tooltip title={addGroupTooltip} placement="bottomRight">
         <i className="icon-add-folder icon-button icon-button--lg" onClick={addFolder} />
-      </Tooltip>
+      </Tooltip> */}
     </div>
   );
 }

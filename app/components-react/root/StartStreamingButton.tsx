@@ -136,7 +136,7 @@ export default function StartStreamingButton(p: { disabled?: boolean }) {
 
   return (
     <button
-      style={{ minWidth: '130px' }}
+      style={{ minWidth: '250px' }}
       className={cx('button button--action', { 'button--soft-warning': getIsRedButton })}
       disabled={isDisabled}
       onClick={toggleStreaming}
@@ -179,5 +179,5 @@ function StreamButtonLabel(p: {
     return <>{$t('Reconnecting')}</>;
   }
 
-  return <>{$t('Start Game Capture')}</>;
+  return <>{$t('Start Gaming')}</>;
 }

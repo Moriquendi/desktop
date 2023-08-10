@@ -150,7 +150,7 @@ export default function ManageSceneCollections() {
                       <UltraIcon
                         type="simple"
                         style={{
-                          fill: '#09161D',
+                          fill: '#101010',
                           display: 'inline-block',
                           height: '12px',
                           width: '12px',

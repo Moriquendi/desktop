@@ -425,7 +425,7 @@ export class StudioEditor extends ReactComponent {}
     name: { default: 'StudioFooter' },
     wrapperStyles: {
       default: () => ({
-        'grid-row': '2 / span 1',
+        'grid-row': '2 / span 2',
         display: 'flex',
         'min-width': 0,
       }),

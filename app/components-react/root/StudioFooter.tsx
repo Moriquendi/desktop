@@ -100,8 +100,9 @@ export default function StudioFooterComponent() {
   }
 
   return (
-    <div className={cx('footer', styles.footer)}>
-      <div className={cx('flex flex--center flex--grow flex--justify-start', styles.footerLeft)}>
+    <div className={cx('footer', styles.footer)} style={{height: '200px'}}>
+      <div className={cx('flex flex--center flex--justify-start', styles.footerLeft)}>
+        
         {/* <Tooltip placement="left" title={$t('Open Performance Window')}>
           <i
             className={cx(
@@ -117,7 +118,7 @@ export default function StudioFooterComponent() {
         {/* <NotificationsArea /> */}
       </div>
 
-      <div className={styles.navRight}>
+      <div>
         <div className={styles.navItem}>{isLoggedIn && <TestWidgets />}</div>
         {recordingModeEnabled && (
           <button className="button button--trans" onClick={showRecordingModeDisableModal}>
@@ -174,6 +175,9 @@ export default function StudioFooterComponent() {
           </div>
         )}
         {recordingModeEnabled && <RecordingButton />}
+      </div>
+
+      <div className={styles.navRight}>
       </div>
     </div>
   );
