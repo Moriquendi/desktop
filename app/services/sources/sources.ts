@@ -119,6 +119,7 @@ export const macSources: TSourceType[] = [
 
   // added by me, not sure if its really supported
   'screen_capture',
+  'game_capture'
 ];
 
 class SourcesViews extends ViewHandler<ISourcesState> {

@@ -23,16 +23,16 @@ export function Connect() {
     authInProgress,
     authPlatform,
     setExtraPlatform,
+    authBuffed
   } = useModule(LoginModule);
   const { next } = useModule(OnboardingModule);
   const { UsageStatisticsService, OnboardingService, RecordingModeService } = Services;
 
-  useEffect(() => {
-    setExtraPlatform('buffed');
-  }, []);
+  return <BuffedPlatformConnect onAuth={(email: string, password: string) => {
+    return authBuffed(email, password, afterLogin)
+  }} />;
 
   if (selectedExtraPlatform) {
-    return <BuffedPlatformConnect />;
     return <ExtraPlatformConnect />;
   }
 
@@ -114,12 +114,7 @@ export function Connect() {
                 value: 'nimotv',
                 label: 'NimoTV',
                 image: require('../../../../media/images/platforms/nimo-logo-small.png'),
-              },
-              {
-                value: 'buffed',
-                label: 'Buffed',
-                image: require('../../../../media/images/platforms/buffed-logo.png'),
-              },
+              }
             ]}
           />
         </Form>
@@ -134,7 +129,7 @@ export function Connect() {
   );
 }
 
-type TExtraPlatform = 'nimotv' | 'dlive' | 'buffed';
+type TExtraPlatform = 'nimotv' | 'dlive'
 
 export class LoginModule {
   state = injectState({
@@ -163,6 +158,14 @@ export class LoginModule {
 
   get isPartialSLAuth() {
     return this.UserService.views.isPartialSLAuth;
+  }
+
+  async authBuffed(email: string, password: string, onSuccess: () => void) {
+    
+    await this.UserService.buffedAuth(email, password);
+    onSuccess();
+
+    
   }
 
   async authPlatform(platform: TPlatform | 'streamlabs', onSuccess: () => void, merge = false) {

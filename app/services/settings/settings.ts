@@ -321,8 +321,8 @@ export class SettingsService extends StatefulService<ISettingsServiceState> {
   getCategories(): string[] {
     let categories: string[] = obs.NodeObs.OBS_settings_getListCategories();
 
-    console.log(`node categories:`);
-    console.log(categories);
+    // console.log(`node categories:`);
+    // console.log(categories);
 
     categories = [
       'General',
@@ -369,8 +369,8 @@ export class SettingsService extends StatefulService<ISettingsServiceState> {
 
     categories.push('Get Support');
 
-    console.log(`Settt categoies:`);
-    console.log(categories);
+    // console.log(`Settt categoies:`);
+    // console.log(categories);
 
     return categories;
   }

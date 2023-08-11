@@ -282,6 +282,9 @@ export class AppService extends StatefulService<IAppState> {
   }
 
   private async downloadAutoGameCaptureConfig() {
+    ///////////////// Disabled for buffed
+    return;
+    /////////////////
     // download game-list for auto game capture
     await downloadFile(
       'https://buffed-cdn.buffed.me/configs/game_capture_list.json',

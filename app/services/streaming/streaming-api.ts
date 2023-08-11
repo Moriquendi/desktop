@@ -7,6 +7,7 @@ import { IStreamError } from './stream-error';
 import { ICustomStreamDestination } from '../settings/streaming';
 import { ITiktokStartStreamOptions } from '../platforms/tiktok';
 import { ITrovoStartStreamOptions } from '../platforms/trovo';
+import { IBuffedStartStreamOptions } from 'services/platforms/buffed';
 
 export enum EStreamingState {
   Offline = 'offline',
@@ -64,6 +65,7 @@ export interface IStreamSettings {
     facebook?: IPlatformFlags & IFacebookStartStreamOptions;
     tiktok?: IPlatformFlags & ITiktokStartStreamOptions;
     trovo?: IPlatformFlags & ITrovoStartStreamOptions;
+    buffed?: IPlatformFlags & IBuffedStartStreamOptions;
   };
   customDestinations: ICustomStreamDestination[];
   advancedMode: boolean;

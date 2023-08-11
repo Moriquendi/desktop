@@ -131,7 +131,7 @@ export const SideBarBottomNavData = (): IMenu => ({
   menuItems: [
     SideNavMenuItems()[EMenuItemKey.DevTools],
     // SideNavMenuItems()[EMenuItemKey.GetPrime],
-    SideNavMenuItems()[EMenuItemKey.Dashboard],
+    // SideNavMenuItems()[EMenuItemKey.Dashboard],
     SideNavMenuItems()[EMenuItemKey.GetHelp],
     SideNavMenuItems()[EMenuItemKey.Settings],
     SideNavMenuItems()[EMenuItemKey.Login],

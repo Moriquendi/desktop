@@ -38,6 +38,8 @@ import { StreamingService } from 'services/streaming';
 import { NotificationsService, ENotificationType } from 'services/notifications';
 import { JsonrpcService } from 'services/api/jsonrpc';
 import * as remote from '@electron/remote';
+import { Services } from 'components-react/service-provider';
+import { BuffedService } from 'app-services';
 
 export enum EAuthProcessState {
   Idle = 'idle',
@@ -162,6 +164,10 @@ class UserViews extends ViewHandler<IUserServiceState> {
 
   get customizationServiceViews() {
     return this.getServiceViews(CustomizationService);
+  }
+
+  get streamSettingsServiceViews() {
+    return this.getServiceViews(StreamSettingsService);
   }
 
   get isLoggedIn() {
@@ -946,6 +952,15 @@ export class UserService extends PersistentStatefulService<IUserServiceState> {
     session.clearStorageData({ storages: ['cookies'] });
     this.settingsService.setSettingValue('Stream', 'key', '');
 
+    //this.streamingService.resetStreamInfo();
+
+    Services.StreamSettingsService.setSettings({
+        key: '',
+        streamType: 'rtmp_custom',
+        server: '',
+      });
+
+
     this.writeUserIdFile();
     this.unsubscribeFromSocketConnection();
     this.LOGOUT();
@@ -1040,6 +1055,55 @@ export class UserService extends PersistentStatefulService<IUserServiceState> {
     this.SET_SLID(auth.slid);
     this.SET_AUTH_STATE(EAuthProcessState.Idle);
     return EPlatformCallResult.Success;
+  }
+
+  async buffedAuth(email: string, password: string) {
+    // const service = getPlatformService('buffed')
+    // const buffedService = service as any as BuffedService
+    const buffedService = BuffedService.instance as BuffedService
+    const authResult = await buffedService.auth(email, password)
+
+    const auth: IUserAuth = {
+      widgetToken: authResult.streamKey,
+      apiToken: authResult.token, // Streamlabs API Token
+    
+      /**
+       * Old key from when SLOBS only supported a single platform account
+       * @deprecated Use `platforms` instead
+       */
+      //platform: undefined,//IPlatformAuth;
+    
+      /**
+       * The primary platform used for chat, go live window, etc
+       */
+      primaryPlatform: 'buffed',
+    
+      /**
+       * New key that supports multiple logged in platforms
+       */
+      platforms: { 
+        //[platform in TPlatform]?: IPlatformAuth
+      },
+    
+      /**
+       * Session partition used to separate cookies associated
+       * with this user login.
+       */
+      // partition?: string;
+    
+      /**
+       * Whether re-login has been forced
+       */
+      hasRelogged: false,//boolean;
+    
+      /**
+       * If the user has an attached SLID account, this object
+       * will be present on the user auth.
+       */
+      //slid?: IStreamlabsID;
+    }
+
+    const result = await this.login(buffedService, auth);
   }
 
   /**

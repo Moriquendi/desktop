@@ -11,7 +11,12 @@ import { Services } from 'components-react/service-provider';
 import Form from 'components-react/shared/inputs/Form';
 import { BuffedClient } from './BuffedClient';
 
-export function BuffedPlatformConnect() {
+interface Props {
+  onAuth: (email: string, password: string) => Promise<void>
+}
+
+export function BuffedPlatformConnect(props: Props) {
+  const onAuth = props.onAuth;
   const { selectedExtraPlatform, setExtraPlatform } = useModule(LoginModule);
   const { next } = useModule(OnboardingModule);
   const [email, setEmail] = useState('');
@@ -25,6 +30,19 @@ export function BuffedPlatformConnect() {
 
   async function onFinish() {
     try {
+      await onAuth(email, password)
+      return;
+////////////////////////////////////////////
+      Services.StreamSettingsService.setSettings({
+        key: '1231231231231',
+        streamType: 'rtmp_custom',
+        server: 'buffed.com.elomelo',
+      });
+      console.log('ok')
+      next();
+      return;
+      ////////////////////////////////////////////
+
       const buffedClient = new BuffedClient();
       console.error('Signing in to buffed');
       const output = await buffedClient.signIn(email, password);
@@ -120,9 +138,9 @@ export function BuffedPlatformConnect() {
 
 
             <p>
-              {/* <a className={styles['link-button']} onClick={() => next()}>
+              <a className={styles['link-button']} onClick={() => next()}>
                 {$t('Skip')}
-              </a> */}
+              </a>
 
               {/* <span style={{ display: 'inline-block', width: 32 }}> </span> */}
 

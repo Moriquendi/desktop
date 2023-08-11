@@ -7,6 +7,7 @@ import { IGoLiveSettings } from 'services/streaming';
 import { WidgetType } from '../widgets';
 import { ITrovoStartStreamOptions, TrovoService } from './trovo';
 import { TDisplayType } from 'services/settings-v2/video';
+import { BuffedService } from './buffed';
 
 export type Tag = string;
 export interface IGame {
@@ -220,7 +221,7 @@ export interface IUserInfo {
   username?: string;
 }
 
-export type TPlatform = 'twitch' | 'facebook' | 'youtube' | 'tiktok' | 'trovo';
+export type TPlatform = 'twitch' | 'facebook' | 'youtube' | 'tiktok' | 'trovo' | 'buffed';
 
 export function getPlatformService(platform: TPlatform): IPlatformService {
   return {
@@ -229,6 +230,7 @@ export function getPlatformService(platform: TPlatform): IPlatformService {
     facebook: FacebookService.instance,
     tiktok: TiktokService.instance,
     trovo: TrovoService.instance,
+    buffed: BuffedService.instance,
   }[platform];
 }
 
