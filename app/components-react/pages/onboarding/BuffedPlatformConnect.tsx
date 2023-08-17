@@ -10,9 +10,10 @@ import { OnboardingModule } from './Onboarding';
 import { Services } from 'components-react/service-provider';
 import Form from 'components-react/shared/inputs/Form';
 import { BuffedClient } from './BuffedClient';
+import { Button, ConfigProvider, Spin } from 'antd';
 
 interface Props {
-  onAuth: (email: string, password: string) => Promise<void>
+  onAuth: (email: string, password: string) => Promise<void>;
 }
 
 export function BuffedPlatformConnect(props: Props) {
@@ -22,6 +23,8 @@ export function BuffedPlatformConnect(props: Props) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
+  const [isLoading, setIsLoading] = useState(false);
+
   //   if (!selectedExtraPlatform) return <div></div>;
 
   function openHelp() {
@@ -29,16 +32,17 @@ export function BuffedPlatformConnect(props: Props) {
   }
 
   async function onFinish() {
+    setIsLoading(true);
     try {
-      await onAuth(email, password)
+      await onAuth(email, password);
       return;
-////////////////////////////////////////////
+      ////////////////////////////////////////////
       Services.StreamSettingsService.setSettings({
         key: '1231231231231',
         streamType: 'rtmp_custom',
         server: 'buffed.com.elomelo',
       });
-      console.log('ok')
+      console.log('ok');
       next();
       return;
       ////////////////////////////////////////////
@@ -61,6 +65,7 @@ export function BuffedPlatformConnect(props: Props) {
       console.error(e);
     }
 
+    setIsLoading(false);
     next();
   }
 
@@ -94,48 +99,47 @@ export function BuffedPlatformConnect(props: Props) {
 
   return (
     <div className={styles.rootContainer}>
-      
       <div className={styles.fancyContainerBackground}> </div>
 
-      <div style={{position: "relative", height: "100%" }}>
-        <div className={styles.fancyContainer} style={{height: "100%"}}>
-            {/* <p>
+      <div style={{ position: 'relative', height: '100%' }}>
+        <div className={styles.fancyContainer} style={{ height: '100%' }}>
+          {/* <p>
               <PlatformLogo platform={'buffed'} />
             </p>
             <h1>{$t('Connect to %{platform}', { platform: platformDefinition.name })}</h1> */}
 
-            <div className="flex flex--center flex--column">
-              <Form>
-                <TextInput
-                  label={$t('Email')}
-                  value={email}
-                  onChange={setEmail}
-                  isPassword={false}
-                  uncontrolled={false}
-                />
-                <TextInput
-                  label={$t('Password')}
-                  value={password}
-                  onChange={setPassword}
-                  isPassword={true}
-                  uncontrolled={false}
-                />
-              </Form>
-
+          <div className="flex flex--center flex--column">
+            <Form>
+              <TextInput
+                label={$t('Email')}
+                value={email}
+                onChange={setEmail}
+                isPassword={false}
+                uncontrolled={false}
+              />
+              <TextInput
+                label={$t('Password')}
+                value={password}
+                onChange={setPassword}
+                isPassword={true}
+                uncontrolled={false}
+              />
+            </Form>
 
             <p>
-              <button
-                className="button button--action"
-                onClick={onFinish}
-                disabled={!(email.trim().length > 0 && password.trim().length > 0)}
-                style={{minWidth: "300px"}}
-              >
-                {$t('Sign In')}
-              </button>
+              {isLoading ? (
+                <Spin />
+              ) : (
+                <button
+                  className="button button--action"
+                  onClick={onFinish}
+                  disabled={!(email.trim().length > 0 && password.trim().length > 0)}
+                  style={{ minWidth: '300px' }}
+                >
+                  {$t('Sign In')}
+                </button>
+              )}
             </p>
-            </div>
-
-
 
             <p>
               <a className={styles['link-button']} onClick={() => next()}>
@@ -149,9 +153,8 @@ export function BuffedPlatformConnect(props: Props) {
               </a> */}
             </p>
           </div>
+        </div>
       </div>
-
-      
     </div>
   );
 }

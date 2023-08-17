@@ -326,7 +326,7 @@ export class SettingsService extends StatefulService<ISettingsServiceState> {
 
     categories = [
       'General',
-      'Stream',
+      // 'Stream',
       'StreamSecond',
       'Output',
       'Audio',
@@ -345,7 +345,7 @@ export class SettingsService extends StatefulService<ISettingsServiceState> {
     categories = categories.concat([
       // 'Scene Collections',
       'Notifications',
-      'Appearance',
+      // 'Appearance',
       // 'Remote Control',
       // 'Virtual Webcam',
     ]);
