@@ -10,7 +10,7 @@ import { OnboardingModule } from './Onboarding';
 import { Services } from 'components-react/service-provider';
 import Form from 'components-react/shared/inputs/Form';
 import { BuffedClient } from './BuffedClient';
-import { Button, ConfigProvider, Spin } from 'antd';
+import { Alert, Button, ConfigProvider, Spin } from 'antd';
 
 interface Props {
   onAuth: (email: string, password: string) => Promise<void>;
@@ -24,6 +24,7 @@ export function BuffedPlatformConnect(props: Props) {
   const [password, setPassword] = useState('');
 
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   //   if (!selectedExtraPlatform) return <div></div>;
 
@@ -33,6 +34,8 @@ export function BuffedPlatformConnect(props: Props) {
 
   async function onFinish() {
     setIsLoading(true);
+    setError(null);
+
     try {
       await onAuth(email, password);
       return;
@@ -63,6 +66,7 @@ export function BuffedPlatformConnect(props: Props) {
       });
     } catch (e) {
       console.error(e);
+      setError(e.message);
     }
 
     setIsLoading(false);
@@ -125,6 +129,8 @@ export function BuffedPlatformConnect(props: Props) {
                 uncontrolled={false}
               />
             </Form>
+
+            {error && <Alert message={error} type="error" showIcon />}
 
             <p>
               {isLoading ? (

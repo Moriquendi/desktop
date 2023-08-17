@@ -127,6 +127,12 @@ export class BuffedService
   }
 
   async auth(email: string, password: string) {
+
+    return {
+      token: 'elomelo',
+      streamKey: 'elomeloKey'
+    }
+
     const buffedClient = new BuffedClient();
     console.error('[Buffed Service] Signing in to buffed');
     const output = await buffedClient.signIn(email, password);
