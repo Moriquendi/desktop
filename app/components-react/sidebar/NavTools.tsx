@@ -136,31 +136,33 @@ export default function SideNav() {
                 className={styles.badgeScale}
               />
             );
-          } else if (isLoggedIn && menuItem.key === EMenuItemKey.Dashboard) {
-            return (
-              <SubMenu
-                key={menuItem.key}
-                title={menuTitles(menuItem.key)}
-                icon={
-                  <div>
-                    <Badge count={<i className={cx('icon-pop-out-3', styles.linkBadge)} />}>
-                      <i className={cx(menuItem.icon, 'small')} />
-                    </Badge>
-                  </div>
-                }
-                onTitleClick={() => {
-                  !isOpen && throttledOpenDashboard();
-                  expandMenuItem(ENavName.BottomNav, menuItem.key as EMenuItemKey);
-                }}
-              >
-                <DashboardSubMenu
-                  subMenuItems={menuItem?.subMenuItems}
-                  throttledOpenDashboard={throttledOpenDashboard}
-                  openSettingsWindow={openSettingsWindow}
-                />
-              </SubMenu>
-            );
-          } else if (menuItem.key === EMenuItemKey.GetHelp) {
+          }
+          // else if (isLoggedIn && menuItem.key === EMenuItemKey.Dashboard) {
+          //   return (
+          //     <SubMenu
+          //       key={menuItem.key}
+          //       title={menuTitles(menuItem.key)}
+          //       icon={
+          //         <div>
+          //           <Badge count={<i className={cx('icon-pop-out-3', styles.linkBadge)} />}>
+          //             <i className={cx(menuItem.icon, 'small')} />
+          //           </Badge>
+          //         </div>
+          //       }
+          //       onTitleClick={() => {
+          //         !isOpen && throttledOpenDashboard();
+          //         expandMenuItem(ENavName.BottomNav, menuItem.key as EMenuItemKey);
+          //       }}
+          //     >
+          //       <DashboardSubMenu
+          //         subMenuItems={menuItem?.subMenuItems}
+          //         throttledOpenDashboard={throttledOpenDashboard}
+          //         openSettingsWindow={openSettingsWindow}
+          //       />
+          //     </SubMenu>
+          //   );
+          // }
+          else if (menuItem.key === EMenuItemKey.GetHelp) {
             return (
               <NavToolsItem
                 key={menuItem.key}
@@ -287,6 +289,8 @@ function LoginMenuItem(p: {
 }) {
   const { menuItem, handleAuth, handleShowModal } = p;
   const { UserService, SideNavService } = Services;
+
+  console.log(`User service logged: ${UserService.views.isLoggedIn}`)
 
   const { isLoggedIn, platform, isOpen } = useVuex(
     () => ({

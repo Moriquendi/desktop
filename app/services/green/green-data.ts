@@ -42,6 +42,10 @@ export const GreenPlatformSettings: TGreenPlatformSettings = {
     platform: 'tiktok',
     display: EOutputDisplayType.Green,
   },
+  ['buffed']: {
+    platform: 'buffed',
+    display: EOutputDisplayType.Horizontal,
+  },
 };
 
 export const platformLabels = (platform: TPlatform | string) =>
@@ -50,6 +54,7 @@ export const platformLabels = (platform: TPlatform | string) =>
     ['facebook']: $t('Facebook'),
     ['youtube']: $t('YouTube'),
     ['trovo']: $t('Trovo'),
+    ['buffed']: $t('Buffed'),
   }[platform]);
 
 export const displayLabels = (display: EOutputDisplayType | string) =>

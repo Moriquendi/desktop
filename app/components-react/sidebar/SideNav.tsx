@@ -101,7 +101,7 @@ export default function SideNav() {
       </Sider>
 
       {/* this button toggles the menu open and close */}
-      <Button
+      {/* <Button
         type="primary"
         className={cx(
           styles.sidenavButton,
@@ -117,7 +117,8 @@ export default function SideNav() {
         }}
       >
         <i className="icon-back" />
-      </Button>
+      </Button> */}
+      <div className={cx(styles.separator)} />
 
       {/* if it's a legacy menu, show new badge */}
       <NewBadge

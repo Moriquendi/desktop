@@ -119,7 +119,8 @@ export default function StudioFooterComponent() {
       </div>
 
       <div>
-        <div className={styles.navItem}>{isLoggedIn && <TestWidgets />}</div>
+        {/* <div className={styles.navItem}>{isLoggedIn && <TestWidgets />}</div> */}
+
         {recordingModeEnabled && (
           <button className="button button--trans" onClick={showRecordingModeDisableModal}>
             {$t('Looking to stream?')}

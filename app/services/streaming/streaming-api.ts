@@ -49,6 +49,7 @@ export interface IStreamInfo {
     facebook: TGoLiveChecklistItemState;
     tiktok: TGoLiveChecklistItemState;
     trovo: TGoLiveChecklistItemState;
+    buffed: TGoLiveChecklistItemState;
     setupMultistream: TGoLiveChecklistItemState;
     setupGreen: TGoLiveChecklistItemState;
     startVideoTransmission: TGoLiveChecklistItemState;

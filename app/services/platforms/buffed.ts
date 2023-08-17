@@ -4,6 +4,7 @@ import {
   IPlatformRequest,
   IPlatformService,
   IPlatformState,
+  IUserInfo,
   TPlatformCapability,
 } from '.';
 import { HostsService } from 'services/hosts';
@@ -84,7 +85,7 @@ export class BuffedService
     // },
   };
 
-  readonly apiBase = 'https://api.twitch.tv';
+  readonly apiBase = 'https://api.buffed.com';
   readonly platform = 'buffed';
   readonly displayName = 'Buffed';
   readonly gameImageSize = { width: 30, height: 40 };
@@ -257,7 +258,7 @@ export class BuffedService
     return EPlatformCallResult.Success;
   }
 
-  fetchNewToken(): Promise<void> {
+  async fetchNewToken(): Promise<void> {
     // const host = this.hostsService.streamlabs;
     // const url = `https://${host}/api/v5/slobs/twitch/refresh`;
     // const headers = authorizedHeaders(this.userService.apiToken!);
@@ -271,7 +272,7 @@ export class BuffedService
   /**
    * Request Twitch API and wrap failed response to a unified error model
    */
-  async requestTwitch<T = unknown>(reqInfo: IPlatformRequest | string): Promise<T> {
+  // async requestTwitch<T = unknown>(reqInfo: IPlatformRequest | string): Promise<T> {
     // try {
     //   return await platformAuthorizedRequest<T>('twitch', reqInfo);
     // } catch (e: unknown) {
@@ -291,13 +292,13 @@ export class BuffedService
     //   }
     //   throwStreamError(errorType, e as any, details);
     // }
-  }
+  // }
 
-  fetchStreamKey(): Promise<string> {
+  // fetchStreamKey(): Promise<string> {
     // return this.requestTwitch<{ data: { stream_key: string }[] }>(
     //   `${this.apiBase}/helix/streams/key?broadcaster_id=${this.twitchId}`,
     // ).then(json => json.data[0].stream_key);
-  }
+  // }
 
   /**
    * prepopulate channel info and save it to the store
@@ -319,7 +320,8 @@ export class BuffedService
     // this.SET_STREAM_SETTINGS({ tags, title: channelInfo.title, game: channelInfo.game });
   }
 
-  fetchUserInfo() {
+  async fetchUserInfo() {
+    return { } as IUserInfo;
     // return platformAuthorizedRequest<{ login: string }[]>(
     //   'twitch',
     //   `${this.apiBase}/helix/users?id=${this.twitchId}`,
@@ -339,7 +341,7 @@ export class BuffedService
   //   }).then(json => json.total);
   // }
 
-  async putChannelInfo({ title, game, tags = [] }: ITwitchStartStreamOptions): Promise<void> {
+  async putChannelInfo({  }: IBuffedStartStreamOptions): Promise<void> {
   //   let gameId = '';
   //   const isUnlisted = game === UNLISTED_GAME_CATEGORY.name;
   //   if (isUnlisted) gameId = '0';
@@ -393,15 +395,17 @@ export class BuffedService
   //   })[0];
   // }
 
-  // get chatUrl(): string {
+  get chatUrl(): string {
+    return ''
   //   const mode = this.customizationService.isDarkTheme ? 'night' : 'day';
   //   const nightMode = mode === 'day' ? 'popout' : 'darkpopout';
   //   return `https://twitch.tv/popout/${this.username}/chat?${nightMode}`;
-  // }
+  }
 
-  // get streamPageUrl() {
+  get streamPageUrl() {
+    return ''
   //   return `https://twitch.tv/${this.username}`;
-  // }
+  }
 
   // async validateTagsScope() {
   //   const hasTagsScope = await this.hasScope('channel:manage:broadcast');
@@ -420,7 +424,8 @@ export class BuffedService
   //   );
   // }
 
-  // getHeaders(req: IPlatformRequest, authorized = false): ITwitchRequestHeaders {
+  getHeaders(req: IPlatformRequest, authorized = false) {
+    return {}
   //   const isNewApi = req.url.indexOf('https://api.twitch.tv/helix/') === 0;
   //   return {
   //     'Client-Id': this.clientId,
@@ -430,11 +435,12 @@ export class BuffedService
   //       ? { Authorization: `${isNewApi ? 'Bearer' : 'OAuth'} ${this.oauthToken}` }
   //       : {}),
   //   };
-  // }
+  }
 
-  // get liveDockEnabled(): boolean {
+  get liveDockEnabled(): boolean {
+    return false;
   //   return true;
-  // }
+  }
 
   // @mutation()
   // private SET_HAS_POLLS_PERMISSION(hasPollsPermission: boolean) {

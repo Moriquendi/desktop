@@ -88,6 +88,7 @@ const platformToServiceNameMap: { [key in TPlatform]: string } = {
   facebook: 'Facebook Live',
   trovo: 'Trovo',
   tiktok: 'Custom',
+  buffed: 'Buffed'
 };
 
 /**

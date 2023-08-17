@@ -470,7 +470,7 @@ export class UserService extends PersistentStatefulService<IUserServiceState> {
 
   async autoLogin() {
     if (!this.state.auth) return;
-
+    
     if (!this.state.auth.hasRelogged) {
       await remote.session.defaultSession.clearCache();
       await remote.session.defaultSession.clearStorageData({
@@ -486,6 +486,8 @@ export class UserService extends PersistentStatefulService<IUserServiceState> {
       if (!allPlatforms.includes(this.state.auth.primaryPlatform)) return;
 
       const service = getPlatformService(this.state.auth.primaryPlatform);
+
+
       return this.login(service, this.state.auth, true);
     }
   }
@@ -878,17 +880,15 @@ export class UserService extends PersistentStatefulService<IUserServiceState> {
   @RunInLoadingMode()
   private async login(service: IPlatformService, auth?: IUserAuth, isOnStartup = false) {
     if (!auth) auth = this.state.auth;
+
     this.LOGIN(auth);
     this.VALIDATE_LOGIN(true);
     this.setSentryContext();
     this.userLogin.next(auth);
-
     const forceRelogin = await this.updateLinkedPlatforms();
-
     if (forceRelogin) {
       try {
         await this.clearForceLoginStatus();
-
         if (isOnStartup) {
           await this.reauthenticate(true);
           return;
@@ -1076,12 +1076,18 @@ export class UserService extends PersistentStatefulService<IUserServiceState> {
       /**
        * The primary platform used for chat, go live window, etc
        */
-      primaryPlatform: 'buffed',
+      primaryPlatform: 'buffed' as any, // TODO: remove any
     
       /**
        * New key that supports multiple logged in platforms
        */
       platforms: { 
+        'buffed': {
+          type: 'buffed',
+          username: '',
+          token: '',
+          id: '',
+        }
         //[platform in TPlatform]?: IPlatformAuth
       },
     
@@ -1094,7 +1100,7 @@ export class UserService extends PersistentStatefulService<IUserServiceState> {
       /**
        * Whether re-login has been forced
        */
-      hasRelogged: false,//boolean;
+      hasRelogged: true,//boolean;
     
       /**
        * If the user has an attached SLID account, this object
@@ -1103,7 +1109,18 @@ export class UserService extends PersistentStatefulService<IUserServiceState> {
       //slid?: IStreamlabsID;
     }
 
-    const result = await this.login(buffedService, auth);
+    this.LOGOUT();
+    this.LOGIN(auth);
+    await this.updateLinkedPlatforms(); // todo for buffed
+
+    const primaryPlatform: TPlatform = 'buffed'
+    this.SET_PRIMARY_PLATFORM(primaryPlatform);
+    const service = getPlatformService(primaryPlatform);
+    this.SET_AUTH_STATE(EAuthProcessState.Loading);
+    const result = await this.login(service);
+    this.SET_AUTH_STATE(EAuthProcessState.Idle);
+    return result;
+    //const result = await this.login(buffedService, auth);
   }
 
   /**
