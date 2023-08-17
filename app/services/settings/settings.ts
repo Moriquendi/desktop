@@ -326,7 +326,7 @@ export class SettingsService extends StatefulService<ISettingsServiceState> {
 
     categories = [
       'General',
-      // 'Stream',
+      'Stream',
       'StreamSecond',
       'Output',
       'Audio',

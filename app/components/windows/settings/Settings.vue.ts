@@ -183,7 +183,8 @@ export default class Settings extends Vue {
   get categoryNames() {
     return this.settingsService
       .getCategories()
-      .filter(category => !category.toLowerCase().startsWith('stream') || category === 'Stream');
+      // buffed: hide 'stream' section
+      .filter(category => !(category.toLowerCase().startsWith('stream') || category === 'Stream'));
   }
 
   save(settingsData: ISettingsSubCategory[]) {
