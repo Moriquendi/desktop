@@ -38,6 +38,8 @@ export function BuffedPlatformConnect(props: Props) {
 
     try {
       await onAuth(email, password);
+      next();
+
       return;
       ////////////////////////////////////////////
       Services.StreamSettingsService.setSettings({
@@ -65,12 +67,14 @@ export function BuffedPlatformConnect(props: Props) {
         server: platformDefinition.ingestUrl,
       });
     } catch (e) {
-      console.error(e);
-      setError(e.message);
+      console.log(`Throwed error:`);
+      const message = e.error ?? 'Something went wrong. Please try again.';
+      // console.log(e.message);
+      // console.log(e.error);
+      setError(message);
     }
 
     setIsLoading(false);
-    next();
   }
 
   //   const platformDefinition = {
@@ -130,7 +134,11 @@ export function BuffedPlatformConnect(props: Props) {
               />
             </Form>
 
-            {error && <Alert message={error} type="error" showIcon />}
+            {error && (
+              <div style={{ padding: 8 }}>
+                <Alert message={error} type="error" showIcon />
+              </div>
+            )}
 
             <p>
               {isLoading ? (

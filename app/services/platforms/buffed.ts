@@ -128,10 +128,10 @@ export class BuffedService
 
   async auth(email: string, password: string) {
 
-    return {
-      token: 'elomelo',
-      streamKey: 'elomeloKey'
-    }
+    // return {
+    //   token: 'elomelos',
+    //   streamKey: 'elomseloKey'
+    // }
 
     const buffedClient = new BuffedClient();
     console.error('[Buffed Service] Signing in to buffed');
@@ -192,15 +192,14 @@ export class BuffedService
   async beforeGoLive(goLiveSettings?: IGoLiveSettings, context?: TDisplayType) {
 
     console.log(`Buffed before go live`)
-
-    console.log(JSON.stringify(this.userService.state.auth))
+    console.log(`Setting key to : ${this.userService.state.auth!.widgetToken}`)
 
     ////////////////////////////////////////
-    // Services.StreamSettingsService.setSettings({
-    //     key: userProfile.buffed_key!,
-    //     streamType: 'rtmp_custom',
-    //     server: 'rtmp://buffed.live/app',
-    //   });
+    this.streamSettingsService.setSettings({
+        key: this.userService.state.auth!.widgetToken,
+        streamType: 'rtmp_custom',
+        server: 'rtmp://buffed.live/app',
+      });
 ////////////////////////////////////////////////////////////
     // if (
     //   this.streamSettingsService.protectedModeEnabled &&

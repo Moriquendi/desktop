@@ -46,6 +46,7 @@ export default function StartStreamingButton(p: { disabled?: boolean }) {
 
   async function toggleStreaming() {
     if (StreamingService.isStreaming) {
+      console.log(`Is streaming. Ending...`);
       StreamingService.toggleStreaming();
     } else {
       if (MediaBackupService.views.globalSyncStatus === EGlobalSyncStatus.Syncing) {
@@ -69,6 +70,16 @@ export default function StartStreamingButton(p: { disabled?: boolean }) {
           .length === 0;
 
       if (needToShowNoSourcesWarning) {
+        ////////////////////////////////////////////////////////////
+        console.log(`Showing warning because:`);
+        console.log(
+          `StreamSettingsService.settings.warnNoVideoSources: ${StreamSettingsService.settings.warnNoVideoSources}`,
+        );
+        console.log(`getSources: `);
+        console.log(SourcesService.views.getSources().map(source => source.type));
+        console.log(SourcesService.views.getSources().map(source => source.video));
+        ////////////////////////////////////////////////////////////
+
         const goLive = await remote.dialog
           .showMessageBox(remote.getCurrentWindow(), {
             title: $t('No Sources'),
@@ -108,30 +119,34 @@ export default function StartStreamingButton(p: { disabled?: boolean }) {
     (streamingStatus === EStreamingState.Ending && delaySecondsRemaining === 0);
 
   function shouldShowGoLiveWindow() {
-    if (!UserService.isLoggedIn) return false;
-    const primaryPlatform = UserService.state.auth?.primaryPlatform;
-    const updateStreamInfoOnLive = CustomizationService.state.updateStreamInfoOnLive;
+    // Buffed - just go live without any extra steps.
 
-    if (!primaryPlatform) return false;
+    return false;
 
-    if (
-      !!UserService.state.auth?.platforms &&
-      StreamingService.views.isMultiplatformMode &&
-      Object.keys(UserService.state.auth?.platforms).length > 1
-    ) {
-      return true;
-    }
+    // if (!UserService.isLoggedIn) return false;
+    // const primaryPlatform = UserService.state.auth?.primaryPlatform;
+    // const updateStreamInfoOnLive = CustomizationService.state.updateStreamInfoOnLive;
 
-    if (primaryPlatform === 'twitch') {
-      // For Twitch, we can show the Go Live window even with protected mode off
-      // This is mainly for legacy reasons.
-      return StreamingService.views.isMultiplatformMode || updateStreamInfoOnLive;
-    } else {
-      return (
-        StreamSettingsService.state.protectedModeEnabled &&
-        StreamSettingsService.isSafeToModifyStreamKey()
-      );
-    }
+    // if (!primaryPlatform) return false;
+
+    // if (
+    //   !!UserService.state.auth?.platforms &&
+    //   StreamingService.views.isMultiplatformMode &&
+    //   Object.keys(UserService.state.auth?.platforms).length > 1
+    // ) {
+    //   return true;
+    // }
+
+    // if (primaryPlatform === 'twitch') {
+    //   // For Twitch, we can show the Go Live window even with protected mode off
+    //   // This is mainly for legacy reasons.
+    //   return StreamingService.views.isMultiplatformMode || updateStreamInfoOnLive;
+    // } else {
+    //   return (
+    //     StreamSettingsService.state.protectedModeEnabled &&
+    //     StreamSettingsService.isSafeToModifyStreamKey()
+    //   );
+    // }
   }
 
   return (

@@ -39,14 +39,17 @@ export class BuffedClient {
     // console.error(`3. result: ${result.status}`);
     // console.error(`4. result: ${result.statusText}`);
 
-    const json = await result.json();
+    try {
+      const json = await result.json();
+      if (json.id === undefined && json.api_key === undefined) {
+        throw new Error('Invalid credentials');
+      }
 
-    if (json.id === undefined && json.api_key === undefined) {
+      const output = json as SignInOutput;
+      return output;
+    } catch (e) {
       throw new Error('Invalid credentials');
     }
-
-    const output = json as SignInOutput;
-    return output;
   }
 
   signUp() {
