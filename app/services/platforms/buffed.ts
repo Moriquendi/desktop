@@ -117,7 +117,6 @@ export class BuffedService
     this.userService.userLogin.subscribe(_ => {
       // if (this.userService.platform?.type === 'twitch') {
       //   this.prepopulateInfo();
-
       //   // Check for updated polls scopes
       //   this.validatePollsScope();
       //   // Check for updated tags scopes
@@ -127,7 +126,6 @@ export class BuffedService
   }
 
   async auth(email: string, password: string) {
-
     // return {
     //   token: 'elomelos',
     //   streamKey: 'elomseloKey'
@@ -137,19 +135,25 @@ export class BuffedService
     console.error('[Buffed Service] Signing in to buffed');
     const output = await buffedClient.signIn(email, password);
     console.log(output);
+    return this.continueAuth(output.api_key);
+  }
+
+  async continueAuth(token: string) {
+    const buffedClient = new BuffedClient();
+
     console.error('[Buffed Service] Fetching profile....');
-    const userProfile = await buffedClient.profile(output.api_key);
+    const userProfile = await buffedClient.profile(token);
     console.log(userProfile);
     console.error('Setting streaming settings for buffed');
 
     return {
-      token: output.api_key,
-      streamKey: userProfile.buffed_key
-    }
+      token: token,
+      streamKey: userProfile.buffed_key,
+    };
   }
 
   get authUrl() {
-    return 'https://buffed:todo.com'
+    return 'https://buffed:todo.com';
     // const host = this.hostsService.streamlabs;
     // const scopes: TTwitchOAuthScope[] = [
     //   'channel_read',
@@ -166,41 +170,40 @@ export class BuffedService
   }
 
   // TODO: Refactor so this is reusable
-//   get userAuth(): { token?: string; id?: string } {
-//     return {
-//       token: this.userService.state.auth?.platforms?.buffed?.token,
-//       id: this.userService.state.auth?.platforms?.buffed?.id,
-//     };
-//   }
+  //   get userAuth(): { token?: string; id?: string } {
+  //     return {
+  //       token: this.userService.state.auth?.platforms?.buffed?.token,
+  //       id: this.userService.state.auth?.platforms?.buffed?.id,
+  //     };
+  //   }
 
-//   get oauthToken() {
-//     return this.userAuth.token;
-//   }
+  //   get oauthToken() {
+  //     return this.userAuth.token;
+  //   }
 
-//   get buffedId() {
-//     return this.userAuth.id;
-//   }
+  //   get buffedId() {
+  //     return this.userAuth.id;
+  //   }
 
-//   get username(): string {
-//     return this.userService.state.auth?.platforms?.buffed?.username || '';
-//   }
+  //   get username(): string {
+  //     return this.userService.state.auth?.platforms?.buffed?.username || '';
+  //   }
 
   // get tags(): string[] {
   //   return this.state.settings.tags;
   // }
 
   async beforeGoLive(goLiveSettings?: IGoLiveSettings, context?: TDisplayType) {
-
-    console.log(`Buffed before go live`)
-    console.log(`Setting key to : ${this.userService.state.auth!.widgetToken}`)
+    console.log(`Buffed before go live`);
+    console.log(`Setting key to : ${this.userService.state.auth!.widgetToken}`);
 
     ////////////////////////////////////////
     this.streamSettingsService.setSettings({
-        key: this.userService.state.auth!.widgetToken,
-        streamType: 'rtmp_custom',
-        server: 'rtmp://buffed.live/app',
-      });
-////////////////////////////////////////////////////////////
+      key: this.userService.state.auth!.widgetToken,
+      streamType: 'rtmp_custom',
+      server: 'rtmp://buffed.live/app',
+    });
+    ////////////////////////////////////////////////////////////
     // if (
     //   this.streamSettingsService.protectedModeEnabled &&
     //   this.streamSettingsService.isSafeToModifyStreamKey()
@@ -268,7 +271,6 @@ export class BuffedService
     // const url = `https://${host}/api/v5/slobs/twitch/refresh`;
     // const headers = authorizedHeaders(this.userService.apiToken!);
     // const request = new Request(url, { headers });
-
     // return jfetch<{ access_token: string }>(request).then(response =>
     //   this.userService.updatePlatformToken('twitch', response.access_token),
     // );
@@ -278,31 +280,31 @@ export class BuffedService
    * Request Twitch API and wrap failed response to a unified error model
    */
   // async requestTwitch<T = unknown>(reqInfo: IPlatformRequest | string): Promise<T> {
-    // try {
-    //   return await platformAuthorizedRequest<T>('twitch', reqInfo);
-    // } catch (e: unknown) {
-    //   const details = (e as any).result
-    //     ? `${(e as any).result.status} ${(e as any).result.error} ${(e as any).result.message}`
-    //     : 'Connection failed';
-    //   let errorType: TStreamErrorType;
-    //   switch ((e as any).result?.message) {
-    //     case 'missing required oauth scope':
-    //       errorType = 'TWITCH_MISSED_OAUTH_SCOPE';
-    //       break;
-    //     case 'Status contains banned words.':
-    //       errorType = 'TWITCH_BANNED_WORDS';
-    //       break;
-    //     default:
-    //       errorType = 'PLATFORM_REQUEST_FAILED';
-    //   }
-    //   throwStreamError(errorType, e as any, details);
-    // }
+  // try {
+  //   return await platformAuthorizedRequest<T>('twitch', reqInfo);
+  // } catch (e: unknown) {
+  //   const details = (e as any).result
+  //     ? `${(e as any).result.status} ${(e as any).result.error} ${(e as any).result.message}`
+  //     : 'Connection failed';
+  //   let errorType: TStreamErrorType;
+  //   switch ((e as any).result?.message) {
+  //     case 'missing required oauth scope':
+  //       errorType = 'TWITCH_MISSED_OAUTH_SCOPE';
+  //       break;
+  //     case 'Status contains banned words.':
+  //       errorType = 'TWITCH_BANNED_WORDS';
+  //       break;
+  //     default:
+  //       errorType = 'PLATFORM_REQUEST_FAILED';
+  //   }
+  //   throwStreamError(errorType, e as any, details);
+  // }
   // }
 
   // fetchStreamKey(): Promise<string> {
-    // return this.requestTwitch<{ data: { stream_key: string }[] }>(
-    //   `${this.apiBase}/helix/streams/key?broadcaster_id=${this.twitchId}`,
-    // ).then(json => json.data[0].stream_key);
+  // return this.requestTwitch<{ data: { stream_key: string }[] }>(
+  //   `${this.apiBase}/helix/streams/key?broadcaster_id=${this.twitchId}`,
+  // ).then(json => json.data[0].stream_key);
   // }
 
   /**
@@ -317,7 +319,6 @@ export class BuffedService
     //     game: json.data[0].game_name,
     //   })),
     // ]);
-
     // const tags: string[] = this.twitchTagsService.views.hasTags
     //   ? this.twitchTagsService.views.tags
     //   : [];
@@ -326,7 +327,7 @@ export class BuffedService
   }
 
   async fetchUserInfo() {
-    return { } as IUserInfo;
+    return {} as IUserInfo;
     // return platformAuthorizedRequest<{ login: string }[]>(
     //   'twitch',
     //   `${this.apiBase}/helix/users?id=${this.twitchId}`,
@@ -346,26 +347,26 @@ export class BuffedService
   //   }).then(json => json.total);
   // }
 
-  async putChannelInfo({  }: IBuffedStartStreamOptions): Promise<void> {
-  //   let gameId = '';
-  //   const isUnlisted = game === UNLISTED_GAME_CATEGORY.name;
-  //   if (isUnlisted) gameId = '0';
-  //   if (game && !isUnlisted) {
-  //     gameId = await this.requestTwitch<{ data: { id: string }[] }>(
-  //       `${this.apiBase}/helix/games?name=${encodeURIComponent(game)}`,
-  //     ).then(json => json.data[0].id);
-  //   }
-  //   this.twitchTagsService.actions.setTags(tags);
-  //   const hasPermission = await this.hasScope('channel:manage:broadcast');
-  //   const scopedTags = hasPermission ? tags : undefined;
-  //   await Promise.all([
-  //     this.requestTwitch({
-  //       url: `${this.apiBase}/helix/channels?broadcaster_id=${this.twitchId}`,
-  //       method: 'PATCH',
-  //       body: JSON.stringify({ game_id: gameId, title, tags: scopedTags }),
-  //     }),
-  //   ]);
-  //   this.SET_STREAM_SETTINGS({ title, game, tags });
+  async putChannelInfo({}: IBuffedStartStreamOptions): Promise<void> {
+    //   let gameId = '';
+    //   const isUnlisted = game === UNLISTED_GAME_CATEGORY.name;
+    //   if (isUnlisted) gameId = '0';
+    //   if (game && !isUnlisted) {
+    //     gameId = await this.requestTwitch<{ data: { id: string }[] }>(
+    //       `${this.apiBase}/helix/games?name=${encodeURIComponent(game)}`,
+    //     ).then(json => json.data[0].id);
+    //   }
+    //   this.twitchTagsService.actions.setTags(tags);
+    //   const hasPermission = await this.hasScope('channel:manage:broadcast');
+    //   const scopedTags = hasPermission ? tags : undefined;
+    //   await Promise.all([
+    //     this.requestTwitch({
+    //       url: `${this.apiBase}/helix/channels?broadcaster_id=${this.twitchId}`,
+    //       method: 'PATCH',
+    //       body: JSON.stringify({ game_id: gameId, title, tags: scopedTags }),
+    //     }),
+    //   ]);
+    //   this.SET_STREAM_SETTINGS({ title, game, tags });
   }
 
   // async searchGames(searchString: string): Promise<IGame[]> {
@@ -401,15 +402,15 @@ export class BuffedService
   // }
 
   get chatUrl(): string {
-    return ''
-  //   const mode = this.customizationService.isDarkTheme ? 'night' : 'day';
-  //   const nightMode = mode === 'day' ? 'popout' : 'darkpopout';
-  //   return `https://twitch.tv/popout/${this.username}/chat?${nightMode}`;
+    return '';
+    //   const mode = this.customizationService.isDarkTheme ? 'night' : 'day';
+    //   const nightMode = mode === 'day' ? 'popout' : 'darkpopout';
+    //   return `https://twitch.tv/popout/${this.username}/chat?${nightMode}`;
   }
 
   get streamPageUrl() {
-    return ''
-  //   return `https://twitch.tv/${this.username}`;
+    return '';
+    //   return `https://twitch.tv/${this.username}`;
   }
 
   // async validateTagsScope() {
@@ -430,21 +431,21 @@ export class BuffedService
   // }
 
   getHeaders(req: IPlatformRequest, authorized = false) {
-    return {}
-  //   const isNewApi = req.url.indexOf('https://api.twitch.tv/helix/') === 0;
-  //   return {
-  //     'Client-Id': this.clientId,
-  //     Accept: 'application/vnd.twitchtv.v5+json',
-  //     'Content-Type': 'application/json',
-  //     ...(authorized
-  //       ? { Authorization: `${isNewApi ? 'Bearer' : 'OAuth'} ${this.oauthToken}` }
-  //       : {}),
-  //   };
+    return {};
+    //   const isNewApi = req.url.indexOf('https://api.twitch.tv/helix/') === 0;
+    //   return {
+    //     'Client-Id': this.clientId,
+    //     Accept: 'application/vnd.twitchtv.v5+json',
+    //     'Content-Type': 'application/json',
+    //     ...(authorized
+    //       ? { Authorization: `${isNewApi ? 'Bearer' : 'OAuth'} ${this.oauthToken}` }
+    //       : {}),
+    //   };
   }
 
   get liveDockEnabled(): boolean {
     return false;
-  //   return true;
+    //   return true;
   }
 
   // @mutation()

@@ -578,12 +578,16 @@ async function startApp() {
 const haDisableFile = path.join(app.getPath('userData'), 'HADisable');
 if (fs.existsSync(haDisableFile)) app.disableHardwareAcceleration();
 
-app.setAsDefaultProtocolClient('buffed');
+//app.setAsDefaultProtocolClient('buffed');
+app.setAsDefaultProtocolClient('me.buffed.app.desktop');
 
 app.on('second-instance', (event, argv, cwd) => {
   // Check for protocol links in the argv of the other process
   argv.forEach(arg => {
-    if (arg.match(/^buffed:\/\//)) {
+
+    console.log(`Args: ${arg}`)
+
+    if (arg.match(/^me\.buffed\.app\.desktop:\/\//)) {
       workerWindow.send('protocolLink', arg);
     }
   });
@@ -608,6 +612,9 @@ let pendingLink;
 
 // For mac os, this event will fire when a protocol link is triggered
 app.on('open-url', (e, url) => {
+
+  console.log(`open-url: ${url}`)
+
   if (protocolLinkReady) {
     workerWindow.send('protocolLink', url);
   } else {
@@ -617,12 +624,16 @@ app.on('open-url', (e, url) => {
 
 ipcMain.on('protocolLinkReady', () => {
   protocolLinkReady = true;
+  console.log(`Pendinglink: ${pendingLink}`)
   if (pendingLink) workerWindow.send('protocolLink', pendingLink);
 });
 
 console.log(`Main: app.on('ready')`);
 
 app.on('ready', () => {
+
+  console.log(`On app ready`)
+
   /*
   if (
     !process.argv.includes('--skip-update') &&

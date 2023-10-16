@@ -5,7 +5,7 @@ import { $t } from 'services/i18n';
 import { Services } from 'components-react/service-provider';
 import { injectState, useModule, mutation } from 'slap';
 import { ExtraPlatformConnect } from './ExtraPlatformConnect';
-import { EPlatformCallResult, TPlatform } from 'services/platforms';
+import { EPlatformCallResult, SocialPlatform, TPlatform } from 'services/platforms';
 import cx from 'classnames';
 import * as remote from '@electron/remote';
 import { OnboardingModule } from './Onboarding';
@@ -22,15 +22,23 @@ export function Connect() {
     loading,
     authInProgress,
     authPlatform,
+    authSocialPlatform,
     setExtraPlatform,
-    authBuffed
+    authBuffed,
   } = useModule(LoginModule);
   const { next } = useModule(OnboardingModule);
   const { UsageStatisticsService, OnboardingService, RecordingModeService } = Services;
 
-  return <BuffedPlatformConnect onAuth={(email: string, password: string) => {
-    return authBuffed(email, password, afterLogin)
-  }} />;
+  return (
+    <BuffedPlatformConnect
+      onAuth={(email: string, password: string) => {
+        return authBuffed(email, password, afterLogin);
+      }}
+      authPlatform={socialPlatform => {
+        return authSocialPlatform(socialPlatform, afterLogin);
+      }}
+    />
+  );
 
   if (selectedExtraPlatform) {
     return <ExtraPlatformConnect />;
@@ -114,7 +122,7 @@ export function Connect() {
                 value: 'nimotv',
                 label: 'NimoTV',
                 image: require('../../../../media/images/platforms/nimo-logo-small.png'),
-              }
+              },
             ]}
           />
         </Form>
@@ -129,7 +137,7 @@ export function Connect() {
   );
 }
 
-type TExtraPlatform = 'nimotv' | 'dlive'
+type TExtraPlatform = 'nimotv' | 'dlive';
 
 export class LoginModule {
   state = injectState({
@@ -161,11 +169,13 @@ export class LoginModule {
   }
 
   async authBuffed(email: string, password: string, onSuccess: () => void) {
-    
     await this.UserService.buffedAuth(email, password);
     onSuccess();
+  }
 
-    
+  async authSocialPlatform(platform: SocialPlatform, onSuccess: () => void, merge = false) {
+    await this.UserService.startSocialAuth(platform);
+    onSuccess();
   }
 
   async authPlatform(platform: TPlatform | 'streamlabs', onSuccess: () => void, merge = false) {

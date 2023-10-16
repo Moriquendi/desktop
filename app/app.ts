@@ -17,7 +17,7 @@ import { WindowsService } from './services/windows';
 import { ObsUserPluginsService } from 'services/obs-user-plugins';
 import { AppService } from './services/app';
 import Utils from './services/utils';
-import electron from 'electron';
+import electron, { protocol } from 'electron';
 import * as Sentry from '@sentry/browser';
 import * as Integrations from '@sentry/integrations';
 import VTooltip from 'v-tooltip';
@@ -427,3 +427,19 @@ if (Utils.isDevMode()) {
     if (ev.key === 'F12') electron.ipcRenderer.send('openDevTools');
   });
 }
+
+// Register a custom scheme handler
+// protocol.registerHttpProtocol('me.buffed.app', (request, callback) => {
+//   const url = request.url;
+//   console.log(`HANDLE DEEPLINK: ${url}`);
+//   // Extract token data from the URL and perform the necessary actions
+//   // (e.g., close the window, resolve the Promise with the tokens).
+//   // You can use the 'url' package to parse the URL and extract query parameters.
+//   // Then, handle the tokens as needed in your app.
+//   // Finally, call the callback to continue loading the URL if necessary.
+//   // Example:
+//   // const parsedUrl = new URL(url);
+//   // const token = parsedUrl.searchParams.get('token');
+//   // // Handle the token...
+//   callback({ error: 0 });
+// });

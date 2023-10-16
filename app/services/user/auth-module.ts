@@ -7,6 +7,12 @@ import URI from 'urijs';
 import http from 'http';
 import Utils from 'services/utils';
 import * as remote from '@electron/remote';
+import { BuffedService } from 'app-services';
+
+interface BuffedDeeplinkAuthData {
+  token: string;
+  userId: string;
+}
 
 /**
  * Responsible for secure handling of platform OAuth flows.
@@ -65,6 +71,50 @@ export class AuthModule {
 
   private authServer: http.Server;
 
+  private activeAuthResolver: ((value: BuffedDeeplinkAuthData) => void) | undefined;
+
+  continueExternalAuth(token: string, userId: string) {
+    console.log(`Auth module continue: ${token} ${userId}`);
+
+    this.activeAuthResolver({
+      token,
+      userId,
+    });
+  }
+
+  async startExternalAuthV2(authUrl: string, onWindowShow: () => void, merge = false) {
+    electron.shell.openExternal(authUrl);
+    onWindowShow();
+
+    console.log('Waiting for response deeplink');
+    const buffedAuthData = await new Promise<BuffedDeeplinkAuthData>(resolve => {
+      this.activeAuthResolver = resolve;
+    });
+
+    console.log('Continue auth...');
+    const buffedService = BuffedService.instance as BuffedService;
+    const userAuthInfo = await buffedService.continueAuth(buffedAuthData.token);
+
+    console.log('Authed!');
+    const authData: IUserAuth = {
+      widgetToken: userAuthInfo.streamKey,
+      apiToken: userAuthInfo.token,
+
+      primaryPlatform: 'buffed' as any,
+
+      platforms: {
+        buffed: {
+          type: 'buffed',
+          username: '',
+          token: '',
+          id: '',
+        },
+      },
+      hasRelogged: true,
+    };
+    return authData;
+  }
+
   /**
    * Starts the authentication process in the OS default browser
    */
@@ -76,6 +126,8 @@ export class AuthModule {
       }
 
       this.authServer = http.createServer((request, response) => {
+        console.log(`Handle: ${request.url}`);
+
         const parsed = this.parseAuthFromUrl(request.url, merge);
 
         if (parsed) {

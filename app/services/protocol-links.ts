@@ -43,6 +43,7 @@ export class ProtocolLinksService extends Service {
   start(argv: string[]) {
     // Other instances started with a protocol link will receive this message
     electron.ipcRenderer.on('protocolLink', (event: Electron.Event, link: string) => {
+      console.log(`Protocol: handle link: ${link}`);
       this.handleLink(link);
     });
 
@@ -50,7 +51,7 @@ export class ProtocolLinksService extends Service {
     byOS({
       [OS.Windows]: () => {
         argv.forEach(arg => {
-          if (arg.match(/^buffed:\/\//)) this.handleLink(arg);
+          if (arg.match(/^me\.buffed\.app\.desktop:\/\//)) this.handleLink(arg);
         });
       },
       [OS.Mac]: () => {
@@ -109,8 +110,19 @@ export class ProtocolLinksService extends Service {
     this.platformAppStoreService.paypalAuthSuccess();
   }
 
+  @protocolHandler('auth')
+  private handleAuthDeeplink(info: IProtocolLinkInfo) {
+    const token = info.query.get('token');
+    const userId = info.query.get('user_id');
+
+    console.log('handleAuthDeeplink', info);
+    this.userService.continueSocialAuth(token, userId);
+  }
+
   @protocolHandler('app')
   private navigateApp(info: IProtocolLinkInfo) {
+    console.log(`Protocol: app`);
+
     if (!this.userService.isLoggedIn) return;
 
     const appId = info.path.replace('/', '');
@@ -126,6 +138,8 @@ export class ProtocolLinksService extends Service {
 
   @protocolHandler('settings')
   private openSettings(info: IProtocolLinkInfo) {
+    console.log(`Protocol: settings`);
+
     const category = info.path.replace('/', '');
 
     this.settingsService.showSettings(category);

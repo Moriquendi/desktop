@@ -11,6 +11,7 @@ import {
   IPlatformService,
   EPlatformCallResult,
   IPlatformAuth,
+  SocialPlatform,
 } from 'services/platforms';
 import { CustomizationService } from 'services/customization';
 import * as Sentry from '@sentry/browser';
@@ -171,6 +172,14 @@ class UserViews extends ViewHandler<IUserServiceState> {
   }
 
   get isLoggedIn() {
+    // console.log(`Is logged in?`);
+    // console.log(`Auth:`);
+    // console.log(this.state.auth);
+    // console.log(`Widget token:`);
+    // console.log(this.state.auth.widgetToken);
+    // console.log(`Login validated:`);
+    // console.log(this.state.loginValidated);
+
     return !!(this.state.auth && this.state.auth.widgetToken && this.state.loginValidated);
   }
 
@@ -470,7 +479,7 @@ export class UserService extends PersistentStatefulService<IUserServiceState> {
 
   async autoLogin() {
     if (!this.state.auth) return;
-    
+
     if (!this.state.auth.hasRelogged) {
       await remote.session.defaultSession.clearCache();
       await remote.session.defaultSession.clearStorageData({
@@ -486,7 +495,6 @@ export class UserService extends PersistentStatefulService<IUserServiceState> {
       if (!allPlatforms.includes(this.state.auth.primaryPlatform)) return;
 
       const service = getPlatformService(this.state.auth.primaryPlatform);
-
 
       return this.login(service, this.state.auth, true);
     }
@@ -955,11 +963,10 @@ export class UserService extends PersistentStatefulService<IUserServiceState> {
     //this.streamingService.resetStreamInfo();
 
     Services.StreamSettingsService.setSettings({
-        key: '',
-        streamType: 'rtmp_custom',
-        server: '',
-      });
-
+      key: '',
+      streamType: 'rtmp_custom',
+      server: '',
+    });
 
     this.writeUserIdFile();
     this.unsubscribeFromSocketConnection();
@@ -971,6 +978,55 @@ export class UserService extends PersistentStatefulService<IUserServiceState> {
     const platform = this.state.auth.primaryPlatform;
     await this.logOut();
     await this.startAuth(platform, 'internal');
+  }
+
+  private urlForPlatform(platform: SocialPlatform): string {
+    switch (platform) {
+      case 'discord':
+        return 'https://buffed.me/users/provider/discord?api_request=true&platform=desktop';
+      case 'google':
+        return 'https://buffed.me/users/provider/google_oauth2?api_request=true&platform=desktop';
+      case 'apple':
+        return 'https://buffed.me/users/provider/apple?api_request=true&platform=desktop';
+    }
+  }
+
+  async continueSocialAuth(token: string, userId: string) {
+    console.log(`Continue elo melo`);
+    this.authModule.continueExternalAuth(token, userId);
+  }
+
+  async startSocialAuth(platform: SocialPlatform) {
+    const url = this.urlForPlatform(platform);
+
+    this.SET_AUTH_STATE(EAuthProcessState.Loading);
+
+    console.log('KUPA start ext');
+
+    const auth = await this.authModule.startExternalAuthV2(
+      url,
+      () => {
+        this.SET_AUTH_STATE(EAuthProcessState.Idle);
+      },
+      false,
+    );
+
+    this.LOGOUT();
+    this.LOGIN(auth);
+
+    console.log('KUPA update linked');
+
+    // Find out if the user has any additional platforms linked
+    await this.updateLinkedPlatforms();
+
+    console.log('KUPA done');
+
+    const primaryPlatform: TPlatform = 'buffed';
+    this.SET_PRIMARY_PLATFORM(primaryPlatform);
+    const service = getPlatformService(primaryPlatform);
+    this.SET_AUTH_STATE(EAuthProcessState.Loading);
+    const result = await this.login(service);
+    this.SET_AUTH_STATE(EAuthProcessState.Idle);
   }
 
   /**
@@ -1060,60 +1116,60 @@ export class UserService extends PersistentStatefulService<IUserServiceState> {
   async buffedAuth(email: string, password: string) {
     // const service = getPlatformService('buffed')
     // const buffedService = service as any as BuffedService
-    const buffedService = BuffedService.instance as BuffedService
-    const authResult = await buffedService.auth(email, password)
+    const buffedService = BuffedService.instance as BuffedService;
+    const authResult = await buffedService.auth(email, password);
 
     const auth: IUserAuth = {
       widgetToken: authResult.streamKey,
       apiToken: authResult.token, // Streamlabs API Token
-    
+
       /**
        * Old key from when SLOBS only supported a single platform account
        * @deprecated Use `platforms` instead
        */
       //platform: undefined,//IPlatformAuth;
-    
+
       /**
        * The primary platform used for chat, go live window, etc
        */
       primaryPlatform: 'buffed' as any, // TODO: remove any
-    
+
       /**
        * New key that supports multiple logged in platforms
        */
-      platforms: { 
-        'buffed': {
+      platforms: {
+        buffed: {
           type: 'buffed',
           username: '',
           token: '',
           id: '',
-        }
+        },
         //[platform in TPlatform]?: IPlatformAuth
       },
-    
+
       /**
        * Session partition used to separate cookies associated
        * with this user login.
        */
       // partition?: string;
-    
+
       /**
        * Whether re-login has been forced
        */
-      hasRelogged: true,//boolean;
-    
+      hasRelogged: true, //boolean;
+
       /**
        * If the user has an attached SLID account, this object
        * will be present on the user auth.
        */
       //slid?: IStreamlabsID;
-    }
+    };
 
     this.LOGOUT();
     this.LOGIN(auth);
     await this.updateLinkedPlatforms(); // todo for buffed
 
-    const primaryPlatform: TPlatform = 'buffed'
+    const primaryPlatform: TPlatform = 'buffed';
     this.SET_PRIMARY_PLATFORM(primaryPlatform);
     const service = getPlatformService(primaryPlatform);
     this.SET_AUTH_STATE(EAuthProcessState.Loading);

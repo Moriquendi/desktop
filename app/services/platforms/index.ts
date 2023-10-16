@@ -222,7 +222,9 @@ export interface IUserInfo {
   username?: string;
 }
 
-export type TPlatform = 'twitch' | 'facebook' | 'youtube' | 'tiktok' | 'trovo' | 'buffed'
+export type TPlatform = 'twitch' | 'facebook' | 'youtube' | 'tiktok' | 'trovo' | 'buffed';
+
+export type SocialPlatform = 'discord' | 'google' | 'apple';
 
 export function getPlatformService(platform: TPlatform): IPlatformService {
   return {

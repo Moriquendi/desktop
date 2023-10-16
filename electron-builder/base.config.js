@@ -1,7 +1,7 @@
 const signtool = require('signtool');
 
 const base = {
-  appId: 'com.me.buffed.desktop',
+  appId: 'me.buffed.app',
   productName: 'Buffed Desktop',
   icon: 'media/images/icon.ico',
   files: [

@@ -22,7 +22,7 @@ exports.default = async function notarizing(context) {
   await notarize({
     appPath,
     tool: 'notarytool',
-    // appBundleId: 'com.me.buffed.desktop',
+    appBundleId: 'me.buffed.app.desktop',
     appleId: process.env['APPLE_ID'],
     appleIdPassword: process.env['APPLE_APP_PASSWORD'],
     teamId: process.env['APPLE_ASC_PROVIDER'],
