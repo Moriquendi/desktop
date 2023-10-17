@@ -79,9 +79,7 @@ export default function SideNav() {
 
   function openHelp() {
     UsageStatisticsService.actions.recordClick('SideNav2', 'help');
-    remote.shell.openExternal(
-      'https://buffed.me/content-hub/support/support-streamlabs-desktop',
-    );
+    remote.shell.openExternal('https://buffed.me/help');
   }
 
   async function upgradeToPrime() {
@@ -106,7 +104,7 @@ export default function SideNav() {
     updateStyleBlockers('main', status);
     setShowModal(status);
   };
-
+  console.log(`nav tools`);
   return (
     <>
       <Menu
@@ -290,7 +288,7 @@ function LoginMenuItem(p: {
   const { menuItem, handleAuth, handleShowModal } = p;
   const { UserService, SideNavService } = Services;
 
-  console.log(`User service logged: ${UserService.views.isLoggedIn}`)
+  console.log(`User service logged: ${UserService.views.isLoggedIn}`);
 
   const { isLoggedIn, platform, isOpen } = useVuex(
     () => ({

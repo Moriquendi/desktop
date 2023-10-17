@@ -97,7 +97,7 @@ export default function SideNav() {
           <NavTools />
         </Scrollable>
 
-        <LoginHelpTip />
+        {/* <LoginHelpTip /> */}
       </Sider>
 
       {/* this button toggles the menu open and close */}
@@ -136,9 +136,9 @@ function LoginHelpTip() {
     <HelpTip
       title={$t('Login')}
       dismissableKey={EDismissable.LoginPrompt}
-      position={{ top: 'calc(100vh - 175px)', left: '80px' }}
+      position={{ top: 'calc(85px)', left: '100px' }}
       arrowPosition="bottom"
-      style={{ position: 'absolute' }}
+      style={{ position: 'absolute', zIndex: 999999 }}
     >
       <div>
         {$t(

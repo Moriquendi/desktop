@@ -45,6 +45,13 @@ export default function StartStreamingButton(p: { disabled?: boolean }) {
   }, [delaySecondsRemaining, streamingStatus, delayEnabled]);
 
   async function toggleStreaming() {
+    console.log('CTA CLICK');
+
+    if (!UserService.isLoggedIn) {
+      UserService.actions.showLogin();
+      return;
+    }
+
     if (StreamingService.isStreaming) {
       console.log(`Is streaming. Ending...`);
       StreamingService.toggleStreaming();

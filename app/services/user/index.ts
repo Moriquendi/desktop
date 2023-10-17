@@ -951,6 +951,11 @@ export class UserService extends PersistentStatefulService<IUserServiceState> {
 
   @RunInLoadingMode()
   async logOut() {
+    if (this.streamingService.isStreaming) {
+      console.log(`TOGGLE STREAMING`);
+      await this.streamingService.actions.toggleStreaming(undefined, true);
+    }
+
     // Attempt to sync scense before logging out
     await this.sceneCollectionsService.save();
     await this.sceneCollectionsService.safeSync();

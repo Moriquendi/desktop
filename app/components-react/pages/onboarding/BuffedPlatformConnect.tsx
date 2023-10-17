@@ -143,46 +143,22 @@ export function BuffedPlatformConnect(props: Props) {
     );
   }
 
-  function EmailForm() {
-    return (
-      <Form>
-        <TextInput
-          label={$t('Email')}
-          value={email}
-          onChange={setEmail}
-          isPassword={false}
-          uncontrolled={false}
-        />
-        <TextInput
-          label={$t('Password')}
-          value={password}
-          onChange={setPassword}
-          isPassword={true}
-          uncontrolled={false}
-        />
-
-        <button
-          className="button button--action"
-          onClick={() => {
-            onFinish();
-          }}
-          disabled={!(email.trim().length > 0 && password.trim().length > 0)}
-          style={{ minWidth: '300px' }}
-        >
-          {$t('Log In')}
-        </button>
-      </Form>
-    );
-  }
-
-  function CurrentScreen() {
+  const renderCurrentScreen = () => {
     switch (screen) {
       case 'auth-method-pick':
         return <AuthMethodButtons />;
       case 'auth-method-email':
-        return <EmailForm />;
+        return (
+          <EmailForm
+            email={email}
+            setEmail={setEmail}
+            password={password}
+            setPassword={setPassword}
+            onFinish={onFinish}
+          />
+        );
     }
-  }
+  };
 
   return (
     <div className={styles.rootContainer}>
@@ -202,7 +178,7 @@ export function BuffedPlatformConnect(props: Props) {
               </div>
             )}
 
-            <CurrentScreen />
+            {renderCurrentScreen()}
 
             <p>{isLoading && <Spin style={{ paddingTop: 20 }} />}</p>
 
@@ -340,5 +316,45 @@ function SocialButton(props: SocialButtonProps) {
         {$t(`Sign In with ${props.name}`)}
       </HStack>
     </button>
+  );
+}
+
+interface EmailFormProps {
+  email: string;
+  setEmail: (email: string) => void;
+
+  password: string;
+  setPassword: (password: string) => void;
+  onFinish: () => void;
+}
+function EmailForm({ email, setEmail, password, setPassword, onFinish }: EmailFormProps) {
+  return (
+    <Form>
+      <TextInput
+        label={$t('Email')}
+        value={email}
+        onChange={setEmail}
+        isPassword={false}
+        uncontrolled={false}
+      />
+      <TextInput
+        label={$t('Password')}
+        value={password}
+        onChange={setPassword}
+        isPassword={true}
+        uncontrolled={false}
+      />
+
+      <button
+        className="button button--action"
+        onClick={() => {
+          onFinish();
+        }}
+        disabled={!(email.trim().length > 0 && password.trim().length > 0)}
+        style={{ minWidth: '300px' }}
+      >
+        {$t('Log In')}
+      </button>
+    </Form>
   );
 }
