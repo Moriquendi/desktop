@@ -746,6 +746,9 @@ export class SceneCollectionsService extends Service implements ISceneCollection
    * - Download collections that have newer version on the server
    */
   private async sync() {
+    console.log('[Buffed] Sync with server disabled.');
+    return;
+
     if (!this.canSync()) return;
 
     const serverCollections = (await this.serverApi.fetchSceneCollections()).data;

@@ -144,6 +144,9 @@ export class WebsocketService extends Service {
       return;
     }
 
+    console.log('[Buffed] Socket connection disabled.');
+    return;
+
     // dynamically import socket.io because it takes to much time to import it on startup
     if (!this.io) {
       this.io = (await importSocketIOClient()).default;

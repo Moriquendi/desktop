@@ -572,6 +572,9 @@ export class UserService extends PersistentStatefulService<IUserServiceState> {
    * @returns `true` if the user should be force logged out
    */
   async updateLinkedPlatforms() {
+    console.log('[Buffed] Updating linked platforms disabled.');
+    return false;
+    /*
     const linkedPlatforms = await this.fetchLinkedPlatforms();
 
     if (!linkedPlatforms) return;
@@ -654,6 +657,7 @@ export class UserService extends PersistentStatefulService<IUserServiceState> {
     }
 
     if (linkedPlatforms.force_login_required) return true;
+    */
   }
 
   fetchLinkedPlatforms() {

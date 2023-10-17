@@ -43,6 +43,8 @@ export class SceneCollectionsStateService extends StatefulService<ISceneCollecti
    * Loads the manifest file into the state for this service.
    */
   async loadManifestFile() {
+    console.log('[Buffed] Disable loading collecition manifes...');
+    return;
     await this.ensureDirectory();
 
     try {
