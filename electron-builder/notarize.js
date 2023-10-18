@@ -1,3 +1,5 @@
+require('dotenv').config();
+
 const { notarize } = require('@electron/notarize');
 const fs = require('fs');
 

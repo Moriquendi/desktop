@@ -1,5 +1,3 @@
-require('dotenv').config();
-
 const appStartTime = Date.now();
 let lastEventTime = 0;
 
@@ -9,7 +7,10 @@ let lastEventTime = 0;
 const pjson = require('./package.json');
 if (pjson.env === 'production') {
   process.env.NODE_ENV = 'production';
+} else {
+  require('dotenv').config();
 }
+
 if (pjson.name === 'buffed-client-preview') {
   process.env.SLOBS_PREVIEW = true;
 }
@@ -487,7 +488,8 @@ async function startApp() {
   });
 
   console.log(`Main: Show dev tools: ${process.env.SLOBS_PRODUCTION_DEBUG}`);
-  if (process.env.SLOBS_PRODUCTION_DEBUG) openDevTools();
+  //if (process.env.SLOBS_PRODUCTION_DEBUG) openDevTools();
+  openDevTools();
 
   // simple messaging system for services between windows
   // WARNING! renderer windows use synchronous requests and will be frozen
