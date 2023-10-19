@@ -429,7 +429,7 @@ if (Utils.isDevMode()) {
 }
 
 // Register a custom scheme handler
-// protocol.registerHttpProtocol('me.buffed.app', (request, callback) => {
+// protocol.registerHttpProtocol('me.buffed.app.desktop', (request, callback) => {
 //   const url = request.url;
 //   console.log(`HANDLE DEEPLINK: ${url}`);
 //   // Extract token data from the URL and perform the necessary actions

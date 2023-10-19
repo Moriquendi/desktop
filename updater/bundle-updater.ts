@@ -41,6 +41,7 @@ module.exports = async (basePath: string) => {
   let updaterWindowSuccessfulClose = false;
 
   function spawnUpdaterWindow() {
+    console.log('Spawning updater window');
     updaterWindow = new electron.BrowserWindow({
       width: 400,
       height: 180,
@@ -107,6 +108,7 @@ module.exports = async (basePath: string) => {
   }
 
   function downloadFile(srcUrl: string, dstPath: string): [Promise<void>, () => void] {
+    console.log(`Downloading file...... ${srcUrl} => ${dstPath}`);
     const abortController = new AbortController();
     const tmpPath = `${dstPath}.tmp`;
 
@@ -145,6 +147,7 @@ module.exports = async (basePath: string) => {
   }
 
   function getChecksum(filePath: string) {
+    console.log(`Getting checksum for ${filePath}`);
     return new Promise<string>((resolve, reject) => {
       const file = fs.createReadStream(filePath);
       const hash = crypto.createHash('md5');
@@ -172,6 +175,7 @@ module.exports = async (basePath: string) => {
     filePath: string,
     manifest: IManifest,
   ): Promise<boolean> {
+    console.log(`Validating file ${filePath}`);
     if (!manifest.checksums || !manifest.checksums[bundle]) {
       console.log(`Checksums not found in manifest, assuming ${bundle} is valid`);
       return true;
@@ -278,6 +282,7 @@ module.exports = async (basePath: string) => {
   }
 
   async function getBundleFilePath(bundle: string, manifest: IManifest): Promise<string> {
+    console.log(`Attempting to get bundle ${bundle}`);
     const localOrCached = await getLocalOrCachedBundleFilePath(bundle, manifest).catch(
       () => undefined,
     );
@@ -308,12 +313,18 @@ module.exports = async (basePath: string) => {
     useLocalBundles = true;
   }
 
+  /////////////////////
+  console.log('[Buffed] Force using local bundles.');
+  useLocalBundles = true;
+  /////////////////////
+
   const localManifest: IManifest = require(path.join(`${basePath}/bundles/manifest.json`));
 
   // Check if bundle updates are available
   let serverManifest: IManifest | undefined;
 
   if (!useLocalBundles) {
+    console.log('Checking for bundle updates...');
     try {
       const remoteManifestName = process.argv.includes('--bundle-qa')
         ? 'manifest-qa.json'
@@ -411,15 +422,23 @@ module.exports = async (basePath: string) => {
     e.returnValue = bundleNames;
   });
 
+  console.log(`Register slbundle protocol`);
   electron.session.defaultSession?.protocol.registerFileProtocol('slbundle', (request, cb) => {
     const url = new URL(request.url);
-
     const bundleName = url.pathname.replace('/', '') as TBundleName;
 
     if (!useLocalBundles && bundlePathsMap[bundleName]) {
       cb({ path: bundlePathsMap[bundleName] });
       return;
     }
+
+    //////////////////// BUFFED
+    if (!localManifest[bundleName]) {
+      console.log('buffed workaround for missing bundle');
+      cb({ path: path.join(localBase, bundleName) });
+      return;
+    }
+    ///////////////////////////
 
     cb({ path: path.join(localBase, localManifest[bundleName]) });
   });
@@ -429,6 +448,7 @@ module.exports = async (basePath: string) => {
   // URL when looking for source maps.
 
   if (!['production', 'test'].includes(process.env.NODE_ENV ?? '')) {
+    console.log('handler server');
     const handler = require('serve-handler');
 
     const server = http.createServer((request, response) => {

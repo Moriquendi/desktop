@@ -1,7 +1,7 @@
 const signtool = require('signtool');
 
 const base = {
-  appId: 'me.buffed.app',
+  appId: 'me.buffed.app.desktop',
   productName: 'Buffed Desktop',
   icon: 'media/images/icon.ico',
   files: [
@@ -48,6 +48,7 @@ const base = {
     timeStampServer: 'http://timestamp.digicert.com',
     signDlls: true,
     async sign(config) {
+      console.log('Windows signing disabled for now....')
       return;
       if (process.env.SLOBS_NO_SIGN) return;
 
@@ -92,7 +93,7 @@ const base = {
       CFBundleURLTypes: [
         {
           CFBundleURLName: 'Buffed OBS Link',
-          CFBundleURLSchemes: ['buffed'],
+          CFBundleURLSchemes: ['me.buffed.app.desktop'],
         },
       ],
     },
