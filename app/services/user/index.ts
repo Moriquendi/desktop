@@ -1176,13 +1176,16 @@ export class UserService extends PersistentStatefulService<IUserServiceState> {
 
     this.LOGOUT();
     this.LOGIN(auth);
+
+    //this.streamSettingsService.resetStreamSettings();
+
     await this.updateLinkedPlatforms(); // todo for buffed
 
     const primaryPlatform: TPlatform = 'buffed';
     this.SET_PRIMARY_PLATFORM(primaryPlatform);
     const service = getPlatformService(primaryPlatform);
     this.SET_AUTH_STATE(EAuthProcessState.Loading);
-    const result = await this.login(service);
+    const result = await this.login(service, auth);
     this.SET_AUTH_STATE(EAuthProcessState.Idle);
     return result;
     //const result = await this.login(buffedService, auth);

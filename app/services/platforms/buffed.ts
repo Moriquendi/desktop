@@ -327,7 +327,9 @@ export class BuffedService
   }
 
   async fetchUserInfo() {
-    return {} as IUserInfo;
+    return {
+      username: 'buffed-desktop',
+    } as IUserInfo;
     // return platformAuthorizedRequest<{ login: string }[]>(
     //   'twitch',
     //   `${this.apiBase}/helix/users?id=${this.twitchId}`,
