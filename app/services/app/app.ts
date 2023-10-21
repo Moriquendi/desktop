@@ -171,7 +171,13 @@ export class AppService extends StatefulService<IAppState> {
 
     ////////////////////////////////////////////////
     console.log(`start`);
-    await new BuffedSettingsController().setBuffedDetaultSettings();
+    const controller = new BuffedSettingsController();
+    await controller.setBuffedDetaultSettings();
+    this.userService.userLoginFinished.subscribe(() => {
+      console.log(`[Buffed settings] User logged in. Refresh buffed settings.`);
+      //await
+      controller.setBuffedDetaultSettings();
+    });
     console.log(`end kasd`);
     ////////////////////////////////////////////
 

@@ -149,6 +149,7 @@ export class BuffedService
     return {
       token: token,
       streamKey: userProfile.buffed_key,
+      profile: userProfile,
     };
   }
 

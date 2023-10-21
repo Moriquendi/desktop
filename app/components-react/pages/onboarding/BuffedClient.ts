@@ -1,4 +1,5 @@
 import fetch from 'node-fetch';
+import { OBSSettings } from '../../../services/settings/BuffedSettingsController';
 
 interface SignInOutput {
   id: number;
@@ -11,6 +12,10 @@ interface UserProfile {
   buffed_key: string | null;
   twitch_key: string | null;
   platform: string | null;
+
+  nickname: string | null;
+
+  obs_settings?: OBSSettings;
 }
 
 export class BuffedClient {
