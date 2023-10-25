@@ -3,6 +3,7 @@ import { BuffedClient } from 'components-react/pages/onboarding/BuffedClient';
 import { Services } from 'components-react/service-provider';
 import { Inject } from 'services/core/injector';
 import { ISourceAddOptions, TSourceType } from 'services/sources';
+import { OS, byOS } from 'util/operating-systems';
 
 export interface OBSSettings {
   width: string;
@@ -141,10 +142,51 @@ export class BuffedSettingsController {
     // SourcesService.addSource('Screen Capture', {}, {})
 
     const scene = ScenesService.views.activeScene;
-    const item = scene.createAndAddSource('Game Capture', 'game_capture', {}, {});
-    const sourceId = item.sourceId;
 
-    const source = SourcesService.views.getSource(sourceId)!;
+    const isMac = byOS({ [OS.Windows]: false, [OS.Mac]: true });
+    if (isMac) {
+      const item = scene.createAndAddSource('Screen Capture', 'screen_capture', {}, {});
+    } else {
+      const item = scene.createAndAddSource('Game Capture', 'game_capture', {}, {});
+
+      const sourceId = item.sourceId;
+      const source = SourcesService.views.getSource(sourceId)!;
+      const sourceProperties = source.getPropertiesFormData();
+
+      console.log(`Source properties:`);
+      console.log(sourceProperties);
+
+      const captureModeProp = sourceProperties.find(v => v.name === 'capture_mode');
+      if (captureModeProp) {
+        captureModeProp.value = 'any_fullscreen';
+        console.log(`Would set this:`);
+        console.log(captureModeProp);
+        EditorCommandsService.executeCommand('EditSourcePropertiesCommand', source.sourceId, [
+          captureModeProp,
+        ]);
+      }
+    }
+
+    /////////////
+    // console.log(`adding color block`);
+    // const blockItem = scene.createAndAddSource(
+    //   'Color Block',
+    //   'color_source',
+    //   {},
+    //   {
+    //     sourceAddOptions: {
+    //       propertiesManager: 'default',
+    //       propertiesManagerSettings: {},
+    //       guestCamStreamId: undefined,
+    //       sourceId: undefined,
+    //     },
+    //   },
+    // );
+    console.log(`Fit to screen all selection.`);
+    const sceneSelection = scene.getSelection();
+    const sceneItems = scene.getItems();
+    sceneSelection.add(sceneItems);
+    sceneSelection.fitToScreen();
 
     // const source = await SourcesService.createSource(
     //   'Game Capture',
@@ -155,21 +197,6 @@ export class BuffedSettingsController {
     //     propertiesManagerSettings: {}
     //   }
     //   );
-
-    const sourceProperties = source.getPropertiesFormData();
-
-    console.log(`Source properties:`);
-    console.log(sourceProperties);
-
-    const captureModeProp = sourceProperties.find(v => v.name === 'capture_mode');
-    if (captureModeProp) {
-      captureModeProp.value = 'any_fullscreen';
-      console.log(`Would set this:`);
-      console.log(captureModeProp);
-      EditorCommandsService.executeCommand('EditSourcePropertiesCommand', source.sourceId, [
-        captureModeProp,
-      ]);
-    }
 
     /*
     const name = 'Screen Capture A';

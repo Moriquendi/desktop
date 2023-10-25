@@ -160,6 +160,30 @@ export function BuffedPlatformConnect(props: Props) {
     }
   };
 
+  function getNavButtons() {
+    return (
+      <HStack>
+        {screen == 'auth-method-email' && (
+          <>
+            <a
+              className={styles['link-button']}
+              onClick={() => {
+                setScreen('auth-method-pick');
+              }}
+            >
+              {$t('Back')}
+            </a>
+            <span style={{ display: 'inline-block', width: 32 }}> </span>
+          </>
+        )}
+
+        <a className={styles['link-button']} onClick={() => next()}>
+          {$t('Skip')}
+        </a>
+      </HStack>
+    );
+  }
+
   return (
     <div className={styles.rootContainer}>
       <div className={styles.fancyContainerBackground}> </div>
@@ -172,36 +196,19 @@ export function BuffedPlatformConnect(props: Props) {
             <h1>{$t('Connect to %{platform}', { platform: platformDefinition.name })}</h1> */}
 
           <div className="flex flex--center flex--column">
-            {error && (
-              <div style={{ padding: 8 }}>
-                <Alert message={error} type="error" showIcon />
-              </div>
-            )}
-
-            {renderCurrentScreen()}
-
-            <p>{isLoading && <Spin style={{ paddingTop: 20 }} />}</p>
-
-            <p>
-              {screen == 'auth-method-email' && (
-                <>
-                  <a
-                    className={styles['link-button']}
-                    onClick={() => {
-                      setScreen('auth-method-pick');
-                      //setExtraPlatform(undefined)
-                    }}
-                  >
-                    {$t('Back')}
-                  </a>
-                  <span style={{ display: 'inline-block', width: 32 }}> </span>
-                </>
+            <VStack>
+              {error && (
+                <div style={{ padding: 8 }}>
+                  <Alert message={error} type="error" showIcon />
+                </div>
               )}
 
-              <a className={styles['link-button']} onClick={() => next()}>
-                {$t('Skip')}
-              </a>
-            </p>
+              {renderCurrentScreen()}
+
+              {isLoading && <Spin />}
+
+              {getNavButtons()}
+            </VStack>
           </div>
         </div>
       </div>
