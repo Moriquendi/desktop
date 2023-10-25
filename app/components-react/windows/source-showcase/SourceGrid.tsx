@@ -103,6 +103,10 @@ export default function SourceGrid(p: { activeTab: string }) {
   }, []);
 
   function showContent(key: string) {
+    if (key == 'widgets') {
+      return false;
+    }
+
     const correctKey = ['all', key].includes(p.activeTab);
     if (UserService.state.auth?.primaryPlatform === 'tiktok' && key === 'widgets') return false;
     if (key === 'apps') {

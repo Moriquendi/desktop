@@ -489,7 +489,7 @@ async function startApp() {
 
   console.log(`Main: Show dev tools: ${process.env.SLOBS_PRODUCTION_DEBUG}`);
   //if (process.env.SLOBS_PRODUCTION_DEBUG) openDevTools();
-  openDevTools();
+  // openDevTools();
 
   // simple messaging system for services between windows
   // WARNING! renderer windows use synchronous requests and will be frozen
