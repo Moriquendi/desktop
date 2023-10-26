@@ -182,9 +182,11 @@ export class BuffedSettingsController {
     //     },
     //   },
     // );
+    ///////////////////////////////////
     console.log(`Fit to screen all selection.`);
     const sceneSelection = scene.getSelection();
     const sceneItems = scene.getItems();
+    console.log(`Adding ${sceneItems.length} items to selection.`);
     sceneSelection.add(sceneItems);
     sceneSelection.fitToScreen();
 
