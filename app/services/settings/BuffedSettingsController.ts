@@ -17,12 +17,16 @@ export interface OBSSettings {
   profile: string;
   tune: string;
 }
+function sleep(ms: number) {
+  console.log(`Sleep for ${ms}`);
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
 
 export class BuffedSettingsController {
   @Inject() userService: UserService;
 
   async otherStuff() {
-    Services.SettingsService.setSettingValue('Output', 'RecRB', false);
+    Services.SettingsService.actions.setSettingValue('Output', 'RecRB', false);
   }
 
   private getDefaultSettings(): OBSSettings {
@@ -77,15 +81,15 @@ export class BuffedSettingsController {
     const h = parseInt(settings.height);
     const fps = parseInt(settings.fps);
 
-    VideoSettingsService.setVideoSetting('baseWidth', w, 'horizontal');
-    VideoSettingsService.setVideoSetting('baseHeight', h, 'horizontal');
+    VideoSettingsService.actions.setVideoSetting('baseWidth', w, 'horizontal');
+    VideoSettingsService.actions.setVideoSetting('baseHeight', h, 'horizontal');
 
-    VideoSettingsService.setVideoSetting('outputWidth', w, 'horizontal');
-    VideoSettingsService.setVideoSetting('outputHeight', h, 'horizontal');
+    VideoSettingsService.actions.setVideoSetting('outputWidth', w, 'horizontal');
+    VideoSettingsService.actions.setVideoSetting('outputHeight', h, 'horizontal');
 
-    VideoSettingsService.setVideoSetting('fpsType', 0, 'horizontal');
-    VideoSettingsService.setVideoSetting('fpsNum', fps, 'horizontal');
-    VideoSettingsService.setVideoSetting('fpsDen', 1, 'horizontal');
+    VideoSettingsService.actions.setVideoSetting('fpsType', 0, 'horizontal');
+    VideoSettingsService.actions.setVideoSetting('fpsNum', fps, 'horizontal');
+    VideoSettingsService.actions.setVideoSetting('fpsDen', 1, 'horizontal');
     // this.setCustomResolution('baseRes', false);
     // this.setResolution('baseRes', '1280x720');
     // // Output res
@@ -119,11 +123,9 @@ export class BuffedSettingsController {
         param.value = 'Advanced';
       }
     });
-    Services.SettingsService.setSettings('Output', outputFormData);
+    Services.SettingsService.actions.setSettings('Output', outputFormData);
 
     // ADD SOURCE
-
-    const nested = ScenesService.views.activeScene.getNestedSources();
 
     const hasAddedSources =
       ScenesService.views.activeScene
@@ -161,11 +163,25 @@ export class BuffedSettingsController {
         captureModeProp.value = 'any_fullscreen';
         console.log(`Would set this:`);
         console.log(captureModeProp);
-        EditorCommandsService.executeCommand('EditSourcePropertiesCommand', source.sourceId, [
-          captureModeProp,
-        ]);
+        EditorCommandsService.actions.executeCommand(
+          'EditSourcePropertiesCommand',
+          source.sourceId,
+          [captureModeProp],
+        );
       }
     }
+
+    await sleep(10);
+    ////////////////////////////////////////
+    // FIT TO SCREN
+    console.log(`Fit to screen all selection.`);
+    const actScene = ScenesService.views.activeScene;
+    const sceneSelection = actScene.getSelection();
+    const sceneItems = actScene.getItems();
+    console.log(`Adding ${sceneItems.length} items to selection.`);
+    sceneSelection.add(sceneItems);
+    sceneSelection.fitToScreen();
+    ////////////////////////////////////////
 
     /////////////
     // console.log(`adding color block`);
@@ -183,12 +199,6 @@ export class BuffedSettingsController {
     //   },
     // );
     ///////////////////////////////////
-    console.log(`Fit to screen all selection.`);
-    const sceneSelection = scene.getSelection();
-    const sceneItems = scene.getItems();
-    console.log(`Adding ${sceneItems.length} items to selection.`);
-    sceneSelection.add(sceneItems);
-    sceneSelection.fitToScreen();
 
     // const source = await SourcesService.createSource(
     //   'Game Capture',

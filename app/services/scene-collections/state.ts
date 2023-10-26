@@ -43,8 +43,7 @@ export class SceneCollectionsStateService extends StatefulService<ISceneCollecti
    * Loads the manifest file into the state for this service.
    */
   async loadManifestFile() {
-    console.log('[Buffed] Disable loading collecition manifes...');
-    return;
+    console.log(`[manifest] Load manifest.`);
     await this.ensureDirectory();
 
     try {
@@ -53,13 +52,13 @@ export class SceneCollectionsStateService extends StatefulService<ISceneCollecti
       if (data) {
         const parsed = JSON.parse(data);
         const recovered = await this.checkAndRecoverManifest(parsed);
-
         if (recovered) this.LOAD_STATE(recovered);
       }
     } catch (e: unknown) {
       console.warn('Error loading manifest file from disk');
     }
 
+    console.log(`[manifest] Manifest loaded.`);
     this.flushManifestFile();
   }
 
