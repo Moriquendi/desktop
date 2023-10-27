@@ -2,7 +2,7 @@
   "name": "buffed-client",
   "productName": "Buffed Desktop",
   "description": "Buffed streaming software",
-  "author": "General Workings, Inc.",
+  "author": "Buffed, Inc.",
   "license": "GPL-3.0",
   "version": "1.0.0",
   "main": "main.js",

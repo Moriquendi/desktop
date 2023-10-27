@@ -26,7 +26,7 @@ class Updater {
     if (osVersion && Number(osVersion.substring(0, 2)) < 19) {
       dialog.showMessageBoxSync({
         message:
-          'You are on a very old version of macOS. Please update macOS to continue using Streamlabs Desktop. Your current version is outdated and is no longer compatible with Streamlabs services.',
+          'You are on a very old version of macOS. Please update macOS to continue using Buffed Desktop. Your current version is outdated and is no longer compatible with Buffed services.',
         type: 'error',
       });
       app.exit();
@@ -36,6 +36,10 @@ class Updater {
     this.updateState = {};
 
     this.bindListeners();
+
+    /////////////////////////////////////////////////////////////////
+    autoUpdater.forceDevUpdateConfig = true
+    /////////////////////////////////////////////////////////////////
 
     // Redirect to new channel for Streamlabs Desktop
     autoUpdater.channel = `desktop-${this.channel}`;
