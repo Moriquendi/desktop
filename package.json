@@ -1,10 +1,13 @@
 {
+  "build": {
+    "generateUpdatesFilesForAllChannels": true
+  },
   "name": "buffed-client",
   "productName": "Buffed Desktop",
   "description": "Buffed streaming software",
   "author": "Buffed, Inc.",
   "license": "GPL-3.0",
-  "version": "1.0.0",
+  "version": "0.2.0-alpha",
   "main": "main.js",
   "scripts": {
     "compile": "yarn clear && yarn compile:updater && yarn webpack-cli --progress --config ./webpack.dev.config.js",
@@ -22,6 +25,7 @@
     "package:mac": "yarn generate-agreement:mac && rimraf dist && electron-builder build -m --x64 --config electron-builder/base.config.js",
     "package:mac-arm64": "yarn generate-agreement:mac && rimraf dist && electron-builder build -m --arm64 --config electron-builder/base.config.js",
     "package:preview": "yarn generate-agreement && rimraf dist && electron-builder build -w --x64 --config electron-builder/preview.config.js",
+    "release": "electron-builder --publish always -m --arm64 --config electron-builder/base.config.js",
     "eslint": "eslint \"{app,guest-api,obs-api,updater}/**/*.ts\" main.js",
     "test": "tsc -p test && ava -v --timeout=3m ./test-dist/test/regular/**/*.js",
     "test:file": "tsc -p test && ava -v --timeout=60m",
@@ -73,7 +77,7 @@
     "color-picker": "https://obs-studio-deployment.s3-us-west-2.amazonaws.com/color-picker-0.0.0.tar.gz",
     "crash-handler": "https://slobs-crash-handler.s3-us-west-2.amazonaws.com/crash-handler-0.0.0.tar.gz",
     "electron-react-devtools": "^0.5.3",
-    "electron-updater": "^6.1.1",
+    "electron-updater": "^6.1.6",
     "electron-window-state": "5.0.3",
     "extract-zip": "^1.6.7",
     "font-manager": "https://slobs-font-manager.s3-us-west-2.amazonaws.com/font-manager-0.0.0.tar.gz",

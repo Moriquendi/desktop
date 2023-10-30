@@ -38,8 +38,8 @@ const base = {
     '**/color-picker/**',
   ],
   publish: {
-    provider: 'generic',
-    url: 'https://buffed-cdn.buffed.me',
+    provider: 'github',
+    // url: 'https://buffed-cdn.buffed.me',
   },
   win: {
     executableName: 'Buffed OBS',
@@ -48,7 +48,7 @@ const base = {
     timeStampServer: 'http://timestamp.digicert.com',
     signDlls: true,
     async sign(config) {
-      console.log('Windows signing disabled for now....')
+      console.log('Windows signing disabled for now....');
       return;
       if (process.env.SLOBS_NO_SIGN) return;
 

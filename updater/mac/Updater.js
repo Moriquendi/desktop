@@ -38,12 +38,19 @@ class Updater {
     this.bindListeners();
 
     /////////////////////////////////////////////////////////////////
-    autoUpdater.forceDevUpdateConfig = true
+    autoUpdater.forceDevUpdateConfig = true;
+    autoUpdater.setFeedURL({
+      provider: 'github',
+      owner: 'Moriquendi',
+      repo: 'desktop',
+    });
     /////////////////////////////////////////////////////////////////
 
     // Redirect to new channel for Streamlabs Desktop
-    autoUpdater.channel = `desktop-${this.channel}`;
+    // autoUpdater.channel = `desktop-${this.channel}`;
+    autoUpdater.channel = 'alpha';
 
+    console.log(`Calling check for updates`);
     autoUpdater.checkForUpdates().catch(() => {
       // This usually means there is no internet connection.
       // In this case, we shouldn't prevent starting the app.
