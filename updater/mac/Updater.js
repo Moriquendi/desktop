@@ -38,17 +38,17 @@ class Updater {
     this.bindListeners();
 
     /////////////////////////////////////////////////////////////////
-    autoUpdater.forceDevUpdateConfig = true;
-    autoUpdater.setFeedURL({
-      provider: 'github',
-      owner: 'Moriquendi',
-      repo: 'desktop',
-    });
+    // autoUpdater.forceDevUpdateConfig = true;
+    // autoUpdater.setFeedURL({
+    //   provider: 'github',
+    //   owner: 'Moriquendi',
+    //   repo: 'desktop',
+    // });
     /////////////////////////////////////////////////////////////////
 
     // Redirect to new channel for Streamlabs Desktop
     // autoUpdater.channel = `desktop-${this.channel}`;
-    autoUpdater.channel = 'alpha';
+    // autoUpdater.channel = 'alpha';
 
     console.log(`Calling check for updates`);
     autoUpdater.checkForUpdates().catch(() => {

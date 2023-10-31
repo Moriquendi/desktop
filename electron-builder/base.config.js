@@ -39,6 +39,8 @@ const base = {
   ],
   publish: {
     provider: 'github',
+    owner: 'Moriquendi',
+    repo: 'desktop',
     // url: 'https://buffed-cdn.buffed.me',
   },
   win: {
