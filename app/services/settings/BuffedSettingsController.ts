@@ -171,7 +171,7 @@ export class BuffedSettingsController {
       }
     }
 
-    await sleep(10);
+    await sleep(100);
     ////////////////////////////////////////
     // FIT TO SCREN
     console.log(`Fit to screen all selection.`);
