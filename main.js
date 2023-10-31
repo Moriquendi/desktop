@@ -636,6 +636,16 @@ app.on('ready', () => {
 
   console.log(`On app ready`)
 
+  if (
+    !process.argv.includes('--skip-update') &&
+    (process.env.NODE_ENV === 'production' || process.env.SLOBS_FORCE_AUTO_UPDATE)
+  ) {
+    console.log(`Main: updater`);
+    new Updater(startApp, releaseChannel).run();
+  } else {
+    console.log(`Main: startApp`);
+    startApp();
+  }
   // if (
   //   !process.argv.includes('--skip-update') &&
   //   (process.env.NODE_ENV === 'production' || process.env.SLOBS_FORCE_AUTO_UPDATE)
@@ -657,8 +667,8 @@ app.on('ready', () => {
   //     console.log(`Main: bootstrap`);
   //     bootstrap(updateInfo, startApp, app.exit);
   //   } else {
-      console.log(`Main: updater`);
-      new Updater(startApp, releaseChannel).run();
+      // console.log(`Main: updater`);
+      // new Updater(startApp, releaseChannel).run();
   //   }
   // } else {
   //   console.log(`Main: startApp`);
