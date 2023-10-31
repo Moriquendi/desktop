@@ -184,6 +184,19 @@ export function BuffedPlatformConnect(props: Props) {
     );
   }
 
+  function getGuideLink() {
+    return (
+      <a
+        className="link--accent"
+        onClick={() => {
+          remote.shell.openExternal('https://buffed.me/community/guides/pc/setup_guide');
+        }}
+      >
+        {$t('Buffed Desktop Setup Guide')}
+      </a>
+    );
+  }
+
   return (
     <div className={styles.rootContainer}>
       <div className={styles.fancyContainerBackground}> </div>
@@ -208,6 +221,8 @@ export function BuffedPlatformConnect(props: Props) {
               {isLoading && <Spin />}
 
               {getNavButtons()}
+
+              {screen == 'auth-method-pick' && <HStack>{getGuideLink()}</HStack>}
             </VStack>
           </div>
         </div>
