@@ -23,15 +23,15 @@ class Updater {
 
   run() {
     const osVersion = require('os').release();
-    if (osVersion && Number(osVersion.substring(0, 2)) < 19) {
-      dialog.showMessageBoxSync({
-        message:
-          'You are on a very old version of macOS. Please update macOS to continue using Buffed Desktop. Your current version is outdated and is no longer compatible with Buffed services.',
-        type: 'error',
-      });
-      app.exit();
-      return;
-    }
+    // if (osVersion && Number(osVersion.substring(0, 2)) < 19) {
+    //   dialog.showMessageBoxSync({
+    //     message:
+    //       'You are on a very old version of macOS. Please update macOS to continue using Buffed Desktop. Your current version is outdated and is no longer compatible with Buffed services.',
+    //     type: 'error',
+    //   });
+    //   app.exit();
+    //   return;
+    // }
 
     this.updateState = {};
 
