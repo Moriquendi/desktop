@@ -102,6 +102,7 @@ const releaseChannel = (() => {
 let workerWindow;
 let mainWindow;
 let childWindow;
+let monitorProcess;
 
 const util = require('util');
 const logFile = path.join(app.getPath('userData'), 'app.log');
@@ -206,6 +207,11 @@ console.log(`Memory: ${humanFileSize(os.totalmem(), false)}`);
 console.log(`Free: ${humanFileSize(os.freemem(), false)}`);
 console.log('=================================');
 
+app.on('activate', () => {
+  console.log(`APP ACTIVATED`);
+  mainWindow?.show();
+})
+
 app.on('ready', () => {
   // Detect when running from an unwritable location like a DMG image (will break updater)
   if (process.platform === 'darwin') {
@@ -260,6 +266,7 @@ function openDevTools() {
   childWindow.webContents.openDevTools({ mode: 'undocked' });
   mainWindow.webContents.openDevTools({ mode: 'undocked' });
   workerWindow.webContents.openDevTools({ mode: 'undocked' });
+  monitorProcess?.webContents.openDevTools({ mode: 'undocked' }); // TODO: make sure monitorProcess exists by the time it's called
 }
 
 // TODO: Clean this up
@@ -345,16 +352,6 @@ async function startApp() {
   }
 
   console.log(`Main: Start worker window`);
-  workerWindow = new BrowserWindow({
-    show: false,
-    webPreferences: { nodeIntegration: true, contextIsolation: false },
-  });
-
-  remote.enable(workerWindow.webContents);
-
-  // setTimeout(() => {
-  workerWindow.loadURL(`${global.indexUrl}?windowId=worker`);
-  // }, 10 * 1000);
 
   // All renderers should use ipcRenderer.sendTo to send to communicate with
   // the worker.  This still gets proxied via the main process, but eventually
@@ -364,77 +361,23 @@ async function startApp() {
     event.returnValue = workerWindow.webContents.id;
   });
 
-  const mainWindowState = windowStateKeeper({
-    defaultWidth: 1600,
-    defaultHeight: 1000,
-  });
-
-  mainWindow = new BrowserWindow({
-    minWidth: 800,
-    minHeight: 600,
-    width: mainWindowState.width,
-    height: mainWindowState.height,
-    x: mainWindowState.isMaximized ? mainWindowState.displayBounds.x : mainWindowState.x,
-    y: mainWindowState.isMaximized ? mainWindowState.displayBounds.y : mainWindowState.y,
-    show: false,
-    frame: false,
-    titleBarStyle: 'hidden',
-    title: 'Buffed Desktop',
-    backgroundColor: '#17242D',
-    webPreferences: {
-      nodeIntegration: true,
-      webviewTag: true,
-      contextIsolation: false,
-    },
-  });
-
-  console.log(`Main: enable remote x`);
-  remote.enable(mainWindow.webContents);
-
-  // setTimeout(() => {
-  mainWindow.loadURL(`${global.indexUrl}?windowId=main`);
-  // }, 5 * 1000)
-
-  mainWindowState.manage(mainWindow);
-
-  mainWindow.removeMenu();
-
-  mainWindow.on('close', e => {
-    console.log(`Main: mainWindow.on('close')`);
-
-    if (!shutdownStarted) {
-      shutdownStarted = true;
-      workerWindow.send('shutdown');
-
-      // We give the worker window 10 seconds to acknowledge a request
-      // to shut down.  Otherwise, we just close it.
-      appShutdownTimeout = setTimeout(() => {
-        allowMainWindowClose = true;
-        if (!mainWindow.isDestroyed()) mainWindow.close();
-        if (!workerWindow.isDestroyed()) workerWindow.close();
-      }, 10 * 1000);
-    }
-
-    if (!allowMainWindowClose) e.preventDefault();
-  });
-
-  // prevent worker window to be closed before other windows
-  // we need it to properly handle App.stop() in tests
-  // since it tries to close all windows
-  workerWindow.on('close', e => {
-    console.log(`Main: workerWindow.on('close')`);
-    if (!shutdownStarted) {
-      e.preventDefault();
-      mainWindow.close();
-    }
-  });
-
+  const loginSettings = app.getLoginItemSettings()
+  if (!loginSettings.wasOpenedAtLogin) {
+    recreateAndShowMainWindow();  
+  }
+  
   // This needs to be explicitly handled on Mac
   app.on('before-quit', e => {
     console.log(`Main: app.on('before-quit')`);
+
     if (!shutdownStarted) {
+      beginShutdown()
       e.preventDefault();
-      mainWindow.close();
+      // if (mainWindow) {
+      //   console.log(`Call close on main window.`)
+      //   e.preventDefault();
+      //   mainWindow.close();
+      // }
     }
   });
 
@@ -448,47 +391,11 @@ async function startApp() {
     allowMainWindowClose = true;
     mainWindow.close();
     workerWindow.close();
-  });
-
-  workerWindow.on('closed', () => {
-    console.log(`Main: workerWindow.on('closed')`);
-    session.defaultSession.flushStorageData();
-    session.defaultSession.cookies.flushStore().then(() => app.quit());
-  });
-
-  // Pre-initialize the child window
-  childWindow = new BrowserWindow({
-    show: false,
-    frame: false,
-    fullscreenable: false,
-    titleBarStyle: 'hidden',
-    backgroundColor: '#17242D',
-    webPreferences: {
-      nodeIntegration: true,
-      backgroundThrottling: false,
-      contextIsolation: false,
-    },
-  });
-
-  remote.enable(childWindow.webContents);
-
-  childWindow.removeMenu();
-
-  childWindow.loadURL(`${global.indexUrl}?windowId=child`);
-
-  // The child window is never closed, it just hides in the
-  // background until it is needed.
-  childWindow.on('close', e => {
-    if (!shutdownStarted) {
-      childWindow.send('closeWindow');
-
-      // Prevent the window from actually closing
-      e.preventDefault();
-    }
+    monitorProcess.close();
   });
 
   console.log(`Main: Show dev tools: ${process.env.SLOBS_PRODUCTION_DEBUG}`);
-  if (process.env.SLOBS_PRODUCTION_DEBUG) openDevTools();
+  //if (process.env.SLOBS_PRODUCTION_DEBUG) openDevTools();
   // openDevTools();
 
   // simple messaging system for services between windows
@@ -497,7 +404,7 @@ async function startApp() {
   const requests = {};
 
   function sendRequest(request, event = null, async = false) {
-    console.log(`Main: sendRequest`);
+    console.log(`Main: sendRequest ${JSON.stringify(request)}`);
     if (workerWindow.isDestroyed()) {
       console.log('Tried to send request but worker window was missing...');
       return;
@@ -574,7 +481,168 @@ async function startApp() {
     // }, 10 * 1000);
   }
 
+  //////////////////////////////////////////////////
+  // Games Monitor Setup
+  //////////////////////////////////////////////////
+  console.log('Setup Games Monitor')
+  monitorProcess = new BrowserWindow({
+    title: 'Games Monitor',
+    show: false,
+    webPreferences: {
+      nodeIntegration: true,
+      contextIsolation: false
+    },
+  });
+  remote.enable(monitorProcess.webContents);
+  let ghtml = `file://${__dirname}/monitor-helper/index.html`
+  monitorProcess.loadURL(ghtml);
+  
+  //if (process.env.SLOBS_PRODUCTION_DEBUG) openDevTools();
+  openDevTools();
+  
   console.log(`Main: End startApp`);
+}
+
+function beginShutdown() {
+  if (!shutdownStarted) {
+    console.log('Begin shutdown.')
+    shutdownStarted = true;
+    workerWindow.send('shutdown');
+
+    // We give the worker window 10 seconds to acknowledge a request
+    // to shut down.  Otherwise, we just close it.
+    appShutdownTimeout = setTimeout(() => {
+      allowMainWindowClose = true;
+      if (!mainWindow.isDestroyed()) mainWindow.close();
+      if (!workerWindow.isDestroyed()) workerWindow.close();
+    }, 10 * 1000);
+  }
+}
+
+function recreateAndShowMainWindow() {
+
+  console.log(`Recreating. Child window destroyed?: ${childWindow?.isDestroyed()}`)
+  ///////////////////////////////////////
+  // Worker Window
+  ///////////////////////////////////////
+  workerWindow = new BrowserWindow({
+    show: false,
+    webPreferences: { nodeIntegration: true, contextIsolation: false },
+  });
+
+  remote.enable(workerWindow.webContents);
+  // setTimeout(() => {
+  workerWindow.loadURL(`${global.indexUrl}?windowId=worker`);
+  // }, 10 * 1000);
+
+
+  ///////////////////////////////////////
+  // Main Window
+  ///////////////////////////////////////
+  const mainWindowState = windowStateKeeper({
+    defaultWidth: 1600,
+    defaultHeight: 1000,
+  });
+  mainWindow = new BrowserWindow({
+    minWidth: 800,
+    minHeight: 600,
+    width: mainWindowState.width,
+    height: mainWindowState.height,
+    x: mainWindowState.isMaximized ? mainWindowState.displayBounds.x : mainWindowState.x,
+    y: mainWindowState.isMaximized ? mainWindowState.displayBounds.y : mainWindowState.y,
+    show: false,
+    frame: false,
+    titleBarStyle: 'hidden',
+    title: 'Buffed Desktop',
+    backgroundColor: '#17242D',
+    webPreferences: {
+      nodeIntegration: true,
+      webviewTag: true,
+      contextIsolation: false,
+    },
+  });
+  remote.enable(mainWindow.webContents);
+  // setTimeout(() => {
+  mainWindow.loadURL(`${global.indexUrl}?windowId=main`);
+  // }, 5 * 1000)
+  mainWindowState.manage(mainWindow);
+  mainWindow.removeMenu();
+  
+  ///////////////////////////////////////
+  // Child Window
+  ///////////////////////////////////////  
+  childWindow = new BrowserWindow({
+    show: false,
+    frame: false,
+    fullscreenable: false,
+    titleBarStyle: 'hidden',
+    backgroundColor: '#17242D',
+    webPreferences: {
+      nodeIntegration: true,
+      backgroundThrottling: false,
+      contextIsolation: false,
+    },
+  });
+  remote.enable(childWindow.webContents);
+  childWindow.removeMenu();
+  childWindow.loadURL(`${global.indexUrl}?windowId=child`);
+  
+  ///////////////////////////////////////
+  // Event Handlers
+  ///////////////////////////////////////
+
+  // The child window is never closed, it just hides in the
+  // background until it is needed.
+  childWindow.on('close', e => {
+    console.log(`On child window close.`)
+
+    if (!shutdownStarted) {
+      childWindow.send('closeWindow');
+      // Prevent the window from actually closing
+      e.preventDefault();
+    }
+  });
+
+  mainWindow.on('show', e => {
+    if (process.platform === 'darwin') {
+      app.dock.show();
+    }
+  });
+
+  mainWindow.on('close', e => {
+    console.log(`Main: mainWindow.on('close')`);
+    mainWindow.hide();
+    
+    // Hide the app icon from the Dock
+    if (process.platform === 'darwin') {
+      app.dock.hide();
+    }
+
+    if (!allowMainWindowClose) {
+      console.log('Closing main window prevented.')
+      e.preventDefault();
+    }
+  });
+
+  // prevent worker window to be closed before other windows
+  // we need it to properly handle App.stop() in tests
+  // since it tries to close all windows
+  workerWindow.on('close', e => {
+    console.log(`Main: workerWindow.on('close')`);
+    if (!shutdownStarted) {
+      e.preventDefault();
+      mainWindow.close();
+    }
+  });
+
+  workerWindow.on('closed', () => {
+    console.log(`Main: workerWindow.on('closed')`);
+    session.defaultSession.flushStorageData();
+    // session.defaultSession.cookies.flushStore().then(() => app.quit());
+    session.defaultSession.cookies.flushStore().then(() => {
+        // ...
+    });
+  });
 }
 
 const haDisableFile = path.join(app.getPath('userData'), 'HADisable');
@@ -868,5 +936,18 @@ function measure(msg, time) {
 }
 
 ipcMain.handle('DESKTOP_CAPTURER_GET_SOURCES', (event, opts) => desktopCapturer.getSources(opts));
+
+ipcMain.handle('SHOW_APP', (event, opts) => {
+  if (!mainWindow) {
+    recreateAndShowMainWindow();
+  } else {
+    mainWindow.show();
+  }
+});
+
+ipcMain.handle('BEGIN_SHUTDOWN', (event, opts) => {
+  beginShutdown();
+});
+
 
 console.log(`Main: End file`);

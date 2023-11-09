@@ -10,6 +10,8 @@ import { SettingsService } from './settings';
 import { byOS, OS } from 'util/operating-systems';
 import { GuestCamService } from './guest-cam';
 import { SideNavService, ESideNavKey, ProtocolLinkKeyMap } from './side-nav';
+import { EStreamingState, StreamingService } from './streaming';
+import { CustomizationService } from './customization';
 
 function protocolHandler(base: string) {
   return (target: any, methodName: string, descriptor: PropertyDescriptor) => {
@@ -36,6 +38,8 @@ export class ProtocolLinksService extends Service {
   @Inject() settingsService: SettingsService;
   @Inject() guestCamService: GuestCamService;
   @Inject() sideNavService: SideNavService;
+  @Inject() streamingService: StreamingService;
+  @Inject() customizationService: CustomizationService;
 
   // Maps base URL components to handler function names
   private handlers: Dictionary<string>;
@@ -61,6 +65,7 @@ export class ProtocolLinksService extends Service {
   }
 
   private handleLink(link: string) {
+    console.log(`HANDLE LINK: ${link}`);
     const parsed = new url.URL(link);
     const info: IProtocolLinkInfo = {
       base: parsed.host,
@@ -150,5 +155,28 @@ export class ProtocolLinksService extends Service {
     const hash = info.path.replace('/', '');
 
     this.guestCamService.joinAsGuest(hash);
+  }
+
+  @protocolHandler('autostream')
+  private autoStream(info: IProtocolLinkInfo) {
+    console.log('Handle autostream link');
+
+    if (!this.customizationService.state.autoStreamEnabled) {
+      console.log('Auto stream disabled. Ignore deeplink.');
+    }
+
+    const shouldStart = info.query.get('start') === 'true';
+    const streamingModel = this.streamingService.getModel();
+    const isOffline = streamingModel.streamingStatus == EStreamingState.Offline;
+
+    if (isOffline && shouldStart) {
+      console.log('Turning on streaming.');
+      this.streamingService.toggleStreaming();
+    } else if (!isOffline && !shouldStart) {
+      console.log('Turning off streaming.');
+      this.streamingService.toggleStreaming();
+    } else {
+      console.warn('No action.');
+    }
   }
 }

@@ -15,6 +15,7 @@ const base = {
     'updater/build/bundle-updater.js',
     'updater/index.html',
     'index.html',
+    'monitor-helper/index.html',
     'main.js',
     'obs-api',
     'updater/mac/index.html',

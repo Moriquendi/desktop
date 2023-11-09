@@ -57,6 +57,7 @@ module.exports = {
     renderer: './app/app.ts',
     updater: './updater/mac/ui.js',
     'guest-api': './guest-api',
+    gamesMonitor: './app/services/games-monitor/GamesMonitor.ts',
   },
 
   output: {

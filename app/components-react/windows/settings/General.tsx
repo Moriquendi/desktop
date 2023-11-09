@@ -60,10 +60,18 @@ function ExtraSettings() {
   const protectedMode = StreamSettingsService.state.protectedModeEnabled;
   const disableHAFilePath = path.join(AppService.appDataDirectory, 'HADisable');
   const [disableHA, setDisableHA] = useState(() => fs.existsSync(disableHAFilePath));
-  const { isRecordingOrStreaming, recordingMode, updateStreamInfoOnLive } = useVuex(() => ({
+  const {
+    isRecordingOrStreaming,
+    recordingMode,
+    updateStreamInfoOnLive,
+    autoLaunchEnabled,
+    autoStreamEnabled,
+  } = useVuex(() => ({
     isRecordingOrStreaming: StreamingService.isStreaming || StreamingService.isRecording,
     recordingMode: RecordingModeService.views.isRecordingModeEnabled,
     updateStreamInfoOnLive: CustomizationService.state.updateStreamInfoOnLive,
+    autoLaunchEnabled: CustomizationService.state.autoLaunchEnabled,
+    autoStreamEnabled: CustomizationService.state.autoStreamEnabled,
   }));
   const canRunOptimizer =
     // HDR Settings are not compliant with the auto-optimizer
@@ -110,6 +118,18 @@ function ExtraSettings() {
   return (
     <>
       <ObsSettingsSection>
+        <CheckboxInput
+          label={$t('Launch Buffed on startup')}
+          value={autoLaunchEnabled}
+          onChange={val => CustomizationService.setAutoLaunchEnabled(val)}
+          name="auto_launch"
+        />
+        <CheckboxInput
+          label={$t('Automatically start streaming when game is detected')}
+          value={autoStreamEnabled}
+          onChange={val => CustomizationService.actions.setAutoStreamEnabled(val)}
+          name="auto_stream"
+        />
         {isLoggedIn && !isFacebook && !isYoutube && (
           <CheckboxInput
             value={updateStreamInfoOnLive}

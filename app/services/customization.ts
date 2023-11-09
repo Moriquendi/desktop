@@ -75,6 +75,9 @@ export interface ICustomizationServiceState {
   pinnedStatistics: IPinnedStatistics;
   enableCrashDumps: boolean;
   enableAnnouncements: boolean;
+
+  autoLaunchEnabled: boolean;
+  autoStreamEnabled: boolean;
 }
 
 class CustomizationViews extends ViewHandler<ICustomizationServiceState> {
@@ -153,6 +156,9 @@ export class CustomizationService extends PersistentStatefulService<ICustomizati
     },
     enableCrashDumps: true,
     enableAnnouncements: true,
+
+    autoLaunchEnabled: true,
+    autoStreamEnabled: true,
   };
 
   settingsChanged = new Subject<Partial<ICustomizationServiceState>>();
@@ -247,6 +253,14 @@ export class CustomizationService extends PersistentStatefulService<ICustomizati
 
   setPinnedStatistics(pinned: IPinnedStatistics) {
     this.setSettings({ pinnedStatistics: pinned });
+  }
+
+  setAutoLaunchEnabled(enabled: boolean) {
+    this.setSettings({ autoLaunchEnabled: enabled });
+  }
+
+  setAutoStreamEnabled(enabled: boolean) {
+    this.setSettings({ autoStreamEnabled: enabled });
   }
 
   togglePerformanceMode() {

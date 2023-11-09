@@ -43,6 +43,7 @@ import { OS, getOS } from 'util/operating-systems';
 import * as remote from '@electron/remote';
 import { VideoSettingsService } from 'services/settings-v2/video';
 import { BuffedSettingsController } from 'services/settings/BuffedSettingsController';
+import { CustomizationService, ICustomizationServiceState } from 'services/customization';
 
 interface IAppState {
   loading: boolean;
@@ -93,6 +94,7 @@ export class AppService extends StatefulService<IAppState> {
   @Inject() private settingsService: SettingsService;
   @Inject() private usageStatisticsService: UsageStatisticsService;
   @Inject() private videoSettingsService: VideoSettingsService;
+  @Inject() private customizationService: CustomizationService;
 
   static initialState: IAppState = {
     loading: true,
@@ -178,7 +180,23 @@ export class AppService extends StatefulService<IAppState> {
       //await
       controller.setBuffedDetaultSettings();
     });
-    console.log(`end kasd`);
+
+    this.customizationService.settingsChanged.subscribe(
+      async (changed: Partial<ICustomizationServiceState>) => {
+        if (changed.autoLaunchEnabled === undefined) {
+          return;
+        }
+
+        console.log(`[Buffed settings] Auto launch changed to ${changed.autoLaunchEnabled}`);
+        remote.app.setLoginItemSettings({
+          openAtLogin: changed.autoLaunchEnabled,
+        });
+      },
+    );
+    console.log('Auto launch set to', this.customizationService.state.autoLaunchEnabled);
+    remote.app.setLoginItemSettings({
+      openAtLogin: this.customizationService.state.autoLaunchEnabled,
+    });
     ////////////////////////////////////////////
 
     ipcRenderer.send('AppInitFinished');
