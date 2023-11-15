@@ -196,6 +196,7 @@ export class AppService extends StatefulService<IAppState> {
     console.log('Auto launch set to', this.customizationService.state.autoLaunchEnabled);
     remote.app.setLoginItemSettings({
       openAtLogin: this.customizationService.state.autoLaunchEnabled,
+      args: ['--was-launched-at-login'],
     });
     ////////////////////////////////////////////
 

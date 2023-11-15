@@ -361,8 +361,8 @@ async function startApp() {
     event.returnValue = workerWindow.webContents.id;
   });
 
-  const loginSettings = app.getLoginItemSettings()
-  if (!loginSettings.wasOpenedAtLogin) {
+  const isLaunchedAutoAtLogin = process.argv.includes('--was-launched-at-login');
+  if (!isLaunchedAutoAtLogin) {
     recreateAndShowMainWindow();  
   }
   
