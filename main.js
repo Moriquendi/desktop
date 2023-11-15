@@ -437,6 +437,8 @@ async function startApp() {
     waitingVuexStores.forEach(windowId => {
       workerWindow.webContents.send('vuex-sendState', windowId);
     });
+
+    monitorProcess.webContents.send('AppInitFinished')
   });
 
   ipcMain.on('services-request', (event, payload) => {
@@ -497,9 +499,6 @@ async function startApp() {
   let ghtml = `file://${__dirname}/monitor-helper/index.html`
   monitorProcess.loadURL(ghtml);
   
-  //if (process.env.SLOBS_PRODUCTION_DEBUG) openDevTools();
-  openDevTools();
-  
   console.log(`Main: End startApp`);
 }
 
@@ -512,10 +511,25 @@ function beginShutdown() {
     // We give the worker window 10 seconds to acknowledge a request
     // to shut down.  Otherwise, we just close it.
     appShutdownTimeout = setTimeout(() => {
+      console.log('Timeout out. Forcing.')
       allowMainWindowClose = true;
       if (!mainWindow.isDestroyed()) mainWindow.close();
       if (!workerWindow.isDestroyed()) workerWindow.close();
+      if (!monitorProcess.isDestroyed()) monitorProcess.close();
+      if (!childWindow.isDestroyed()) childWindow.close();
+
+      setTimeout(() => {
+      console.log('Windows:')
+      console.log(`Main: ${mainWindow.isDestroyed()}`)
+      console.log(`Worker: ${workerWindow.isDestroyed()}`)
+      console.log(`Monitor: ${monitorProcess.isDestroyed()}`)
+      console.log(`Child: ${childWindow.isDestroyed()}`)
+      }, 1 * 1000);
+
+      
     }, 10 * 1000);
+  } else {
+    console.log('Shutdown already started. Ignore.')
   }
 }
 
@@ -630,6 +644,7 @@ function recreateAndShowMainWindow() {
   workerWindow.on('close', e => {
     console.log(`Main: workerWindow.on('close')`);
     if (!shutdownStarted) {
+      console.log(`Main: workerWindow.on('close') - !shutdownStarted`);
       e.preventDefault();
       mainWindow.close();
     }
@@ -643,6 +658,9 @@ function recreateAndShowMainWindow() {
         // ...
     });
   });
+
+  //if (process.env.SLOBS_PRODUCTION_DEBUG) openDevTools();
+  openDevTools();
 }
 
 const haDisableFile = path.join(app.getPath('userData'), 'HADisable');
@@ -945,7 +963,9 @@ ipcMain.handle('SHOW_APP', (event, opts) => {
   }
 });
 
+console.log(`REGISTER for BEGIN SHUTDOWN`)
 ipcMain.handle('BEGIN_SHUTDOWN', (event, opts) => {
+  console.log('Received shutdown.')
   beginShutdown();
 });
 

@@ -4,6 +4,7 @@ import { RunningAppInfo, RunningAppsObserver } from './RunningAppsObserver';
 import path from 'path';
 import electron from 'electron';
 import * as remote from '@electron/remote';
+import Utils from 'services/utils';
 const { app } = remote;
 
 export enum GameStatus {
@@ -17,12 +18,18 @@ class GamesMonitor {
   private currentStatus: GameStatus = GameStatus.NotRunning;
 
   constructor() {
-    this.startBackgroundMonitoring();
+    console.log('[GamesMonitor] Creating.');
+
     this.exeNames = new Set(GAMES_LIST.map(game => game.exe.toLowerCase()));
   }
 
-  startBackgroundMonitoring() {
+  async startBackgroundMonitoring() {
     console.log('[GamesMonitor] Start background monitoring...');
+
+    console.log('[GamesMonitor] Waiting 5 seconds...');
+    // Wait to make sure everything else is loaded
+    await Utils.sleep(5 * 1000);
+    console.log('[GamesMonitor] Start observing.');
 
     this.observer.onRunningAppsChanged = appsList => {
       this.handle(appsList);
@@ -65,6 +72,11 @@ class GamesMonitor {
 
 const monitor = new GamesMonitor();
 export default monitor;
+
+electron.ipcRenderer.on('AppInitFinished', () => {
+  console.log('[GamesMonitor] AppInitFinished.');
+  monitor.startBackgroundMonitoring();
+});
 
 //////////////////////////////
 // Tray

@@ -32,7 +32,12 @@ export class TrayManager {
           label: 'Quit',
           type: 'normal',
           click: async () => {
-            await electron.ipcRenderer.invoke('BEGIN_SHUTDOWN');
+            console.log('Invoke shutdown');
+            try {
+              await electron.ipcRenderer.invoke('BEGIN_SHUTDOWN');
+            } catch {
+              console.error('Failed to call shutdown');
+            }
           },
         },
       ]);
