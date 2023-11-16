@@ -71,7 +71,7 @@ class GamesMonitor {
     const url = `me.buffed.app.desktop://autostream?${query}`;
 
     console.log('openDeeplink', url);
-    window.open(url);
+    electron.shell.openExternal(url);
   }
 }
 
