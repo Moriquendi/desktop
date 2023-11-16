@@ -150,13 +150,13 @@ function ExtraSettings() {
           onChange={RecordingModeService.actions.setRecordingMode}
         />
 
-        <div className="actions">
+        {/* <div className="actions">
           <div className="input-container">
             <button className="button button--default" onClick={restartStreamlabelsSession}>
               {$t('Restart Stream Labels')}
             </button>
           </div>
-        </div>
+        </div> */}
       </ObsSettingsSection>
 
       <ObsSettingsSection>
