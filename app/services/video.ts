@@ -128,7 +128,7 @@ export class Display {
 
     this.boundClose = this.remoteClose.bind(this);
 
-    electronWindow.on('close', this.boundClose);
+    electronWindow.on('closed', this.boundClose);
 
     this.cancelUnload = onUnload(() => this.boundClose());
   }

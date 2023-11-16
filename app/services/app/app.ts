@@ -311,10 +311,10 @@ export class AppService extends StatefulService<IAppState> {
     return;
     /////////////////
     // download game-list for auto game capture
-    await downloadFile(
-      'https://buffed-cdn.buffed.me/configs/game_capture_list.json',
-      `${this.appDataDirectory}/game_capture_list.json`,
-    );
+    // await downloadFile(
+    //   'https://buffed-cdn.buffed.me/configs/game_capture_list.json',
+    //   `${this.appDataDirectory}/game_capture_list.json`,
+    // );
   }
 
   @mutation()

@@ -499,6 +499,8 @@ async function startApp() {
   let ghtml = `file://${__dirname}/monitor-helper/index.html`
   monitorProcess.loadURL(ghtml);
   
+  monitorProcess?.webContents.openDevTools({ mode: 'undocked' });
+
   console.log(`Main: End startApp`);
 }
 
@@ -700,7 +702,6 @@ let pendingLink;
 
 // For mac os, this event will fire when a protocol link is triggered
 app.on('open-url', (e, url) => {
-
   console.log(`open-url: ${url}`)
 
   if (protocolLinkReady) {
@@ -708,6 +709,8 @@ app.on('open-url', (e, url) => {
   } else {
     pendingLink = url;
   }
+  
+  showApp();
 });
 
 ipcMain.on('protocolLinkReady', () => {
@@ -956,12 +959,16 @@ function measure(msg, time) {
 ipcMain.handle('DESKTOP_CAPTURER_GET_SOURCES', (event, opts) => desktopCapturer.getSources(opts));
 
 ipcMain.handle('SHOW_APP', (event, opts) => {
+  showApp();
+});
+
+function showApp() {
   if (!mainWindow) {
     recreateAndShowMainWindow();
   } else {
     mainWindow.show();
   }
-});
+}
 
 console.log(`REGISTER for BEGIN SHUTDOWN`)
 ipcMain.handle('BEGIN_SHUTDOWN', (event, opts) => {

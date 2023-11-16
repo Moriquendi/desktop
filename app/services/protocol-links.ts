@@ -12,6 +12,7 @@ import { GuestCamService } from './guest-cam';
 import { SideNavService, ESideNavKey, ProtocolLinkKeyMap } from './side-nav';
 import { EStreamingState, StreamingService } from './streaming';
 import { CustomizationService } from './customization';
+import Utils from './utils';
 
 function protocolHandler(base: string) {
   return (target: any, methodName: string, descriptor: PropertyDescriptor) => {
@@ -57,6 +58,7 @@ export class ProtocolLinksService extends Service {
         argv.forEach(arg => {
           if (arg.match(/^me\.buffed\.app\.desktop:\/\//)) this.handleLink(arg);
         });
+        electron.ipcRenderer.send('protocolLinkReady');
       },
       [OS.Mac]: () => {
         electron.ipcRenderer.send('protocolLinkReady');
@@ -158,7 +160,7 @@ export class ProtocolLinksService extends Service {
   }
 
   @protocolHandler('autostream')
-  private autoStream(info: IProtocolLinkInfo) {
+  private async autoStream(info: IProtocolLinkInfo) {
     console.log('Handle autostream link');
 
     if (!this.customizationService.state.autoStreamEnabled) {
@@ -170,7 +172,12 @@ export class ProtocolLinksService extends Service {
     const isOffline = streamingModel.streamingStatus == EStreamingState.Offline;
 
     if (isOffline && shouldStart) {
-      console.log('Turning on streaming.');
+      console.log('Will turn on streaming.');
+      console.log(`Make sure app is shown...`);
+      await electron.ipcRenderer.invoke('SHOW_APP');
+      console.log(`Wait for app to finish init...`);
+      await this.awaitForAllSetupDone();
+      console.log(`STREAMING GO`);
       this.streamingService.toggleStreaming();
     } else if (!isOffline && !shouldStart) {
       console.log('Turning off streaming.');
@@ -178,5 +185,12 @@ export class ProtocolLinksService extends Service {
     } else {
       console.warn('No action.');
     }
+  }
+
+  private async awaitForAllSetupDone() {
+    // Todo: make it smarter.
+    // Now, when we toggleStreaming right away, it is stuck in 'starting' state.
+    await Utils.sleep(1500);
+    return;
   }
 }

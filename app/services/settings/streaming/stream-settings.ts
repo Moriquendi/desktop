@@ -282,6 +282,12 @@ export class StreamSettingsService extends PersistentStatefulService<IStreamSett
    * returns true if protected mode has been disabled
    */
   private async migrateOffProtectedModeIfRequired() {
+    console.log('Will migrate if needed');
+    ///////////////////////////////////
+    // TODO: Sometimes app is frozen here.
+    // I guess this is because of some race-conditino that blocks the thread.
+    // Would be great to get some help in debugging it.
+    ///////////////////////////////////
     const currentStreamSettings = this.settings;
 
     // We already migrated, so don't touch settings

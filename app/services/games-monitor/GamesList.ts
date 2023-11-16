@@ -6,6 +6,9 @@ export interface GameInfo {
 }
 
 export const GAMES_LIST: GameInfo[] = [
+  { exe: 'cod22-cod.exe', class: 'Call of Duty', title: '', type: 'ignore' },
+  { exe: 'cod.exe', class: 'Call of Duty', title: '', type: 'ignore' },
+
   { exe: 'FarCryNewDawn.exe', class: 'NomadSplash', title: '', type: 'ignore' },
   { exe: 'Cuphead.exe', class: 'Windows.UI.Core.CoreWindow', title: '', type: 'ignore' },
   { exe: 'Beat Saber.exe', class: 'ConsoleWindowClass', title: '', type: 'ignore' },

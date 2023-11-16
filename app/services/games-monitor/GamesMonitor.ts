@@ -5,6 +5,8 @@ import path from 'path';
 import electron from 'electron';
 import * as remote from '@electron/remote';
 import Utils from 'services/utils';
+import { OS, byOS } from 'util/operating-systems';
+import { first } from 'lodash';
 const { app } = remote;
 
 export enum GameStatus {
@@ -38,7 +40,10 @@ class GamesMonitor {
   }
 
   handle(apps: RunningAppInfo[]) {
-    const runningPaths = apps.map(app => app.command);
+    const isMac = byOS({ [OS.Windows]: false, [OS.Mac]: true });
+    const runningPaths = apps.map(app =>
+      isMac ? first(app.arguments) ?? app.command : app.command,
+    );
 
     const runningGame = runningPaths.find(thePath => {
       const fileName = path.basename(thePath);
@@ -73,10 +78,10 @@ class GamesMonitor {
 const monitor = new GamesMonitor();
 export default monitor;
 
-electron.ipcRenderer.on('AppInitFinished', () => {
-  console.log('[GamesMonitor] AppInitFinished.');
-  monitor.startBackgroundMonitoring();
-});
+// electron.ipcRenderer.on('AppInitFinished', () => {
+// console.log('[GamesMonitor] AppInitFinished.');
+monitor.startBackgroundMonitoring();
+// });
 
 //////////////////////////////
 // Tray

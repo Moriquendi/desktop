@@ -334,8 +334,6 @@ document.addEventListener('DOMContentLoaded', async () => {
       return;
     }
 
-    console.log(`app: 22`);
-
     ipcRenderer.on('closeWindow', () => windowsService.closeMainWindow());
     I18nService.instance.load();
     AppService.instance.load();
