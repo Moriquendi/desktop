@@ -1319,6 +1319,6 @@ export const GAMES_LIST: GameInfo[] = [
 
   //////////////////////////////////////////////////////////////////////
   // debugging
-  { exe: 'Discord', class: '', title: '', type: 'capture' },
+  //{ exe: 'Discord', class: '', title: '', type: 'capture' },
   //////////////////////////////////////////////////////////////////////
 ].filter(game => game.exe.length > 0 && game.type === 'capture');
