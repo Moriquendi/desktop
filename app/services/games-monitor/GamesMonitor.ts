@@ -1,5 +1,5 @@
 import { TrayManager } from 'Tray/TrayManager';
-import { GAMES_LIST } from './GamesList';
+
 import { RunningAppInfo, RunningAppsObserver } from './RunningAppsObserver';
 import path from 'path';
 import electron from 'electron';
@@ -7,6 +7,7 @@ import * as remote from '@electron/remote';
 import Utils from 'services/utils';
 import { OS, byOS } from 'util/operating-systems';
 import { first } from 'lodash';
+import { GameInfo, fetchGamesList } from './API+Games';
 const { app } = remote;
 
 export enum GameStatus {
@@ -16,13 +17,25 @@ export enum GameStatus {
 
 class GamesMonitor {
   private observer = new RunningAppsObserver();
-  private exeNames: Set<string>;
   private currentStatus: GameStatus = GameStatus.NotRunning;
+  private executableNameToGameMap: { [key: string]: GameInfo } = {};
 
   constructor() {
     console.log('[GamesMonitor] Creating.');
 
-    this.exeNames = new Set(GAMES_LIST.map(game => game.exe.toLowerCase()));
+    new Promise(async (resolve, reject) => {
+      console.log('Download games list...');
+      const gamesList = await fetchGamesList();
+      console.log(`Games list downloaded. ${gamesList.length} games.`);
+
+      gamesList.forEach(game => {
+        game.executables?.forEach(executable => {
+          const name = path.basename(executable.name).toLocaleLowerCase();
+          this.executableNameToGameMap[name] = game;
+        });
+      });
+      resolve(1);
+    });
   }
 
   async startBackgroundMonitoring() {
@@ -46,10 +59,16 @@ class GamesMonitor {
     );
 
     const runningGame = runningPaths.find(thePath => {
-      const fileName = path.basename(thePath);
-      const isAGame = this.exeNames.has(fileName.toLowerCase());
+      const fileName = path.basename(thePath).toLocaleLowerCase();
+      const matchingGame = this.executableNameToGameMap[fileName];
 
-      return isAGame;
+      if (!matchingGame) {
+        return;
+      }
+
+      // TODO: Skip if launcher?
+      console.log(`Detected game running: ${matchingGame.name}`);
+      return true;
     });
 
     const isAnyGameRunning = runningGame !== undefined;

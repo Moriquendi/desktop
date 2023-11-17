@@ -163,8 +163,6 @@ export class AppService extends StatefulService<IAppState> {
 
     this.crashReporterService.endStartup();
 
-    this.protocolLinksService.start(this.state.argv);
-
     // Initialize some mac-only services
     if (getOS() === OS.Mac) {
       this.touchBarService;
@@ -199,6 +197,8 @@ export class AppService extends StatefulService<IAppState> {
       args: ['--was-launched-at-login'],
     });
     ////////////////////////////////////////////
+
+    this.protocolLinksService.start(this.state.argv);
 
     ipcRenderer.send('AppInitFinished');
     this.metricsService.recordMetric('sceneCollectionLoadingTime');

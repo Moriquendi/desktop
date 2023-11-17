@@ -15,9 +15,9 @@ export function Support() {
   return (
     <div>
       <SupportLinks />
-      <DiagnosticReport />
-      <CacheSettings />
-      {getOS() === OS.Windows && <CrashReporting />}
+      {/* <DiagnosticReport /> */}
+      {/* <CacheSettings /> */}
+      {/* {getOS() === OS.Windows && <CrashReporting />} */}
     </div>
   );
 }

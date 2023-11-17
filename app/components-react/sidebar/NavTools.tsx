@@ -79,7 +79,7 @@ export default function SideNav() {
 
   function openHelp() {
     UsageStatisticsService.actions.recordClick('SideNav2', 'help');
-    remote.shell.openExternal('https://buffed.me/help');
+    remote.shell.openExternal('https://discord.gg/ysrAn9unC3');
   }
 
   async function upgradeToPrime() {
@@ -311,7 +311,7 @@ function LoginMenuItem(p: {
       ) : (
         isOpen && (
           <>
-            {platform && (
+            {/* {platform && (
               <PlatformLogo
                 platform={platform?.type!}
                 className={cx(
@@ -319,7 +319,7 @@ function LoginMenuItem(p: {
                   styles[`platform-logo-${platform?.type ?? 'default'}`],
                 )}
               />
-            )}
+            )} */}
             <span className={styles.username}>{platform?.username || $t('Log Out')}</span>
             <i className={cx('icon-logout', styles.loginArrow)} />
           </>

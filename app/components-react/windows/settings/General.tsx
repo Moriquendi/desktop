@@ -144,11 +144,11 @@ function ExtraSettings() {
           onChange={disableHardwareAcceleration}
           name="disable_ha"
         />
-        <CheckboxInput
+        {/* <CheckboxInput
           label={$t('Disable live streaming features (Recording Only mode)')}
           value={recordingMode}
           onChange={RecordingModeService.actions.setRecordingMode}
-        />
+        /> */}
 
         {/* <div className="actions">
           <div className="input-container">

@@ -61,10 +61,10 @@
           >
             <i :class="userService.isLoggedIn ? 'fas fa-sign-out-alt' : 'fas fa-sign-in-alt'" />
             <strong>{{ userService.isLoggedIn ? $t('Log Out') : $t('Log In') }}</strong>
-            <platform-logo
+            <!-- <platform-logo
               v-if="userService.isLoggedIn"
               :componentProps="{ platform: userService.platform.type, size: 'small' }"
-            />
+            /> -->
             <span v-if="userService.isLoggedIn">{{ userService.username }}</span>
           </div>
         </scrollable>
@@ -180,7 +180,7 @@
   position: fixed;
   bottom: 40px;
   padding-top: 16px;
-  padding-bottom: 16px;
+  padding-bottom: 32px;
   width: 240px;
   border-top: 1px solid var(--border);
   background: var(--background);
