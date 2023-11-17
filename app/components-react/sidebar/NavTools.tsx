@@ -8,17 +8,17 @@ import { Services } from '../service-provider';
 import { useVuex } from '../hooks';
 import styles from './NavTools.m.less';
 import * as remote from '@electron/remote';
-import { Badge, Button, Form, Menu, Modal } from 'antd';
+import { Badge, Button, Form, Menu, Modal, Tooltip } from 'antd';
 import { EMenuItemKey, ENavName, IMenuItem, IParentMenuItem, menuTitles } from 'services/side-nav';
 import PlatformLogo from 'components-react/shared/PlatformLogo';
 import SubMenu from 'components-react/shared/SubMenu';
 import MenuItem from 'components-react/shared/MenuItem';
 import UltraIcon from 'components-react/shared/UltraIcon';
+import { HStack } from 'components-react/shared/HStack';
 
 export default function SideNav() {
   const {
     UserService,
-    SettingsService,
     MagicLinkService,
     UsageStatisticsService,
     SideNavService,
@@ -51,11 +51,6 @@ export default function SideNav() {
   const [dashboardOpening, setDashboardOpening] = useState(false);
   const [showModal, setShowModal] = useState(false);
 
-  function openSettingsWindow(type?: string, category?: string) {
-    UsageStatisticsService.actions.recordClick('SideNav2', type ?? 'settings');
-    SettingsService.actions.showSettings(category);
-  }
-
   function openDevTools() {
     electron.ipcRenderer.send('openDevTools');
   }
@@ -76,11 +71,6 @@ export default function SideNav() {
   }
 
   const throttledOpenDashboard = throttle(openDashboard, 2000, { trailing: false });
-
-  function openHelp() {
-    UsageStatisticsService.actions.recordClick('SideNav2', 'help');
-    remote.shell.openExternal('https://discord.gg/ysrAn9unC3');
-  }
 
   async function upgradeToPrime() {
     UsageStatisticsService.actions.recordClick('SideNav2', 'prime');
@@ -160,30 +150,7 @@ export default function SideNav() {
           //     </SubMenu>
           //   );
           // }
-          else if (menuItem.key === EMenuItemKey.GetHelp) {
-            return (
-              <NavToolsItem
-                key={menuItem.key}
-                menuItem={menuItem}
-                icon={
-                  <div>
-                    <Badge count={<i className={cx('icon-pop-out-3', styles.linkBadge)} />}>
-                      <i className={menuItem?.icon} />
-                    </Badge>
-                  </div>
-                }
-                onClick={() => openHelp()}
-              />
-            );
-          } else if (menuItem.key === EMenuItemKey.Settings) {
-            return (
-              <NavToolsItem
-                key={menuItem.key}
-                menuItem={menuItem}
-                onClick={() => openSettingsWindow()}
-              />
-            );
-          } else if (menuItem.key === EMenuItemKey.Login) {
+          else if (menuItem.key === EMenuItemKey.Login) {
             return (
               <LoginMenuItem
                 key={menuItem.key}
@@ -204,7 +171,7 @@ export default function SideNav() {
   );
 }
 
-function NavToolsItem(p: {
+export function NavToolsItem(p: {
   menuItem: IMenuItem;
   icon?: React.ReactElement;
   className?: string;

@@ -102,6 +102,10 @@ export class SideNavService extends PersistentStatefulService<ISideNavServiceSta
 
   init() {
     super.init();
+
+    // Reset state to default
+    //this.state = SideNavService.defaultState;
+
     this.userService.userLoginFinished.subscribe(() => this.handleUserLogin());
 
     this.handleDismissables();
@@ -235,18 +239,18 @@ export class SideNavService extends PersistentStatefulService<ISideNavServiceSta
       hasLegacyMenu: false,
       compactView: true,
       showCustomEditor: false,
-      [ENavName.TopNav]: {
-        ...this.state[ENavName.TopNav],
-        menuItems: [
-          { ...SideNavMenuItems()[EMenuItemKey.Editor], isActive: true },
-          { ...SideNavMenuItems()[EMenuItemKey.LayoutEditor], isActive: false },
-          { ...SideNavMenuItems()[EMenuItemKey.StudioMode], isActive: false },
-          { ...SideNavMenuItems()[EMenuItemKey.Themes], isActive: true },
-          { ...SideNavMenuItems()[EMenuItemKey.AppStore], isActive: true },
-          { ...SideNavMenuItems()[EMenuItemKey.Highlighter], isActive: true },
-          { ...SideNavMenuItems()[EMenuItemKey.ThemeAudit], isActive: true },
-        ],
-      },
+      // [ENavName.TopNav]: {
+      //   ...this.state[ENavName.TopNav],
+      //   menuItems: [
+      //     { ...SideNavMenuItems()[EMenuItemKey.Editor], isActive: true },
+      //     { ...SideNavMenuItems()[EMenuItemKey.LayoutEditor], isActive: false },
+      //     { ...SideNavMenuItems()[EMenuItemKey.StudioMode], isActive: false },
+      //     { ...SideNavMenuItems()[EMenuItemKey.Themes], isActive: true },
+      //     { ...SideNavMenuItems()[EMenuItemKey.AppStore], isActive: true },
+      //     { ...SideNavMenuItems()[EMenuItemKey.Highlighter], isActive: true },
+      //     { ...SideNavMenuItems()[EMenuItemKey.ThemeAudit], isActive: true },
+      //   ],
+      // },
       [ENavName.BottomNav]: {
         ...this.state[ENavName.BottomNav],
         menuItems: this.state[ENavName.BottomNav].menuItems.map((menuItem: IMenuItem) => {

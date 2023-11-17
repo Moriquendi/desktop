@@ -15,6 +15,7 @@ export enum EMenuItemKey {
   GetHelp = 'get-help',
   Settings = 'settings',
   Login = 'login',
+  AutoStreamStatus = 'auto-status',
 }
 
 export enum ESubMenuItemKey {
@@ -98,6 +99,7 @@ export const menuTitles = (item: EMenuItemKey | ESubMenuItemKey | string) => {
     [EMenuItemKey.GetHelp]: $t('Get Help'),
     [EMenuItemKey.Settings]: $t('Settings'),
     [EMenuItemKey.Login]: $t('Login'),
+    [EMenuItemKey.AutoStreamStatus]: $t('Auto Stream'),
     [ESubMenuItemKey.Scene]: $t('Scene'),
     [ESubMenuItemKey.AlertBoxLibrary]: $t('Alert Box Library'),
     [ESubMenuItemKey.Widget]: $t('Widget'),
@@ -116,24 +118,25 @@ export const menuTitles = (item: EMenuItemKey | ESubMenuItemKey | string) => {
 export const SideBarTopNavData = (): IMenu => ({
   name: ENavName.TopNav,
   menuItems: [
-    SideNavMenuItems()[EMenuItemKey.Editor],
-    SideNavMenuItems()[EMenuItemKey.LayoutEditor],
-    SideNavMenuItems()[EMenuItemKey.StudioMode],
-    SideNavMenuItems()[EMenuItemKey.Themes],
-    SideNavMenuItems()[EMenuItemKey.AppStore],
-    SideNavMenuItems()[EMenuItemKey.Highlighter],
-    SideNavMenuItems()[EMenuItemKey.ThemeAudit],
+    SideNavMenuItems()[EMenuItemKey.GetHelp],
+    SideNavMenuItems()[EMenuItemKey.Settings],
+    SideNavMenuItems()[EMenuItemKey.AutoStreamStatus],
+    // SideNavMenuItems()[EMenuItemKey.Editor],
+    // SideNavMenuItems()[EMenuItemKey.LayoutEditor],
+    // SideNavMenuItems()[EMenuItemKey.StudioMode],
+    // SideNavMenuItems()[EMenuItemKey.Themes],
+    // SideNavMenuItems()[EMenuItemKey.AppStore],
+    // SideNavMenuItems()[EMenuItemKey.Highlighter],
+    // SideNavMenuItems()[EMenuItemKey.ThemeAudit],
   ],
 });
 
 export const SideBarBottomNavData = (): IMenu => ({
   name: ENavName.BottomNav,
   menuItems: [
-    SideNavMenuItems()[EMenuItemKey.DevTools],
+    // SideNavMenuItems()[EMenuItemKey.DevTools],
     // SideNavMenuItems()[EMenuItemKey.GetPrime],
     // SideNavMenuItems()[EMenuItemKey.Dashboard],
-    SideNavMenuItems()[EMenuItemKey.GetHelp],
-    SideNavMenuItems()[EMenuItemKey.Settings],
     SideNavMenuItems()[EMenuItemKey.Login],
   ],
 });
@@ -248,6 +251,12 @@ export const SideNavMenuItems = (): TMenuItems => ({
   },
   [EMenuItemKey.Login]: {
     key: EMenuItemKey.Login,
+    icon: 'icon-user',
+    isActive: true,
+    isExpanded: false,
+  },
+  [EMenuItemKey.AutoStreamStatus]: {
+    key: EMenuItemKey.AutoStreamStatus,
     icon: 'icon-user',
     isActive: true,
     isExpanded: false,

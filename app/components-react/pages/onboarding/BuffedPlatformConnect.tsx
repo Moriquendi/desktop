@@ -12,6 +12,7 @@ import Form from 'components-react/shared/inputs/Form';
 import { BuffedClient } from './BuffedClient';
 import { Image, Alert, Button, ConfigProvider, Spin } from 'antd';
 import { SocialPlatform, TPlatform } from 'services/platforms';
+import { HStack } from 'components-react/shared/HStack';
 
 interface Props {
   onAuth: (email: string, password: string) => Promise<void>;
@@ -259,35 +260,6 @@ interface ButtonsProps {
 
 function VStack(props: { children: React.ReactNode }) {
   return <div style={{ display: 'flex', flexDirection: 'column', gap: 30 }}>{props.children}</div>;
-}
-
-interface HStackProps extends React.HTMLAttributes<HTMLDivElement> {
-  spacing?: number;
-}
-
-function HStack(props: HStackProps) {
-  return (
-    <div
-      style={{
-        width: '100%',
-        display: 'flex',
-        flexDirection: 'row',
-        gap: props.spacing ?? 30,
-        // borderWidth: 2,
-        // borderColor: '#fff',
-        // borderStyle: 'solid',
-        // alignItems: 'center',
-        // alignContent: 'flex-end',
-        // flexBasis: 'auto',
-        // alignItems: 'flex-end',
-        // justifyItems: 'flex-end',
-        // content: 'fit-content',
-        justifyContent: 'center',
-      }}
-    >
-      {props.children}
-    </div>
-  );
 }
 
 function SocialAuthButtons(props: ButtonsProps) {

@@ -51,16 +51,16 @@ async function readGamesList(): Promise<GameInfo[]> {
       const list = JSON.parse(data) as GameInfo[];
 
       ////////////
-      list.push({
-        executables: [
-          {
-            is_launcher: false,
-            name: 'discord',
-            os: 'darwin',
-          },
-        ],
-        name: 'Discord',
-      });
+      // list.push({
+      //   executables: [
+      //     {
+      //       is_launcher: false,
+      //       name: 'discord',
+      //       os: 'darwin',
+      //     },
+      //   ],
+      //   name: 'Discord',
+      // });
       ////////////
 
       resolve(list);

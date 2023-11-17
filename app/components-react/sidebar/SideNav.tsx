@@ -91,8 +91,8 @@ export default function SideNav() {
       >
         <Scrollable className={cx(styles.sidenavScroll)}>
           {/* top navigation menu */}
-          {/* <FeaturesNav /> */}
-
+          <FeaturesNav />
+          <div style={{ flexGrow: 1 }} />
           {/* bottom navigation menu */}
           <NavTools />
         </Scrollable>
