@@ -50,18 +50,32 @@ async function readGamesList(): Promise<GameInfo[]> {
       }
       const list = JSON.parse(data) as GameInfo[];
 
-      ////////////
-      // list.push({
-      //   executables: [
-      //     {
-      //       is_launcher: false,
-      //       name: 'discord',
-      //       os: 'darwin',
-      //     },
-      //   ],
-      //   name: 'Discord',
-      // });
-      ////////////
+      //////////
+      list.push(
+        // {
+        //   executables: [
+        //     {
+        //       is_launcher: false,
+        //       name: 'discord',
+        //       os: 'darwin',
+        //     },
+        //   ],
+        //   name: 'Discord',
+        // },
+        {
+          executables: [
+            { is_launcher: false, name: 'fortniteclient-win64-shipping_BE.exe', os: 'win32' },
+          ],
+          name: 'Fortnite manual',
+        },
+        {
+          executables: [
+            { is_launcher: false, name: 'fortniteclient-win64-shipping_EAC_EOS.exe', os: 'win32' },
+          ],
+          name: 'Fortnite manual',
+        },
+      );
+      //////////
 
       resolve(list);
     });

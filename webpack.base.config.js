@@ -80,6 +80,9 @@ module.exports = {
     'color-picker': 'require("color-picker")',
     '@electron/remote': 'require("@electron/remote")',
 
+    '@paymoapp/active-window': 'require("@paymoapp/active-window")',
+    
+
     // Not actually a native addons, but for one reason or another
     // we don't want them compiled in our webpack bundle.
     'aws-sdk': 'require("aws-sdk")',

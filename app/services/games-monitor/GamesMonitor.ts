@@ -8,6 +8,7 @@ import Utils from 'services/utils';
 import { OS, byOS } from 'util/operating-systems';
 import { first } from 'lodash';
 import { GameInfo, fetchGamesList } from './API+Games';
+import { WindowInfo } from '@paymoapp/active-window';
 const { app } = remote;
 
 export enum GameStatus {
@@ -30,7 +31,13 @@ class GamesMonitor {
 
       gamesList.forEach(game => {
         game.executables?.forEach(executable => {
-          const name = path.basename(executable.name).toLocaleLowerCase();
+          let name = path.basename(executable.name).toLocaleLowerCase();
+          const isMac = executable.os === 'darwin';
+          if (isMac) {
+            // Because 'app' is not actually a binary but the file in
+            // Contents/MacOS which has no extension
+            name = name.replace('.app', '');
+          }
           this.executableNameToGameMap[name] = game;
         });
       });
@@ -47,16 +54,32 @@ class GamesMonitor {
     console.log('[GamesMonitor] Start observing.');
 
     this.observer.onRunningAppsChanged = appsList => {
-      this.handle(appsList);
+      this.handle(appsList, false, true);
+    };
+    this.observer.onFocusedWindowChanged = windowInfo => {
+      this.handleWindow(windowInfo);
     };
     this.observer.start();
   }
 
-  handle(apps: RunningAppInfo[]) {
+  handleWindow(window: WindowInfo) {
+    const app: RunningAppInfo = {
+      pid: window.pid.toString(),
+      command: window.path,
+      arguments: [window.path],
+    };
+    this.handle([app], true, false);
+  }
+
+  handle(apps: RunningAppInfo[], allowStart: boolean, allowEnd: boolean) {
     const isMac = byOS({ [OS.Windows]: false, [OS.Mac]: true });
     const runningPaths = apps.map(app =>
       isMac ? first(app.arguments) ?? app.command : app.command,
     );
+
+    // apps.forEach(app => {
+    //   console.log(`App: ${app.command} - ${app.arguments}`);
+    // });
 
     const runningGame = runningPaths.find(thePath => {
       const fileName = path.basename(thePath).toLocaleLowerCase();
@@ -78,6 +101,14 @@ class GamesMonitor {
 
     const newStatus: GameStatus = isAnyGameRunning ? GameStatus.Running : GameStatus.NotRunning;
     if (newStatus !== this.currentStatus) {
+      if (newStatus === GameStatus.Running && !allowStart) {
+        return;
+      }
+      if (newStatus === GameStatus.NotRunning && !allowEnd) {
+        return;
+      }
+
+      console.log(`Trigger status change.`);
       this.currentStatus = newStatus;
       this.onGameStatusChanged(newStatus);
     }

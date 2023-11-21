@@ -79,4 +79,29 @@ export class BuffedClient {
     const output = (await result.json()) as UserProfile;
     return output;
   }
+
+  async registerStreamStardCommand(apiKey: string, cmd: string) {
+    console.log(`Register stream app: ${cmd}`);
+    const baseURL = 'https://buffed.me/api/v1/';
+    const url = `${baseURL}/game_sessions/start_cmd?api_key=${apiKey}`;
+    const body = {
+      start_cmd: cmd,
+    };
+
+    try {
+      const resp = await fetch(url, {
+        method: 'post',
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+        },
+        body: JSON.stringify(body),
+      });
+
+      console.log(`Register status: ${resp.status}`);
+    } catch (error) {
+      console.log('Failed to register');
+      console.error(error);
+    }
+  }
 }

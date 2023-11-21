@@ -23,6 +23,8 @@ import { IVideo } from 'obs-studio-node';
 import { TDisplayType } from 'services/settings-v2';
 import { TOutputOrientation } from 'services/restream';
 import { BuffedClient } from '../../components-react/pages/onboarding/BuffedClient';
+import { RunningAppsObserver } from 'services/games-monitor/RunningAppsObserver';
+import path from 'path';
 
 export interface IBuffedStartStreamOptions {
   // title: string;
@@ -106,6 +108,8 @@ export class BuffedService
     width: 600,
     height: 800,
   };
+
+  private timer: NodeJS.Timer | null = null;
 
   // Streamlabs Production Twitch OAuth Client ID
   // clientId = Utils.shouldUseBeta()
@@ -234,6 +238,31 @@ export class BuffedService
     // }
 
     // this.setPlatformContext('twitch');
+  }
+
+  async afterGoLive() {
+    const buffedClient = new BuffedClient();
+    const apiKey = this.userService.views.auth?.apiToken;
+    const command = '';
+
+    const me = this;
+    this.timer = setInterval(async function () {
+      if (me.timer) {
+        clearInterval(me.timer);
+        me.timer = null;
+      }
+
+      if (!me.streamingService.views.isStreaming) {
+        console.log(`Already stopped streaming, will not register running app for that stream.`);
+        return;
+      }
+
+      console.log(`Will register running app for that stream.`);
+      const appsObserver = new RunningAppsObserver();
+      const window = await appsObserver.getFocusedWindow();
+      const name = path.basename(window.path);
+      await buffedClient.registerStreamStardCommand(apiKey, name);
+    }, 10 * 1000);
   }
 
   async validatePlatform() {

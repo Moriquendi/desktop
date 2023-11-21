@@ -1,4 +1,5 @@
 import * as ps from 'ps-node';
+import ActiveWindow, { WindowInfo } from '@paymoapp/active-window';
 
 export interface RunningAppInfo {
   pid: string;
@@ -8,7 +9,8 @@ export interface RunningAppInfo {
 
 export class RunningAppsObserver {
   onRunningAppsChanged: (appsList: RunningAppInfo[]) => void;
-  private observer: any | null = null;
+  onFocusedWindowChanged: (windowInfo: WindowInfo) => void;
+  private observer: NodeJS.Timer | null = null;
 
   async start() {
     const me = this;
@@ -16,10 +18,18 @@ export class RunningAppsObserver {
       console.log(`Check running apps...`);
       const appsList: RunningAppInfo[] = await getRunningApps();
       me.onRunningAppsChanged(appsList);
-    }, 5 * 1000);
+
+      const window = await me.getFocusedWindow();
+      me.onFocusedWindowChanged(window);
+    }, 10 * 1000);
+  }
+
+  async getFocusedWindow(): Promise<WindowInfo> {
+    const activeWin = ActiveWindow.getActiveWindow();
+    console.log(`Focused window: ${JSON.stringify(activeWin)}`);
+    return activeWin;
   }
 }
-
 function getRunningApps(): Promise<RunningAppInfo[]> {
   return new Promise((resolve, reject) => {
     ps.lookup({}, function (err, resultList) {

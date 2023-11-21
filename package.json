@@ -72,6 +72,7 @@
   },
   "dependencies": {
     "@electron/remote": "2.0.8",
+    "@paymoapp/active-window": "^2.0.6",
     "abort-controller": "^3.0.0",
     "archiver": "2.1.1",
     "aws-sdk": "^2.344.0",
