@@ -72,6 +72,13 @@ class GamesMonitor {
   }
 
   handle(apps: RunningAppInfo[], allowStart: boolean, allowEnd: boolean) {
+    if (this.currentStatus === GameStatus.Running && !allowEnd) {
+      return;
+    }
+    if (this.currentStatus === GameStatus.NotRunning && !allowStart) {
+      return;
+    }
+
     const isMac = byOS({ [OS.Windows]: false, [OS.Mac]: true });
     const runningPaths = apps.map(app =>
       isMac ? first(app.arguments) ?? app.command : app.command,
@@ -101,14 +108,14 @@ class GamesMonitor {
 
     const newStatus: GameStatus = isAnyGameRunning ? GameStatus.Running : GameStatus.NotRunning;
     if (newStatus !== this.currentStatus) {
-      if (newStatus === GameStatus.Running && !allowStart) {
-        return;
-      }
-      if (newStatus === GameStatus.NotRunning && !allowEnd) {
-        return;
-      }
+      console.log(`Trigger status change ===> ${newStatus}`);
+      ////////////////////////////////////////////////////////////////////////////////////////
+      console.log('APPS LIST:');
+      apps.forEach(app => {
+        console.log(`App: ${app.command} - ${app.arguments}`);
+      });
+      ////////////////////////////////////////////////////////////////////////////////////////
 
-      console.log(`Trigger status change.`);
       this.currentStatus = newStatus;
       this.onGameStatusChanged(newStatus);
     }

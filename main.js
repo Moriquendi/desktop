@@ -499,7 +499,7 @@ async function startApp() {
   let ghtml = `file://${__dirname}/monitor-helper/index.html`
   monitorProcess.loadURL(ghtml);
   
-  //monitorProcess?.webContents.openDevTools({ mode: 'undocked' });
+  monitorProcess?.webContents.openDevTools({ mode: 'undocked' });
 
   console.log(`Main: End startApp`);
 }

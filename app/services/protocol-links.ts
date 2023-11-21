@@ -169,7 +169,7 @@ export class ProtocolLinksService extends Service {
 
     const shouldStart = info.query.get('start') === 'true';
     const streamingModel = this.streamingService.getModel();
-    const isOffline = streamingModel.streamingStatus == EStreamingState.Offline;
+    const isOffline = streamingModel.streamingStatus === EStreamingState.Offline;
 
     if (isOffline && shouldStart) {
       console.log('Will turn on streaming.');
