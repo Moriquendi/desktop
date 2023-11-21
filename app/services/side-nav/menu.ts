@@ -104,7 +104,7 @@ export class SideNavService extends PersistentStatefulService<ISideNavServiceSta
     super.init();
 
     // Reset state to default
-    //this.state = SideNavService.defaultState;
+    this.state = SideNavService.defaultState;
 
     this.userService.userLoginFinished.subscribe(() => this.handleUserLogin());
 
