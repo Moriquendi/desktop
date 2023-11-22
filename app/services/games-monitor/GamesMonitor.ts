@@ -20,6 +20,7 @@ class GamesMonitor {
   private observer = new RunningAppsObserver();
   private currentStatus: GameStatus = GameStatus.NotRunning;
   private executableNameToGameMap: { [key: string]: GameInfo } = {};
+  private statusAwaitingForChange: GameStatus | null = null;
 
   constructor() {
     console.log('[GamesMonitor] Creating.');
@@ -108,6 +109,19 @@ class GamesMonitor {
 
     const newStatus: GameStatus = isAnyGameRunning ? GameStatus.Running : GameStatus.NotRunning;
     if (newStatus !== this.currentStatus) {
+      if (this.statusAwaitingForChange == null) {
+        this.statusAwaitingForChange = newStatus;
+        console.log(`Will change status to ${newStatus} after receiving second confirmation`);
+        return;
+      }
+      if (this.statusAwaitingForChange !== newStatus) {
+        console.log('Status changed in the meantime, reset');
+        this.statusAwaitingForChange = null;
+      }
+
+      console.log(`Received confirmation to change to ${newStatus}`);
+      this.statusAwaitingForChange = null;
+
       console.log(`Trigger status change ===> ${newStatus}`);
       ////////////////////////////////////////////////////////////////////////////////////////
       console.log('APPS LIST:');
