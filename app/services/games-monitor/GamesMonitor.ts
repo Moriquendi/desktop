@@ -117,6 +117,7 @@ class GamesMonitor {
       if (this.statusAwaitingForChange !== newStatus) {
         console.log('Status changed in the meantime, reset');
         this.statusAwaitingForChange = null;
+        return;
       }
 
       console.log(`Received confirmation to change to ${newStatus}`);
