@@ -130,7 +130,12 @@ class GamesMonitor {
         return thePath.toLowerCase().includes(executable.name.toLowerCase());
       });
       if (!strictMatch) {
-        console.log(`Skip because no strict match ${thePath}`);
+        const executableNames = matchingGame.executables?.map(executable => executable.name);
+        console.log(
+          `Skip because no strict match. Path: ${thePath}. Game: ${JSON.stringify(
+            executableNames,
+          )}`,
+        );
         return;
       }
 
