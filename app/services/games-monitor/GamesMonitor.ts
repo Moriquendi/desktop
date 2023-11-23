@@ -136,7 +136,7 @@ class GamesMonitor {
       }
 
       const strictMatch = matchingGame.executables?.find(executable => {
-        return thePath.toLowerCase().includes(executable.name.toLowerCase());
+        return thePath.toLowerCase().replace('\\', '/').includes(executable.name.toLowerCase());
       });
       if (!strictMatch) {
         const executableNames = matchingGame.executables?.map(executable => executable.name);
