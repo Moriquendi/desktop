@@ -127,7 +127,7 @@ class GamesMonitor {
       }
 
       const strictMatch = matchingGame.executables?.find(executable => {
-        return executable.name.toLowerCase().includes(thePath.toLowerCase());
+        return thePath.toLowerCase().includes(executable.name.toLowerCase());
       });
       if (!strictMatch) {
         console.log(`Skip because no strict match ${thePath}`);
