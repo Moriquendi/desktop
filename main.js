@@ -962,6 +962,10 @@ ipcMain.handle('SHOW_APP', (event, opts) => {
   showApp();
 });
 
+ipcMain.on('STREAMING_STATE_CHANGED', (event, streamingState) => {
+ monitorProcess?.webContents.send('STREAMING_STATE_CHANGED', streamingState);
+})
+
 function showApp() {
   if (!mainWindow) {
     recreateAndShowMainWindow();

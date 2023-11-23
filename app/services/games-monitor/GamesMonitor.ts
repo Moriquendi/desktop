@@ -11,19 +11,34 @@ import { GameInfo, fetchGamesList } from './API+Games';
 import { WindowInfo } from '@paymoapp/active-window';
 const { app } = remote;
 
-export enum GameStatus {
-  NotRunning,
-  Running,
+// Same as import { EStreamingState } from 'services/streaming';
+// but I can't import it here
+enum EStreamingState {
+  Offline = 'offline',
+  Starting = 'starting',
+  Live = 'live',
+  Ending = 'ending',
+  Reconnecting = 'reconnecting',
 }
 
 class GamesMonitor {
   private observer = new RunningAppsObserver();
-  private currentStatus: GameStatus = GameStatus.NotRunning;
+  private currentStreamStatus: EStreamingState = EStreamingState.Offline;
   private executableNameToGameMap: { [key: string]: GameInfo } = {};
-  private statusAwaitingForChange: GameStatus | null = null;
+  private statusAwaitingForChange: EStreamingState | null = null;
+  private didAutoStartStreaming = false;
 
   constructor() {
     console.log('[GamesMonitor] Creating.');
+
+    electron.ipcRenderer.on('STREAMING_STATE_CHANGED', (event, status) => {
+      console.log(`Received streaming state: ${status}`);
+      this.currentStreamStatus = status;
+      if (status == EStreamingState.Offline) {
+        // reset
+        this.didAutoStartStreaming = false;
+      }
+    });
 
     new Promise(async (resolve, reject) => {
       console.log('Download games list...');
@@ -73,10 +88,24 @@ class GamesMonitor {
   }
 
   handle(apps: RunningAppInfo[], allowStart: boolean, allowEnd: boolean) {
-    if (this.currentStatus === GameStatus.Running && !allowEnd) {
+    if (
+      this.currentStreamStatus === EStreamingState.Starting ||
+      this.currentStreamStatus === EStreamingState.Ending ||
+      this.currentStreamStatus === EStreamingState.Reconnecting
+    ) {
+      console.log('Is in transition state. Skip.');
       return;
     }
-    if (this.currentStatus === GameStatus.NotRunning && !allowStart) {
+
+    if (this.currentStreamStatus === EStreamingState.Live && !allowEnd) {
+      return;
+    }
+    if (this.currentStreamStatus === EStreamingState.Offline && !allowStart) {
+      return;
+    }
+
+    if (allowEnd && !this.didAutoStartStreaming) {
+      // If we are allowed to end the stream, but we didn't start it, don't end it
       return;
     }
 
@@ -107,16 +136,22 @@ class GamesMonitor {
       console.log(`Detected game running: ${runningGame}`);
     }
 
-    const newStatus: GameStatus = isAnyGameRunning ? GameStatus.Running : GameStatus.NotRunning;
-    if (newStatus !== this.currentStatus) {
+    const newStatus: EStreamingState = isAnyGameRunning
+      ? EStreamingState.Live
+      : EStreamingState.Offline;
+
+    console.log('Resolved status:', newStatus);
+
+    if (this.statusAwaitingForChange !== null && this.statusAwaitingForChange !== newStatus) {
+      console.log('Status changed in the meantime, reset');
+      this.statusAwaitingForChange = null;
+      return;
+    }
+
+    if (newStatus !== this.currentStreamStatus) {
       if (this.statusAwaitingForChange == null) {
         this.statusAwaitingForChange = newStatus;
         console.log(`Will change status to ${newStatus} after receiving second confirmation`);
-        return;
-      }
-      if (this.statusAwaitingForChange !== newStatus) {
-        console.log('Status changed in the meantime, reset');
-        this.statusAwaitingForChange = null;
         return;
       }
 
@@ -131,14 +166,18 @@ class GamesMonitor {
       });
       ////////////////////////////////////////////////////////////////////////////////////////
 
-      this.currentStatus = newStatus;
+      if (newStatus == EStreamingState.Live) {
+        this.didAutoStartStreaming = true;
+      }
+
+      this.currentStreamStatus = newStatus;
       this.onGameStatusChanged(newStatus);
     }
   }
 
-  onGameStatusChanged(status: GameStatus) {
+  onGameStatusChanged(status: EStreamingState) {
     console.log(`Game status changed: ${status}`);
-    const shouldStart = status === GameStatus.Running;
+    const shouldStart = status === EStreamingState.Live;
     const query = `start=${shouldStart ? 'true' : 'false'}`;
     const url = `me.buffed.app.desktop://autostream?${query}`;
 

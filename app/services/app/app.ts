@@ -44,6 +44,7 @@ import * as remote from '@electron/remote';
 import { VideoSettingsService } from 'services/settings-v2/video';
 import { BuffedSettingsController } from 'services/settings/BuffedSettingsController';
 import { CustomizationService, ICustomizationServiceState } from 'services/customization';
+import { StreamingService } from 'app-services';
 
 interface IAppState {
   loading: boolean;
@@ -76,6 +77,7 @@ export class AppService extends StatefulService<IAppState> {
   @Inject() sourcesService: SourcesService;
   @Inject() scenesService: ScenesService;
   @Inject() videoService: VideoService;
+  @Inject() streamingService: StreamingService;
   @Inject() streamlabelsService: StreamlabelsService;
   @Inject() private ipcServerService: IpcServerService;
   @Inject() private tcpServerService: TcpServerService;
@@ -152,6 +154,11 @@ export class AppService extends StatefulService<IAppState> {
       this.windowsService.hideMainWindow();
       electron.ipcRenderer.send('acknowledgeShutdown');
       this.shutdownHandler();
+    });
+
+    this.streamingService.streamingStatusChange.subscribe(async status => {
+      console.log(`ON CHANGE STATE, ${status}`);
+      electron.ipcRenderer.send('STREAMING_STATE_CHANGED', status);
     });
 
     this.performanceService.startMonitoringPerformance();
