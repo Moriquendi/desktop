@@ -126,6 +126,14 @@ class GamesMonitor {
         return;
       }
 
+      const strictMatch = matchingGame.executables?.find(executable => {
+        return executable.name.toLowerCase().includes(thePath.toLowerCase());
+      });
+      if (!strictMatch) {
+        console.log(`Skip because no strict match ${thePath}`);
+        return;
+      }
+
       // TODO: Skip if launcher?
       console.log(`Detected game running: ${matchingGame.name}`);
       return true;
