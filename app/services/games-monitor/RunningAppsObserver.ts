@@ -36,6 +36,11 @@ export class RunningAppsObserver {
     }, 10 * 1000);
   }
 
+  async stop() {
+    this.observer && clearInterval(this.observer);
+    this.observer = null;
+  }
+
   async getFocusedWindow(): Promise<WindowInfo> {
     const activeWin = ActiveWindow.getActiveWindow();
     console.log(`Focused window: ${activeWin.path}`);

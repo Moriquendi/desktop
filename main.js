@@ -963,7 +963,11 @@ ipcMain.handle('SHOW_APP', (event, opts) => {
 });
 
 ipcMain.on('STREAMING_STATE_CHANGED', (event, streamingState) => {
- monitorProcess?.webContents.send('STREAMING_STATE_CHANGED', streamingState);
+  monitorProcess?.webContents.send('STREAMING_STATE_CHANGED', streamingState);
+})
+
+ipcMain.on('SET_AUTO_STREAMING_STATE', (event, v) => {
+  monitorProcess?.webContents.send('SET_AUTO_STREAMING_STATE', v);
 })
 
 function showApp() {

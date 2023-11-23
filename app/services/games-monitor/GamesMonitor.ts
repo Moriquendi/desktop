@@ -65,8 +65,7 @@ class GamesMonitor {
     console.log('[GamesMonitor] Start background monitoring...');
 
     console.log('[GamesMonitor] Waiting 5 seconds...');
-    // Wait to make sure everything else is loaded
-    await Utils.sleep(5 * 1000);
+
     console.log('[GamesMonitor] Start observing.');
 
     this.observer.onRunningAppsChanged = appsList => {
@@ -75,7 +74,17 @@ class GamesMonitor {
     this.observer.onFocusedWindowChanged = windowInfo => {
       this.handleWindow(windowInfo);
     };
-    this.observer.start();
+
+    electron.ipcRenderer.on('SET_AUTO_STREAMING_STATE', async (e, state) => {
+      console.log(`Received SET_AUTO_STREAMING_STATE = ${state}`);
+      if (state) {
+        // Wait to make sure everything else is loaded
+        await Utils.sleep(5 * 1000);
+        this.observer.start();
+      } else {
+        this.observer.stop();
+      }
+    });
   }
 
   handleWindow(window: WindowInfo) {

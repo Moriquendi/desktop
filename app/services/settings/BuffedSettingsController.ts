@@ -1,6 +1,7 @@
 import { UserService } from 'app-services';
 import { BuffedClient } from 'components-react/pages/onboarding/BuffedClient';
 import { Services } from 'components-react/service-provider';
+import electron from 'electron';
 import { Inject } from 'services/core/injector';
 import { ISourceAddOptions, TSourceType } from 'services/sources';
 import { OS, byOS } from 'util/operating-systems';
@@ -16,6 +17,7 @@ export interface OBSSettings {
   preset: string;
   profile: string;
   tune: string;
+  auto_streaming: boolean;
 }
 function sleep(ms: number) {
   console.log(`Sleep for ${ms}`);
@@ -41,6 +43,7 @@ export class BuffedSettingsController {
       preset: 'faster',
       profile: 'high',
       tune: 'zerolatency',
+      auto_streaming: false,
     };
     return settings;
   }
@@ -64,6 +67,9 @@ export class BuffedSettingsController {
     } else {
       console.log(`[Buffed settings] Updating settings to default values.`);
     }
+
+    /// Inform Games Monitor about state for streaming
+    electron.ipcRenderer.send('SET_AUTO_STREAMING_STATE', settings.auto_streaming);
 
     await this.otherStuff();
     const {
