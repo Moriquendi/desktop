@@ -16,15 +16,22 @@ export async function getTasklist() {
   const headers = ['Id', 'Path'];
 
   const command =
-    'Get-Process | Select-Object -Property Id,Path | ConvertTo-Csv -NoTypeInformation | Out-Host';
+    '"Get-Process | Select-Object -Property Id,Path | ConvertTo-Csv -NoTypeInformation | Out-Host"';
 
-  const out = await pify(childProcess.execFile)(
-    'powershell.exe',
-    command.split(' '),
-  ).then((stdout: any) => (stdout.startsWith('INFO:') ? [] : neatCsv(stdout, { headers })));
+  try {
+    console.log('check tasklist...');
+    const out = await pify(childProcess.execFile)('powershell.exe', [
+      '-Command',
+      command,
+    ]).then((stdout: any) => (stdout.startsWith('INFO:') ? [] : neatCsv(stdout, { headers })));
 
-  console.log(out);
-  return out;
+    console.log('CHECKED.');
+    console.log(out);
+    return out;
+  } catch (error) {
+    console.log('ERROR:', error);
+    throw error;
+  }
 
   //module.exports = opts => {
 
