@@ -24,7 +24,7 @@ enum EStreamingState {
 class GamesMonitor {
   private observer = new RunningAppsObserver();
   private currentStreamStatus: EStreamingState = EStreamingState.Offline;
-  private executableNameToGameMap: { [key: string]: GameInfo } = {};
+  private executableNameToGameMap: { [key: string]: GameInfo[] } = {};
   private statusAwaitingForChange: EStreamingState | null = null;
   private didAutoStartStreaming = false;
 
@@ -54,7 +54,12 @@ class GamesMonitor {
             // Contents/MacOS which has no extension
             name = name.replace('.app', '');
           }
-          this.executableNameToGameMap[name] = game;
+
+          if (this.executableNameToGameMap[name]) {
+            this.executableNameToGameMap[name] = [...this.executableNameToGameMap[name], game];
+          } else {
+            this.executableNameToGameMap[name] = [game];
+          }
         });
       });
       resolve(1);
@@ -129,28 +134,32 @@ class GamesMonitor {
 
     const runningGame = runningPaths.find(thePath => {
       const fileName = path.basename(thePath).toLocaleLowerCase();
-      const matchingGame = this.executableNameToGameMap[fileName];
+      const matchingGames = this.executableNameToGameMap[fileName];
 
-      if (!matchingGame) {
+      if (!matchingGames) {
         return false;
       }
 
-      const strictMatch = matchingGame.executables?.find(executable => {
-        return thePath.toLowerCase().replace(/\\/g, '/').includes(executable.name.toLowerCase());
-      });
-      if (!strictMatch) {
-        const executableNames = matchingGame.executables?.map(executable => executable.name);
-        console.log(
-          `Skip because no strict match. Path: ${thePath}. Game: ${JSON.stringify(
-            executableNames,
-          )}`,
-        );
-        return false;
-      }
+      for (const matchingGame of matchingGames) {
+        const strictMatch = matchingGame.executables?.find(executable => {
+          return thePath.toLowerCase().replace(/\\/g, '/').includes(executable.name.toLowerCase());
+        });
 
-      // TODO: Skip if launcher?
-      console.log(`Detected game running: ${matchingGame.name}`);
-      return true;
+        if (!strictMatch) {
+          const executableNames = matchingGame.executables?.map(executable => executable.name);
+          console.log(
+            `Skip because no strict match. Path: ${thePath}. Game: ${JSON.stringify(
+              executableNames,
+            )}`,
+          );
+          continue;
+        }
+
+        // TODO: Skip if launcher?
+        console.log(`Detected game running: ${matchingGame.name}`);
+        return true;
+      }
+      return false;
     });
 
     const isAnyGameRunning = runningGame !== undefined;
