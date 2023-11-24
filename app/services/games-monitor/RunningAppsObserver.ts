@@ -3,7 +3,8 @@ import ActiveWindow, { WindowInfo } from '@paymoapp/active-window';
 
 // import { lookup } from './WindowsTasklist';
 // @ts-ignore
-import * as tasklist from 'tasklist';
+// import * as tasklist from 'tasklist';
+import { getTasklist } from './TasklistCustom';
 
 export interface RunningAppInfo {
   pid: string;
@@ -50,7 +51,7 @@ export class RunningAppsObserver {
 var IS_WIN = process.platform === 'win32';
 async function getRunningApps(): Promise<RunningAppInfo[]> {
   if (IS_WIN) {
-    const out = await tasklist();
+    const out = await getTasklist();
     const list = out as TaskListInfo[];
 
     const mapped = list.map(item => {

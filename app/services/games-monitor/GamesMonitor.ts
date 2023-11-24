@@ -132,7 +132,7 @@ class GamesMonitor {
       const matchingGame = this.executableNameToGameMap[fileName];
 
       if (!matchingGame) {
-        return;
+        return false;
       }
 
       const strictMatch = matchingGame.executables?.find(executable => {
@@ -145,7 +145,7 @@ class GamesMonitor {
             executableNames,
           )}`,
         );
-        return;
+        return false;
       }
 
       // TODO: Skip if launcher?
@@ -182,10 +182,10 @@ class GamesMonitor {
 
       console.log(`Trigger status change ===> ${newStatus}`);
       ////////////////////////////////////////////////////////////////////////////////////////
-      console.log('APPS LIST:');
-      apps.forEach(app => {
-        console.log(`App: ${app.command} - ${app.arguments}`);
-      });
+      // console.log('APPS LIST:');
+      // apps.forEach(app => {
+      //   console.log(`App: ${app.command} - ${app.arguments}`);
+      // });
       ////////////////////////////////////////////////////////////////////////////////////////
 
       if (newStatus == EStreamingState.Live) {
