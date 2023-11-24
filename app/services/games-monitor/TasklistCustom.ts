@@ -21,19 +21,38 @@ export async function checkIfExists(pid: string): Promise<boolean> {
 
   try {
     console.log(`Check PID ${pid}`);
-    const out = await pify(childProcess.execFile)('powershell.exe', [
-      '-Command',
-      command,
-    ]).then((stdout: any) => (stdout.includes('ObjectNotFound') ? false : true));
+    return await performAsyncOperationWithTimeout(3000, async () => {
+      const out = await pify(childProcess.execFile)('powershell.exe', [
+        '-Command',
+        command,
+      ]).then((stdout: any) => (stdout.includes('ObjectNotFound') ? false : true));
 
-    console.log('CHECKED.');
-    console.log(out);
-    return out;
+      console.log('CHECKED.');
+      console.log(out);
+      return out;
+    });
   } catch (error) {
     console.log('ERROR:', error);
     // throw error;
     return false;
   }
+}
+// Function to perform async operation with a timeout
+function performAsyncOperationWithTimeout<T>(
+  timeout: number,
+  asyncOperation: () => Promise<T>,
+): Promise<T> {
+  const asyncOperationPromise = asyncOperation();
+
+  // Promise that resolves after the specified timeout
+  const timeoutPromise = new Promise<T>((_, reject) => {
+    setTimeout(() => {
+      reject(new Error(`Operation timed out after ${timeout} milliseconds`));
+    }, timeout);
+  });
+
+  // Use Promise.race to race the async operation and the timeout
+  return Promise.race([asyncOperationPromise, timeoutPromise]);
 }
 
 export async function getTasklist(): Promise<TaskInfo[]> {

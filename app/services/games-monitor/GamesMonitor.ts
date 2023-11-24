@@ -171,7 +171,7 @@ class GamesMonitor {
 
     const isAnyGameRunning = runningGame !== undefined;
     if (isAnyGameRunning) {
-      console.log(`Detected game running: ${runningGame}`);
+      console.log(`Detected game running: ${runningGame.command}`);
       this.observer.observedPID = runningGame.pid;
     }
 

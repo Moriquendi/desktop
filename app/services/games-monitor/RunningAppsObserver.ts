@@ -30,7 +30,7 @@ export class RunningAppsObserver {
   async start() {
     const me = this;
     this.observer = setInterval(async function () {
-      console.log(`Check running apps...`);
+      console.log(`10s tick.`);
       if (me.observedPID) {
         const exists = await checkIfExists(me.observedPID);
         me.onObservedPIDExistsChanged(me.observedPID, exists);
