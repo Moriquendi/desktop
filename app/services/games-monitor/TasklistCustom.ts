@@ -21,7 +21,7 @@ export async function getTasklist(): Promise<TaskInfo[]> {
   const headers = ['Id', 'Path'];
 
   const command =
-    '"Get-Process | Select-Object -Property Id,Path | ConvertTo-Csv -NoTypeInformation | Out-Host"';
+    'Get-Process | Select-Object -Property Id,Path | ConvertTo-Csv -NoTypeInformation | Out-Host';
 
   try {
     console.log('check tasklist...');
