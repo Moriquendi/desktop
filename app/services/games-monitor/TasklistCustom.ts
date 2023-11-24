@@ -7,7 +7,7 @@ import pify from 'pify';
 import neatCsv from 'neat-csv';
 // const sec = require('sec');
 
-export function getTasklist() {
+export async function getTasklist() {
   //   spawn('powershell.exe', ['C:\\folder\\folder2\\myPSScript.ps1']);
   if (process.platform !== 'win32') {
     return Promise.reject(new Error('Windows only'));
@@ -15,9 +15,12 @@ export function getTasklist() {
 
   const headers = ['Id', 'Path'];
 
-  const out = pify(childProcess.execFile)(
+  const command =
+    'Get-Process | Select-Object -Property Id,Path | ConvertTo-Csv -NoTypeInformation | Out-Host';
+
+  const out = await pify(childProcess.execFile)(
     'powershell.exe',
-    'Get-Process | Select-Object -Property Id,Path | ConvertTo-Csv -NoTypeInformation | Out-Host',
+    command.split(' '),
   ).then((stdout: any) => (stdout.startsWith('INFO:') ? [] : neatCsv(stdout, { headers })));
 
   console.log(out);
