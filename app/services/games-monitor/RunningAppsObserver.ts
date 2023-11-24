@@ -51,14 +51,13 @@ export class RunningAppsObserver {
 var IS_WIN = process.platform === 'win32';
 async function getRunningApps(): Promise<RunningAppInfo[]> {
   if (IS_WIN) {
-    const out = await getTasklist();
-    const list = out as TaskListInfo[];
+    const list = await getTasklist();
 
     const mapped = list.map(item => {
       const info: RunningAppInfo = {
-        pid: item.pid,
-        command: item.imageName,
-        arguments: [item.imageName],
+        pid: item.Id,
+        command: item.Path,
+        arguments: [item.Path],
       };
       return info;
     });

@@ -7,7 +7,12 @@ import pify from 'pify';
 import neatCsv from 'neat-csv';
 // const sec = require('sec');
 
-export async function getTasklist() {
+interface TaskInfo {
+  Id: string;
+  Path: string;
+}
+
+export async function getTasklist(): Promise<TaskInfo[]> {
   //   spawn('powershell.exe', ['C:\\folder\\folder2\\myPSScript.ps1']);
   if (process.platform !== 'win32') {
     return Promise.reject(new Error('Windows only'));
@@ -27,7 +32,8 @@ export async function getTasklist() {
 
     console.log('CHECKED.');
     console.log(out);
-    return out;
+
+    return out as TaskInfo[];
   } catch (error) {
     console.log('ERROR:', error);
     throw error;
