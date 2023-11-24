@@ -73,11 +73,16 @@ class GamesMonitor {
 
     console.log('[GamesMonitor] Start observing.');
 
-    this.observer.onRunningAppsChanged = appsList => {
-      this.handle(appsList, false, true);
-    };
+    // this.observer.onRunningAppsChanged = appsList => {
+    //   this.handle(appsList, false, true);
+    // };
     this.observer.onFocusedWindowChanged = windowInfo => {
       this.handleWindow(windowInfo);
+    };
+    this.observer.onObservedPIDExistsChanged = (pid, exists) => {
+      if (exists) {
+        this.handle([], false, true);
+      }
     };
 
     electron.ipcRenderer.on('SET_AUTO_STREAMING_STATE', async (e, state) => {
@@ -124,15 +129,17 @@ class GamesMonitor {
     }
 
     const isMac = byOS({ [OS.Windows]: false, [OS.Mac]: true });
-    const runningPaths = apps.map(app =>
-      isMac ? first(app.arguments) ?? app.command : app.command,
-    );
+    // const runningPaths = apps.map(app =>
+    //   isMac ? first(app.arguments) ?? app.command : app.command,
+    // );
 
     // apps.forEach(app => {
     //   console.log(`App: ${app.command} - ${app.arguments}`);
     // });
 
-    const runningGame = runningPaths.find(thePath => {
+    const runningGame = apps.find(app => {
+      const thePath = isMac ? first(app.arguments) ?? app.command : app.command;
+
       const fileName = path.basename(thePath).toLocaleLowerCase();
       const matchingGames = this.executableNameToGameMap[fileName];
 
@@ -165,6 +172,7 @@ class GamesMonitor {
     const isAnyGameRunning = runningGame !== undefined;
     if (isAnyGameRunning) {
       console.log(`Detected game running: ${runningGame}`);
+      this.observer.observedPID = runningGame.pid;
     }
 
     const newStatus: EStreamingState = isAnyGameRunning

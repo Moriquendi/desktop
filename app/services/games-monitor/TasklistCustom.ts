@@ -12,8 +12,31 @@ interface TaskInfo {
   Path: string;
 }
 
+export async function checkIfExists(pid: string): Promise<boolean> {
+  if (process.platform !== 'win32') {
+    return Promise.reject(new Error('Windows only'));
+  }
+
+  const command = `Get-Process -Id ${pid}`;
+
+  try {
+    console.log(`Check PID ${pid}`);
+    const out = await pify(childProcess.execFile)('powershell.exe', [
+      '-Command',
+      command,
+    ]).then((stdout: any) => (stdout.includes('ObjectNotFound') ? false : true));
+
+    console.log('CHECKED.');
+    console.log(out);
+    return out;
+  } catch (error) {
+    console.log('ERROR:', error);
+    // throw error;
+    return false;
+  }
+}
+
 export async function getTasklist(): Promise<TaskInfo[]> {
-  //   spawn('powershell.exe', ['C:\\folder\\folder2\\myPSScript.ps1']);
   if (process.platform !== 'win32') {
     return Promise.reject(new Error('Windows only'));
   }

@@ -3,8 +3,8 @@ import ActiveWindow, { WindowInfo } from '@paymoapp/active-window';
 
 // import { lookup } from './WindowsTasklist';
 // @ts-ignore
-// import * as tasklist from 'tasklist';
-import { getTasklist } from './TasklistCustom';
+import * as tasklist from 'tasklist';
+import { checkIfExists, getTasklist } from './TasklistCustom';
 
 export interface RunningAppInfo {
   pid: string;
@@ -22,15 +22,21 @@ interface TaskListInfo {
 
 export class RunningAppsObserver {
   onRunningAppsChanged: (appsList: RunningAppInfo[]) => void;
+  onObservedPIDExistsChanged: (pid: string, exists: boolean) => void;
   onFocusedWindowChanged: (windowInfo: WindowInfo) => void;
   private observer: NodeJS.Timer | null = null;
+  observedPID: string | null = null;
 
   async start() {
     const me = this;
     this.observer = setInterval(async function () {
       console.log(`Check running apps...`);
-      const appsList: RunningAppInfo[] = await getRunningApps();
-      me.onRunningAppsChanged(appsList);
+      if (me.observedPID) {
+        const exists = await checkIfExists(me.observedPID);
+        me.onObservedPIDExistsChanged(me.observedPID, exists);
+      }
+      // const appsList: RunningAppInfo[] = await getRunningApps();
+      // me.onRunningAppsChanged(appsList);
 
       const window = await me.getFocusedWindow();
       me.onFocusedWindowChanged(window);
