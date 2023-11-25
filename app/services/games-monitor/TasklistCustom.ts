@@ -7,7 +7,7 @@ import pify from 'pify';
 import neatCsv from 'neat-csv';
 // const sec = require('sec');
 import util from 'util';
-const execFile = util.promisify(require('child_process').execFile);
+const exec = util.promisify(require('child_process').exec);
 
 interface TaskInfo {
   Id: string;
@@ -19,13 +19,11 @@ export async function checkIfExists(pid: string): Promise<boolean> {
     return Promise.reject(new Error('Windows only'));
   }
 
-  const command = `Get-Process -Id ${pid} -ErrorAction SilentlyContinue`;
-
   try {
     console.log(`Check PID >${pid}<`);
-    return await performAsyncOperationWithTimeout(30000, async () => {
-      const { stdout } = await execFile('powershell.exe', ['-Command', command]);
-      const isProcessRunning = !!stdout.trim();
+    return await performAsyncOperationWithTimeout(4000, async () => {
+      const { stdout } = await exec(`tasklist /FI "PID eq ${pid}"`);
+      const isProcessRunning = !stdout.startsWith('INFO');
 
       console.log('CHECKED.');
       console.log(isProcessRunning);

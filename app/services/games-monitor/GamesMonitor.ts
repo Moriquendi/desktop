@@ -80,7 +80,7 @@ class GamesMonitor {
       this.handleWindow(windowInfo);
     };
     this.observer.onObservedPIDExistsChanged = (pid, exists) => {
-      if (exists) {
+      if (!exists) {
         this.handle([], false, true);
       }
     };

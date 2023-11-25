@@ -32,13 +32,19 @@ export class RunningAppsObserver {
     this.observer = setInterval(async function () {
       console.log(`10s tick.`);
       if (me.observedPID) {
-        const exists = await checkIfExists(me.observedPID);
-        me.onObservedPIDExistsChanged(me.observedPID, exists);
+        try {
+          const exists = await checkIfExists(me.observedPID);
+          console.log(`Got pid exists: ${exists}`);
+          me.onObservedPIDExistsChanged(me.observedPID, exists);
+        } catch {
+          console.error('Failed to check if process exists.');
+        }
       }
       // const appsList: RunningAppInfo[] = await getRunningApps();
       // me.onRunningAppsChanged(appsList);
 
       const window = await me.getFocusedWindow();
+      console.log('Got window');
       me.onFocusedWindowChanged(window);
     }, 10 * 1000);
   }
