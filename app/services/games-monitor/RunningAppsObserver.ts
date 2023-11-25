@@ -29,7 +29,6 @@ export class RunningAppsObserver {
 
   async start() {
     const me = this;
-    this.observedPID = '123123';
     this.observer = setInterval(async function () {
       console.log(`10s tick.`);
       if (me.observedPID) {

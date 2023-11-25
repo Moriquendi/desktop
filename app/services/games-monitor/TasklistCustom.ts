@@ -19,7 +19,7 @@ export async function checkIfExists(pid: string): Promise<boolean> {
     return Promise.reject(new Error('Windows only'));
   }
 
-  const command = `Get-Process -Id ${pid}`;
+  const command = `Get-Process -Id ${pid} -ErrorAction SilentlyContinue`;
 
   try {
     console.log(`Check PID >${pid}<`);
