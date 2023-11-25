@@ -6,6 +6,8 @@ import pify from 'pify';
 // @ts-ignore
 import neatCsv from 'neat-csv';
 // const sec = require('sec');
+import util from 'util';
+const execFile = util.promisify(require('child_process').execFile);
 
 interface TaskInfo {
   Id: string;
@@ -20,23 +22,21 @@ export async function checkIfExists(pid: string): Promise<boolean> {
   const command = `Get-Process -Id ${pid}`;
 
   try {
-    console.log(`Check PID ${pid}`);
-    return await performAsyncOperationWithTimeout(3000, async () => {
-      const out = await pify(childProcess.execFile)('powershell.exe', [
-        '-Command',
-        command,
-      ]).then((stdout: any) => (stdout.includes('ObjectNotFound') ? false : true));
+    console.log(`Check PID >${pid}<`);
+    return await performAsyncOperationWithTimeout(30000, async () => {
+      const { stdout } = await execFile('powershell.exe', ['-Command', command]);
+      const isProcessRunning = !stdout.includes('ObjectNotFound');
 
       console.log('CHECKED.');
-      console.log(out);
-      return out;
+      console.log(isProcessRunning);
+      return isProcessRunning;
     });
   } catch (error) {
     console.log('ERROR:', error);
-    // throw error;
-    return false;
+    throw error;
   }
 }
+
 // Function to perform async operation with a timeout
 function performAsyncOperationWithTimeout<T>(
   timeout: number,
