@@ -25,7 +25,7 @@ export async function checkIfExists(pid: string): Promise<boolean> {
     console.log(`Check PID >${pid}<`);
     return await performAsyncOperationWithTimeout(30000, async () => {
       const { stdout } = await execFile('powershell.exe', ['-Command', command]);
-      const isProcessRunning = !stdout.includes('ObjectNotFound');
+      const isProcessRunning = !!stdout.trim();
 
       console.log('CHECKED.');
       console.log(isProcessRunning);
