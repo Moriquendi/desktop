@@ -119,25 +119,26 @@ function ExtraSettings() {
     <>
       <ObsSettingsSection>
         <CheckboxInput
+          label={$t('Auto Capture: automatically start when game is detected')}
+          value={autoStreamEnabled}
+          onChange={val => CustomizationService.actions.setAutoStreamEnabled(val)}
+          name="auto_stream"
+        />
+        <CheckboxInput
           label={$t('Launch Buffed on startup')}
           value={autoLaunchEnabled}
           onChange={val => CustomizationService.setAutoLaunchEnabled(val)}
           name="auto_launch"
         />
-        <CheckboxInput
-          label={$t('Automatically start streaming when game is detected')}
-          value={autoStreamEnabled}
-          onChange={val => CustomizationService.actions.setAutoStreamEnabled(val)}
-          name="auto_stream"
-        />
-        {isLoggedIn && !isFacebook && !isYoutube && (
+
+        {/* {isLoggedIn && !isFacebook && !isYoutube && (
           <CheckboxInput
             value={updateStreamInfoOnLive}
             onChange={val => CustomizationService.setUpdateStreamInfoOnLive(val)}
             label={$t('Confirm stream title and game before going live')}
             name="stream_info_udpate"
           />
-        )}
+        )} */}
         <CheckboxInput
           label={$t('Disable hardware acceleration (requires restart)')}
           value={disableHA}

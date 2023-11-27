@@ -15,23 +15,37 @@ interface TaskInfo {
 }
 
 export async function checkIfExists(pid: string): Promise<boolean> {
-  if (process.platform !== 'win32') {
-    return Promise.reject(new Error('Windows only'));
-  }
+  console.log(`Check PID >${pid}<`);
+  if (process.platform === 'win32') {
+    // WINDOWS
+    try {
+      return await performAsyncOperationWithTimeout(4000, async () => {
+        const { stdout } = await exec(`tasklist /FI "PID eq ${pid}"`);
+        const isProcessRunning = !stdout.startsWith('INFO');
 
-  try {
-    console.log(`Check PID >${pid}<`);
-    return await performAsyncOperationWithTimeout(4000, async () => {
-      const { stdout } = await exec(`tasklist /FI "PID eq ${pid}"`);
-      const isProcessRunning = !stdout.startsWith('INFO');
+        console.log('CHECKED.');
+        console.log(isProcessRunning);
+        return isProcessRunning;
+      });
+    } catch (error) {
+      console.log('ERROR:', error);
+      throw error;
+    }
+  } else {
+    // MACOS
+    try {
+      return await performAsyncOperationWithTimeout(4000, async () => {
+        const { stdout } = await exec(`ps -p ${pid}`);
 
-      console.log('CHECKED.');
-      console.log(isProcessRunning);
-      return isProcessRunning;
-    });
-  } catch (error) {
-    console.log('ERROR:', error);
-    throw error;
+        const headers = ['PID'];
+        const isProcessRunning = stdout.includes(pid);
+        console.log(`CHECKED. ${isProcessRunning}`);
+        return isProcessRunning;
+      });
+    } catch (error) {
+      console.log('ERROR:', error);
+      throw error;
+    }
   }
 }
 

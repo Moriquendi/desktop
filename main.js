@@ -98,6 +98,8 @@ const releaseChannel = (() => {
 // Main Program
 ////////////////////////////////////////////////////////////////////////////////
 
+let shouldFocusWindowOnNextShow = true
+
 // Windows
 let workerWindow;
 let mainWindow;
@@ -209,7 +211,10 @@ console.log('=================================');
 
 app.on('activate', () => {
   console.log(`APP ACTIVATED`);
-  mainWindow?.show();
+  if (!mainWindow) {
+    return;
+  }
+  showApp();
 })
 
 app.on('ready', () => {
@@ -709,7 +714,10 @@ app.on('open-url', (e, url) => {
   } else {
     pendingLink = url;
   }
-  
+
+  if (url.includes('/autostream')) {
+    shouldFocusWindowOnNextShow = false;
+  }
   showApp();
 });
 
@@ -974,7 +982,12 @@ function showApp() {
   if (!mainWindow) {
     recreateAndShowMainWindow();
   } else {
-    mainWindow.show();
+    if (shouldFocusWindowOnNextShow) {
+      mainWindow.show();
+    } else {
+      mainWindow.showInactive();
+    }
+    shouldFocusWindowOnNextShow = true;
   }
 }
 
@@ -983,6 +996,12 @@ ipcMain.handle('BEGIN_SHUTDOWN', (event, opts) => {
   console.log('Received shutdown.')
   beginShutdown();
 });
+
+// TODO: Not working properly yet
+ipcMain.handle('check-update', (event, opts) => {
+  new Updater(startApp, 'latest').run();
+})
+
 
 
 console.log(`Main: End file`);
