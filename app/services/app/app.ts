@@ -186,6 +186,13 @@ export class AppService extends StatefulService<IAppState> {
       controller.setBuffedDetaultSettings();
     });
 
+    const setupAutoLogin = (enabled: boolean) => {
+      remote.app.setLoginItemSettings({
+        openAtLogin: enabled,
+        args: ['--was-launched-at-login'],
+      });
+    };
+
     this.customizationService.settingsChanged.subscribe(
       async (changed: Partial<ICustomizationServiceState>) => {
         if (changed.autoLaunchEnabled === undefined) {
@@ -193,16 +200,11 @@ export class AppService extends StatefulService<IAppState> {
         }
 
         console.log(`[Buffed settings] Auto launch changed to ${changed.autoLaunchEnabled}`);
-        remote.app.setLoginItemSettings({
-          openAtLogin: changed.autoLaunchEnabled,
-        });
+        setupAutoLogin(changed.autoLaunchEnabled);
       },
     );
     console.log('Auto launch set to', this.customizationService.state.autoLaunchEnabled);
-    remote.app.setLoginItemSettings({
-      openAtLogin: this.customizationService.state.autoLaunchEnabled,
-      args: ['--was-launched-at-login'],
-    });
+    setupAutoLogin(this.customizationService.state.autoLaunchEnabled);
     ////////////////////////////////////////////
 
     this.protocolLinksService.start(this.state.argv);

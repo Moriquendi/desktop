@@ -366,11 +366,16 @@ async function startApp() {
     event.returnValue = workerWindow.webContents.id;
   });
 
-  const isLaunchedAutoAtLogin = process.argv.includes('--was-launched-at-login');
+  const settings = app.getLoginItemSettings();
+  const isLaunchedAutoAtLogin =
+    process.argv.includes('--was-launched-at-login') || settings.wasOpenedAtLogin;
+
   if (!isLaunchedAutoAtLogin) {
-    recreateAndShowMainWindow();  
+    recreateAndShowMainWindow();
+  } else {
+    console.log(`App launched on login. Don't show windows.`);
   }
-  
+
   // This needs to be explicitly handled on Mac
   app.on('before-quit', e => {
     console.log(`Main: app.on('before-quit')`);
