@@ -98,7 +98,7 @@ const releaseChannel = (() => {
 // Main Program
 ////////////////////////////////////////////////////////////////////////////////
 
-let shouldFocusWindowOnNextShow = true
+let shouldFocusWindowOnNextShow = true;
 
 // Windows
 let workerWindow;
@@ -215,7 +215,7 @@ app.on('activate', () => {
     return;
   }
   showApp();
-})
+});
 
 app.on('ready', () => {
   // Detect when running from an unwritable location like a DMG image (will break updater)
@@ -381,7 +381,7 @@ async function startApp() {
     console.log(`Main: app.on('before-quit')`);
 
     if (!shutdownStarted) {
-      beginShutdown()
+      beginShutdown();
       e.preventDefault();
       // if (mainWindow) {
       //   console.log(`Call close on main window.`)
@@ -448,7 +448,7 @@ async function startApp() {
       workerWindow.webContents.send('vuex-sendState', windowId);
     });
 
-    monitorProcess.webContents.send('AppInitFinished')
+    monitorProcess.webContents.send('AppInitFinished');
   });
 
   ipcMain.on('services-request', (event, payload) => {
@@ -496,19 +496,19 @@ async function startApp() {
   //////////////////////////////////////////////////
   // Games Monitor Setup
   //////////////////////////////////////////////////
-  console.log('Setup Games Monitor')
+  console.log('Setup Games Monitor');
   monitorProcess = new BrowserWindow({
     title: 'Games Monitor',
     show: false,
     webPreferences: {
       nodeIntegration: true,
-      contextIsolation: false
+      contextIsolation: false,
     },
   });
   remote.enable(monitorProcess.webContents);
-  let ghtml = `file://${__dirname}/monitor-helper/index.html`
+  let ghtml = `file://${__dirname}/monitor-helper/index.html`;
   monitorProcess.loadURL(ghtml);
-  
+
   monitorProcess?.webContents.openDevTools({ mode: 'undocked' });
 
   console.log(`Main: End startApp`);
@@ -516,14 +516,14 @@ async function startApp() {
 
 function beginShutdown() {
   if (!shutdownStarted) {
-    console.log('Begin shutdown.')
+    console.log('Begin shutdown.');
     shutdownStarted = true;
     workerWindow.send('shutdown');
 
     // We give the worker window 10 seconds to acknowledge a request
     // to shut down.  Otherwise, we just close it.
     appShutdownTimeout = setTimeout(() => {
-      console.log('Timeout out. Forcing.')
+      console.log('Timeout out. Forcing.');
       allowMainWindowClose = true;
       if (!mainWindow.isDestroyed()) mainWindow.close();
       if (!workerWindow.isDestroyed()) workerWindow.close();
@@ -531,23 +531,20 @@ function beginShutdown() {
       if (!childWindow.isDestroyed()) childWindow.close();
 
       setTimeout(() => {
-      console.log('Windows:')
-      console.log(`Main: ${mainWindow.isDestroyed()}`)
-      console.log(`Worker: ${workerWindow.isDestroyed()}`)
-      console.log(`Monitor: ${monitorProcess.isDestroyed()}`)
-      console.log(`Child: ${childWindow.isDestroyed()}`)
+        console.log('Windows:');
+        console.log(`Main: ${mainWindow.isDestroyed()}`);
+        console.log(`Worker: ${workerWindow.isDestroyed()}`);
+        console.log(`Monitor: ${monitorProcess.isDestroyed()}`);
+        console.log(`Child: ${childWindow.isDestroyed()}`);
       }, 1 * 1000);
-
-      
     }, 10 * 1000);
   } else {
-    console.log('Shutdown already started. Ignore.')
+    console.log('Shutdown already started. Ignore.');
   }
 }
 
 function recreateAndShowMainWindow() {
-
-  console.log(`Recreating. Child window destroyed?: ${childWindow?.isDestroyed()}`)
+  console.log(`Recreating. Child window destroyed?: ${childWindow?.isDestroyed()}`);
   ///////////////////////////////////////
   // Worker Window
   ///////////////////////////////////////
@@ -560,7 +557,6 @@ function recreateAndShowMainWindow() {
   // setTimeout(() => {
   workerWindow.loadURL(`${global.indexUrl}?windowId=worker`);
   // }, 10 * 1000);
-
 
   ///////////////////////////////////////
   // Main Window
@@ -593,10 +589,10 @@ function recreateAndShowMainWindow() {
   // }, 5 * 1000)
   mainWindowState.manage(mainWindow);
   mainWindow.removeMenu();
-  
+
   ///////////////////////////////////////
   // Child Window
-  ///////////////////////////////////////  
+  ///////////////////////////////////////
   childWindow = new BrowserWindow({
     show: false,
     frame: false,
@@ -612,7 +608,7 @@ function recreateAndShowMainWindow() {
   remote.enable(childWindow.webContents);
   childWindow.removeMenu();
   childWindow.loadURL(`${global.indexUrl}?windowId=child`);
-  
+
   ///////////////////////////////////////
   // Event Handlers
   ///////////////////////////////////////
@@ -620,7 +616,7 @@ function recreateAndShowMainWindow() {
   // The child window is never closed, it just hides in the
   // background until it is needed.
   childWindow.on('close', e => {
-    console.log(`On child window close.`)
+    console.log(`On child window close.`);
 
     if (!shutdownStarted) {
       childWindow.send('closeWindow');
@@ -638,14 +634,14 @@ function recreateAndShowMainWindow() {
   mainWindow.on('close', e => {
     console.log(`Main: mainWindow.on('close')`);
     mainWindow.hide();
-    
+
     // Hide the app icon from the Dock
     if (process.platform === 'darwin') {
       app.dock.hide();
     }
 
     if (!allowMainWindowClose) {
-      console.log('Closing main window prevented.')
+      console.log('Closing main window prevented.');
       e.preventDefault();
     }
   });
@@ -667,7 +663,7 @@ function recreateAndShowMainWindow() {
     session.defaultSession.flushStorageData();
     // session.defaultSession.cookies.flushStore().then(() => app.quit());
     session.defaultSession.cookies.flushStore().then(() => {
-        // ...
+      // ...
     });
   });
 
@@ -684,8 +680,7 @@ app.setAsDefaultProtocolClient('me.buffed.app.desktop');
 app.on('second-instance', (event, argv, cwd) => {
   // Check for protocol links in the argv of the other process
   argv.forEach(arg => {
-
-    console.log(`Args: ${arg}`)
+    console.log(`Args: ${arg}`);
 
     if (arg.match(/^me\.buffed\.app\.desktop:\/\//)) {
       workerWindow.send('protocolLink', arg);
@@ -712,7 +707,7 @@ let pendingLink;
 
 // For mac os, this event will fire when a protocol link is triggered
 app.on('open-url', (e, url) => {
-  console.log(`open-url: ${url}`)
+  console.log(`open-url: ${url}`);
 
   if (protocolLinkReady) {
     workerWindow.send('protocolLink', url);
@@ -728,15 +723,14 @@ app.on('open-url', (e, url) => {
 
 ipcMain.on('protocolLinkReady', () => {
   protocolLinkReady = true;
-  console.log(`Pendinglink: ${pendingLink}`)
+  console.log(`Pendinglink: ${pendingLink}`);
   if (pendingLink) workerWindow.send('protocolLink', pendingLink);
 });
 
 console.log(`Main: app.on('ready')`);
 
 app.on('ready', () => {
-
-  console.log(`On app ready`)
+  console.log(`On app ready`);
 
   if (
     !process.argv.includes('--skip-update') &&
@@ -769,8 +763,8 @@ app.on('ready', () => {
   //     console.log(`Main: bootstrap`);
   //     bootstrap(updateInfo, startApp, app.exit);
   //   } else {
-      // console.log(`Main: updater`);
-      // new Updater(startApp, releaseChannel).run();
+  // console.log(`Main: updater`);
+  // new Updater(startApp, releaseChannel).run();
   //   }
   // } else {
   //   console.log(`Main: startApp`);
@@ -977,11 +971,11 @@ ipcMain.handle('SHOW_APP', (event, opts) => {
 
 ipcMain.on('STREAMING_STATE_CHANGED', (event, streamingState) => {
   monitorProcess?.webContents.send('STREAMING_STATE_CHANGED', streamingState);
-})
+});
 
 ipcMain.on('SET_AUTO_STREAMING_STATE', (event, v) => {
   monitorProcess?.webContents.send('SET_AUTO_STREAMING_STATE', v);
-})
+});
 
 function showApp() {
   if (!mainWindow) {
@@ -996,17 +990,15 @@ function showApp() {
   }
 }
 
-console.log(`REGISTER for BEGIN SHUTDOWN`)
+console.log(`REGISTER for BEGIN SHUTDOWN`);
 ipcMain.handle('BEGIN_SHUTDOWN', (event, opts) => {
-  console.log('Received shutdown.')
+  console.log('Received shutdown.');
   beginShutdown();
 });
 
 // TODO: Not working properly yet
 ipcMain.handle('check-update', (event, opts) => {
   new Updater(startApp, 'latest').run();
-})
-
-
+});
 
 console.log(`Main: End file`);
