@@ -366,6 +366,11 @@ async function startApp() {
     event.returnValue = workerWindow.webContents.id;
   });
 
+  workerWindow = new BrowserWindow({
+    show: false,
+    webPreferences: { nodeIntegration: true, contextIsolation: false },
+  });
+
   const settings = app.getLoginItemSettings();
   const isLaunchedAutoAtLogin =
     process.argv.includes('--was-launched-at-login') || settings.wasOpenedAtLogin;
@@ -517,18 +522,15 @@ async function startApp() {
 function beginShutdown() {
   if (!shutdownStarted) {
     console.log('Begin shutdown.');
+    console.log(workerWindow.isEnabled());
     shutdownStarted = true;
-    workerWindow.send('shutdown');
 
-    // We give the worker window 10 seconds to acknowledge a request
-    // to shut down.  Otherwise, we just close it.
-    appShutdownTimeout = setTimeout(() => {
-      console.log('Timeout out. Forcing.');
+    const forceClose = () => {
       allowMainWindowClose = true;
-      if (!mainWindow.isDestroyed()) mainWindow.close();
-      if (!workerWindow.isDestroyed()) workerWindow.close();
-      if (!monitorProcess.isDestroyed()) monitorProcess.close();
-      if (!childWindow.isDestroyed()) childWindow.close();
+      if (mainWindow && !mainWindow.isDestroyed()) mainWindow.close();
+      if (workerWindow && !workerWindow.isDestroyed()) workerWindow.close();
+      if (monitorProcess && !monitorProcess.isDestroyed()) monitorProcess.close();
+      if (childWindow && !childWindow.isDestroyed()) childWindow.close();
 
       setTimeout(() => {
         console.log('Windows:');
@@ -537,7 +539,20 @@ function beginShutdown() {
         console.log(`Monitor: ${monitorProcess.isDestroyed()}`);
         console.log(`Child: ${childWindow.isDestroyed()}`);
       }, 1 * 1000);
-    }, 10 * 1000);
+    };
+
+    if (workerInitFinished) {
+      workerWindow.send('shutdown');
+
+      // We give the worker window 10 seconds to acknowledge a request
+      // to shut down.  Otherwise, we just close it.
+      appShutdownTimeout = setTimeout(() => {
+        console.log('Timeout out. Forcing.');
+        forceClose();
+      }, 10 * 1000);
+    } else {
+      forceClose();
+    }
   } else {
     console.log('Shutdown already started. Ignore.');
   }
@@ -548,11 +563,6 @@ function recreateAndShowMainWindow() {
   ///////////////////////////////////////
   // Worker Window
   ///////////////////////////////////////
-  workerWindow = new BrowserWindow({
-    show: false,
-    webPreferences: { nodeIntegration: true, contextIsolation: false },
-  });
-
   remote.enable(workerWindow.webContents);
   // setTimeout(() => {
   workerWindow.loadURL(`${global.indexUrl}?windowId=worker`);
