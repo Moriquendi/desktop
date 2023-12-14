@@ -165,6 +165,7 @@ export class ProtocolLinksService extends Service {
 
     if (!this.customizationService.state.autoStreamEnabled) {
       console.log('Auto stream disabled. Ignore deeplink.');
+      return;
     }
 
     const shouldStart = info.query.get('start') === 'true';
@@ -174,7 +175,7 @@ export class ProtocolLinksService extends Service {
     if (isOffline && shouldStart) {
       console.log('Will turn on streaming.');
       console.log(`Make sure app is shown...`);
-      await electron.ipcRenderer.invoke('SHOW_APP');
+      await electron.ipcRenderer.invoke('SHOW_APP', { focus: false });
       console.log(`Wait for app to finish init...`);
       await this.awaitForAllSetupDone();
       console.log(`STREAMING GO`);

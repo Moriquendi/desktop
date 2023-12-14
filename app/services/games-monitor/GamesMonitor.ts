@@ -9,6 +9,7 @@ import { OS, byOS } from 'util/operating-systems';
 import { first } from 'lodash';
 import { GameInfo, fetchGamesList } from './API+Games';
 import { WindowInfo } from '@paymoapp/active-window';
+
 const { app } = remote;
 
 // Same as import { EStreamingState } from 'services/streaming';
@@ -30,7 +31,6 @@ class GamesMonitor {
 
   constructor() {
     console.log('[GamesMonitor] Creating.');
-
     electron.ipcRenderer.on('STREAMING_STATE_CHANGED', (event, status) => {
       console.log(`Received streaming state: ${status}`);
       this.currentStreamStatus = status;
@@ -66,16 +66,9 @@ class GamesMonitor {
     });
   }
 
-  async startBackgroundMonitoring() {
-    console.log('[GamesMonitor] Start background monitoring...');
+  async setup() {
+    console.log('[GamesMonitor] Setup');
 
-    console.log('[GamesMonitor] Waiting 5 seconds...');
-
-    console.log('[GamesMonitor] Start observing.');
-
-    // this.observer.onRunningAppsChanged = appsList => {
-    //   this.handle(appsList, false, true);
-    // };
     this.observer.onFocusedWindowChanged = windowInfo => {
       this.handleWindow(windowInfo);
     };
@@ -85,16 +78,26 @@ class GamesMonitor {
       }
     };
 
-    electron.ipcRenderer.on('SET_AUTO_STREAMING_STATE', async (e, state) => {
-      console.log(`Received SET_AUTO_STREAMING_STATE = ${state}`);
-      if (state) {
-        // Wait to make sure everything else is loaded
-        await Utils.sleep(5 * 1000);
-        this.observer.start();
-      } else {
-        this.observer.stop();
-      }
-    });
+    this.startBackgroundMonitoring();
+    // TODO:
+    // electron.ipcRenderer.on('SET_AUTO_STREAMING_STATE', async (e, state) => {
+    //   console.log(`Received SET_AUTO_STREAMING_STATE = ${state}`);
+    //   if (state) {
+    //     this.startBackgroundMonitoring();
+    //   } else {
+    //     this.observer.stop();
+    //   }
+    // });
+  }
+
+  async startBackgroundMonitoring() {
+    console.log('[GamesMonitor] Start background monitoring...');
+    console.log('[GamesMonitor] Waiting 5 seconds...');
+    console.log('[GamesMonitor] Start observing.');
+
+    // Wait to make sure everything else is loaded
+    await Utils.sleep(5 * 1000);
+    this.observer.start();
   }
 
   handleWindow(window: WindowInfo) {
@@ -230,7 +233,7 @@ export default monitor;
 
 // electron.ipcRenderer.on('AppInitFinished', () => {
 // console.log('[GamesMonitor] AppInitFinished.');
-monitor.startBackgroundMonitoring();
+monitor.setup();
 // });
 
 //////////////////////////////

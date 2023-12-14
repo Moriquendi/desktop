@@ -1,4 +1,4 @@
-import { UserService } from 'app-services';
+import { CustomizationService, UserService } from 'app-services';
 import { BuffedClient } from 'components-react/pages/onboarding/BuffedClient';
 import { Services } from 'components-react/service-provider';
 import electron from 'electron';
@@ -26,6 +26,7 @@ function sleep(ms: number) {
 
 export class BuffedSettingsController {
   @Inject() userService: UserService;
+  @Inject() customizationService: CustomizationService;
 
   async otherStuff() {
     Services.SettingsService.actions.setSettingValue('Output', 'RecRB', false);
@@ -61,6 +62,11 @@ export class BuffedSettingsController {
         const profile = await client.profile(token);
         console.log(`[Buffed settings] Fetched. `, profile.obs_settings);
         settings = profile.obs_settings ?? settings;
+
+        if (!settings.auto_streaming) {
+          // disable it in setting in case it comes as false
+          this.customizationService.actions.setAutoStreamEnabled(false);
+        }
       } catch {
         console.log(`[Buffed settings] FAILED fetch.`);
       }

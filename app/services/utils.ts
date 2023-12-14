@@ -57,6 +57,10 @@ export default class Utils {
     return this.getUrlParams(window.location.href);
   }
 
+  static getShouldShow(): boolean {
+    return this.getCurrentUrlParams().show === 'true';
+  }
+
   static getWindowId(): string {
     return this.getCurrentUrlParams().windowId;
   }

@@ -385,7 +385,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   let mainWindowShowTime = 0;
   if (Utils.isMainWindow()) {
-    remote.getCurrentWindow().show();
+    if (Utils.getShouldShow()) {
+      remote.getCurrentWindow().show();
+    }
     mainWindowShowTime = Date.now();
   }
 

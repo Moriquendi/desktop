@@ -372,8 +372,9 @@ async function startApp() {
   });
 
   const settings = app.getLoginItemSettings();
-  const isLaunchedAutoAtLogin =
-    process.argv.includes('--was-launched-at-login') || settings.wasOpenedAtLogin;
+  // const isLaunchedAutoAtLogin =
+  //   process.argv.includes('--was-launched-at-login') || settings.wasOpenedAtLogin;
+  const isLaunchedAutoAtLogin = true;
 
   if (!isLaunchedAutoAtLogin) {
     recreateAndShowMainWindow();
@@ -514,7 +515,7 @@ async function startApp() {
   let ghtml = `file://${__dirname}/monitor-helper/index.html`;
   monitorProcess.loadURL(ghtml);
 
-  //monitorProcess?.webContents.openDevTools({ mode: 'undocked' });
+  // monitorProcess?.webContents.openDevTools({ mode: 'undocked' });
 
   console.log(`Main: End startApp`);
 }
@@ -595,7 +596,7 @@ function recreateAndShowMainWindow() {
   });
   remote.enable(mainWindow.webContents);
   // setTimeout(() => {
-  mainWindow.loadURL(`${global.indexUrl}?windowId=main`);
+  mainWindow.loadURL(`${global.indexUrl}?windowId=main&show=${shouldFocusWindowOnNextShow ? 'true' : 'false'}`);
   // }, 5 * 1000)
   mainWindowState.manage(mainWindow);
   mainWindow.removeMenu();
@@ -719,15 +720,16 @@ let pendingLink;
 app.on('open-url', (e, url) => {
   console.log(`open-url: ${url}`);
 
+  if (url.includes('/autostream')) {
+    shouldFocusWindowOnNextShow = false;
+  }
+
   if (protocolLinkReady) {
     workerWindow.send('protocolLink', url);
   } else {
     pendingLink = url;
   }
 
-  if (url.includes('/autostream')) {
-    shouldFocusWindowOnNextShow = false;
-  }
   showApp();
 });
 
@@ -976,6 +978,9 @@ function measure(msg, time) {
 ipcMain.handle('DESKTOP_CAPTURER_GET_SOURCES', (event, opts) => desktopCapturer.getSources(opts));
 
 ipcMain.handle('SHOW_APP', (event, opts) => {
+  if (opts.focus !== undefined && opts == false) {
+    shouldFocusWindowOnNextShow = false;
+  }
   showApp();
 });
 
