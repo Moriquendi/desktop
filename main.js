@@ -372,9 +372,8 @@ async function startApp() {
   });
 
   const settings = app.getLoginItemSettings();
-  // const isLaunchedAutoAtLogin =
-  //   process.argv.includes('--was-launched-at-login') || settings.wasOpenedAtLogin;
-  const isLaunchedAutoAtLogin = true;
+  const isLaunchedAutoAtLogin =
+    process.argv.includes('--was-launched-at-login') || settings.wasOpenedAtLogin;
 
   if (!isLaunchedAutoAtLogin) {
     recreateAndShowMainWindow();
@@ -716,9 +715,8 @@ app.on('second-instance', (event, argv, cwd) => {
 let protocolLinkReady = false;
 let pendingLink;
 
-// For mac os, this event will fire when a protocol link is triggered
-app.on('open-url', (e, url) => {
-  console.log(`open-url: ${url}`);
+function handleDeeplink(url) {
+  console.log('Handle deeplink.')
 
   if (url.includes('/autostream')) {
     shouldFocusWindowOnNextShow = false;
@@ -731,7 +729,15 @@ app.on('open-url', (e, url) => {
   }
 
   showApp();
+}
+
+// For mac os, this event will fire when a protocol link is triggered
+app.on('open-url', (e, url) => {
+  console.log(`open-url: ${url}`);
+  handleDeeplink(url);
 });
+
+
 
 ipcMain.on('protocolLinkReady', () => {
   protocolLinkReady = true;
@@ -982,6 +988,11 @@ ipcMain.handle('SHOW_APP', (event, opts) => {
     shouldFocusWindowOnNextShow = false;
   }
   showApp();
+});
+
+ipcMain.handle('DEEPLINK', (event, opts) => {
+  console.log(`DEEPLINK: ${opts}`);
+  handleDeeplink(opts);
 });
 
 ipcMain.on('STREAMING_STATE_CHANGED', (event, streamingState) => {

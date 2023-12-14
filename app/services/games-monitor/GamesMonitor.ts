@@ -224,7 +224,7 @@ class GamesMonitor {
     const url = `me.buffed.app.desktop://autostream?${query}`;
 
     console.log('openDeeplink', url);
-    electron.shell.openExternal(url);
+    electron.ipcRenderer.invoke('DEEPLINK', url);
   }
 }
 
