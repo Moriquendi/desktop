@@ -984,7 +984,7 @@ function measure(msg, time) {
 ipcMain.handle('DESKTOP_CAPTURER_GET_SOURCES', (event, opts) => desktopCapturer.getSources(opts));
 
 ipcMain.handle('SHOW_APP', (event, opts) => {
-  if (opts.focus !== undefined && opts == false) {
+  if (opts?.focus !== undefined && opts == false) {
     shouldFocusWindowOnNextShow = false;
   }
   showApp();

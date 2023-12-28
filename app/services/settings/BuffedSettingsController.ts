@@ -186,13 +186,7 @@ export class BuffedSettingsController {
     await sleep(100);
     ////////////////////////////////////////
     // FIT TO SCREN
-    console.log(`Fit to screen all selection.`);
-    const actScene = ScenesService.views.activeScene;
-    const sceneSelection = actScene.getSelection();
-    const sceneItems = actScene.getItems();
-    console.log(`Adding ${sceneItems.length} items to selection.`);
-    sceneSelection.add(sceneItems);
-    sceneSelection.fitToScreen();
+
     ////////////////////////////////////////
 
     /////////////
@@ -263,5 +257,16 @@ export class BuffedSettingsController {
     );
     console.log(`result: ${result}`);
     */
+  }
+
+  fitScreenContent() {
+    console.log(`Fit to screen all selection.`);
+    const { ScenesService } = Services;
+    const actScene = ScenesService.views.activeScene;
+    const sceneSelection = actScene.getSelection();
+    const sceneItems = actScene.getItems();
+    console.log(`Adding ${sceneItems.length} items to selection.`);
+    sceneSelection.add(sceneItems);
+    sceneSelection.fitToScreen();
   }
 }

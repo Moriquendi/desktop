@@ -180,10 +180,9 @@ export class AppService extends StatefulService<IAppState> {
     console.log(`start`);
     const controller = new BuffedSettingsController();
     await controller.setBuffedDetaultSettings();
-    this.userService.userLoginFinished.subscribe(() => {
+    this.userService.userLoginFinished.subscribe(async () => {
       console.log(`[Buffed settings] User logged in. Refresh buffed settings.`);
-      //await
-      controller.setBuffedDetaultSettings();
+      await controller.setBuffedDetaultSettings();
     });
 
     const setupAutoLogin = (enabled: boolean) => {
@@ -211,6 +210,8 @@ export class AppService extends StatefulService<IAppState> {
 
     ipcRenderer.send('AppInitFinished');
     this.metricsService.recordMetric('sceneCollectionLoadingTime');
+
+    controller.fitScreenContent();
   }
 
   shutdownStarted = new Subject();
