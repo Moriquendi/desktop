@@ -100,9 +100,8 @@ export default function StudioFooterComponent() {
   }
 
   return (
-    <div className={cx('footer', styles.footer)} style={{height: '200px'}}>
+    <div className={cx('footer', styles.footer)} style={{ height: '200px' }}>
       <div className={cx('flex flex--center flex--justify-start', styles.footerLeft)}>
-        
         {/* <Tooltip placement="left" title={$t('Open Performance Window')}>
           <i
             className={cx(
@@ -171,15 +170,23 @@ export default function StudioFooterComponent() {
           </div>
         )}
         {!recordingModeEnabled && (
-          <div className={styles.navItem}>
+          <div
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              textAlign: 'center',
+              gap: '10px',
+            }}
+          >
             <StartStreamingButton />
+            <p>You can browse clips from captured games in the Buffed mobile app</p>
           </div>
         )}
         {recordingModeEnabled && <RecordingButton />}
       </div>
 
-      <div className={styles.navRight}>
-      </div>
+      <div className={styles.navRight}></div>
     </div>
   );
 }

@@ -14,7 +14,7 @@ export function GeneralSettings() {
     <div>
       <LanguageSettings />
       <ExtraSettings />
-      <ObsGenericSettingsForm />
+      {/* <ObsGenericSettingsForm /> */}
     </div>
   );
 }
@@ -175,11 +175,11 @@ function ExtraSettings() {
             </div>
           )}
 
-          <div className="input-container">
+          {/* <div className="input-container">
             <button className="button button--default" onClick={importFromObs}>
               {$t('OBS Import')}
             </button>
-          </div>
+          </div> */}
         </div>
       </ObsSettingsSection>
     </>

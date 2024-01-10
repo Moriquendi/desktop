@@ -201,5 +201,5 @@ function StreamButtonLabel(p: {
     return <>{$t('Reconnecting')}</>;
   }
 
-  return <>{$t('Start Gaming')}</>;
+  return <>{$t('Start Game Capture')}</>;
 }

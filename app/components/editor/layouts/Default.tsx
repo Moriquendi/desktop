@@ -42,7 +42,7 @@ export default class Default extends BaseLayout {
         >
           {this.$slots['1']}
         </div>
-        <ResizeBar
+        {/* <ResizeBar
           position="top"
           value={this.bar1}
           onInput={(value: number) => this.setBar('bar1', value)}
@@ -51,7 +51,7 @@ export default class Default extends BaseLayout {
           max={this.calculateMax(this.mins.rest + this.bar2)}
           min={this.mins.bar1}
           reverse={true}
-        />
+        /> */}
         {/* <div
           style={{ height: `${this.resizes.bar1 * 100}%` }}
           class={cx(styles.cell, 'no-top-padding')}

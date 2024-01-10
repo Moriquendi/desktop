@@ -8,4 +8,5 @@ export {
   StreamPreview,
   DisplayElement as Display,
   SourceSelector,
+  SourceAndMixerSelector,
 } from 'components/shared/ReactComponentList';

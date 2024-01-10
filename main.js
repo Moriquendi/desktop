@@ -572,8 +572,8 @@ function recreateAndShowMainWindow() {
   // Main Window
   ///////////////////////////////////////
   const mainWindowState = windowStateKeeper({
-    defaultWidth: 1600,
-    defaultHeight: 1000,
+    defaultWidth: 900,
+    defaultHeight: 850,
   });
   mainWindow = new BrowserWindow({
     minWidth: 800,

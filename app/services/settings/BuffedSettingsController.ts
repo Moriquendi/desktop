@@ -186,7 +186,7 @@ export class BuffedSettingsController {
     await sleep(100);
     ////////////////////////////////////////
     // FIT TO SCREN
-
+    this.fitScreenContent();
     ////////////////////////////////////////
 
     /////////////
