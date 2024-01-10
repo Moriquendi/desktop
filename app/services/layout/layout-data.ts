@@ -1,5 +1,5 @@
-import * as Layouts from 'components/editor/layouts';
-import * as Elements from 'components/editor/elements';
+import * as Layouts from 'components-react/editor/elements/layouts';
+import * as Elements from 'components-react/editor/elements';
 import TsxComponent from 'components/tsx-component';
 import { $t } from 'services/i18n';
 

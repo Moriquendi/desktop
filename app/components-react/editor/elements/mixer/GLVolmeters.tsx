@@ -1,27 +1,28 @@
-import { Component, Watch } from 'vue-property-decorator';
-import { AudioService, IVolmeter } from 'services/audio';
-import { Inject } from 'services/core/injector';
-import { CustomizationService } from 'services/customization';
+import React, { useEffect, useRef } from 'react';
+import { IVolmeter } from 'services/audio';
+import { Subscription } from 'rxjs';
+import electron from 'electron';
+import difference from 'lodash/difference';
 import { compileShader, createProgram } from 'util/webgl/utils';
 import vShaderSrc from 'util/webgl/shaders/volmeter.vert';
 import fShaderSrc from 'util/webgl/shaders/volmeter.frag';
-import electron from 'electron';
-import TsxComponent, { createProps } from 'components/tsx-component';
-import difference from 'lodash/difference';
-import { Subscription } from 'rxjs';
+import { Services } from 'components-react/service-provider';
+import { injectWatch, useModule } from 'slap';
+import { assertIsDefined, getDefined } from 'util/properties-type-guards';
 
 // Configuration
 const CHANNEL_HEIGHT = 3;
 const SPACE_BETWEEN_CHANNELS = 2;
 const PADDING_TOP = 39;
-const PADDING_BOTTOM = 41;
+const PADDING_BOTTOM = 49;
 const PEAK_WIDTH = 4;
 const PEAK_HOLD_CYCLES = 100;
 const WARNING_LEVEL = -20;
 const DANGER_LEVEL = -9;
 
 // Colors (RGB)
-const GREEN = [49, 195, 162];
+const GREEN = [128, 245, 210];
+const LIGHT_MODE_GREEN = [18, 128, 121];
 const YELLOW = [255, 205, 71];
 const RED = [252, 62, 63];
 
@@ -42,37 +43,41 @@ interface IVolmeterSubscription {
   listener: (e: Electron.Event, volmeter: IVolmeter) => void;
 }
 
-class VolmetersProps {}
-
 /**
- * Renders volmeters for the current scene via WebGL
+ * Component that renders the volume for audio sources via WebGL
  */
-@Component({ props: createProps(VolmetersProps) })
-export default class GLVolmeters extends TsxComponent<VolmetersProps> {
-  render() {
-    return (
-      <div style={{ position: 'absolute' }}>
-        <canvas
-          ref="canvas"
-          style={{
-            display: 'block',
-            position: 'absolute',
-            top: 0,
-            right: 0,
-            left: 0,
-            height: '100%',
-          }}
-        />
-      </div>
-    );
-  }
+export default function GLVolmeters() {
+  const { setupNewCanvas } = useModule(GLVolmetersModule);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
 
-  $refs: {
-    canvas: HTMLCanvasElement;
-  };
+  // start rendering volmeters when the canvas is ready
+  useEffect(() => {
+    assertIsDefined(canvasRef.current);
+    setupNewCanvas(canvasRef.current);
+  }, []);
 
-  @Inject() customizationService!: CustomizationService;
-  @Inject() audioService: AudioService;
+  return (
+    <div style={{ position: 'absolute', height: '100%', width: '100%' }}>
+      <canvas
+        ref={canvasRef}
+        style={{
+          display: 'block',
+          position: 'absolute',
+          top: 0,
+          right: 0,
+          left: 0,
+          paddingLeft: '16px',
+          paddingRight: '16px',
+          height: '100%',
+        }}
+      />
+    </div>
+  );
+}
+
+class GLVolmetersModule {
+  private customizationService = Services.CustomizationService;
+  private audioService = Services.AudioService;
 
   subscriptions: Dictionary<IVolmeterSubscription> = {};
 
@@ -108,14 +113,13 @@ export default class GLVolmeters extends TsxComponent<VolmetersProps> {
   private workerId: number;
   private requestedFrameId: number;
   private bgMultiplier = this.customizationService.isDarkTheme ? 0.2 : 0.5;
-  private customizationServiceSubscription: Subscription = null;
+  private customizationServiceSubscription: Subscription = null!;
 
-  mounted() {
+  init() {
     this.workerId = electron.ipcRenderer.sendSync('getWorkerWindowId');
     this.subscribeVolmeters();
     this.bg = this.customizationService.sectionBackground;
-    this.fpsLimit = this.customizationService.state.experimental.volmetersFPSLimit;
-    this.setupNewCanvas();
+    this.fpsLimit = this.customizationService.state.experimental!.volmetersFPSLimit! || 30;
 
     // update FPS limit if settings have changed
     this.customizationServiceSubscription = this.customizationService.settingsChanged.subscribe(
@@ -127,6 +131,10 @@ export default class GLVolmeters extends TsxComponent<VolmetersProps> {
     );
   }
 
+  $refs = {
+    canvas: null! as HTMLCanvasElement,
+  };
+
   // TODO: refactor into a single source of truth between Mixer and Volmeters
   get audioSources() {
     return this.audioService.views.sourcesForCurrentScene.filter(source => {
@@ -134,10 +142,16 @@ export default class GLVolmeters extends TsxComponent<VolmetersProps> {
     });
   }
 
+  // update volmeters subscriptions when audio sources change
+  watchAudioSources = injectWatch(
+    () => this.audioSources,
+    () => this.subscribeVolmeters(),
+  );
+
   /**
    * add or remove subscription for volmeters depending on current scene
    */
-  @Watch('audioSources')
+
   private subscribeVolmeters() {
     const audioSources = this.audioSources;
     const sourcesOrder = audioSources.map(source => source.sourceId);
@@ -210,26 +224,27 @@ export default class GLVolmeters extends TsxComponent<VolmetersProps> {
     this.customizationServiceSubscription.unsubscribe();
   }
 
-  private setupNewCanvas() {
+  setupNewCanvas($canvasEl: HTMLCanvasElement) {
+    this.$refs.canvas = $canvasEl;
     // Make sure all state is cleared out
-    this.gl = null;
-    this.program = null;
-    this.positionLocation = null;
-    this.resolutionLocation = null;
-    this.translationLocation = null;
-    this.scaleLocation = null;
-    this.volumeLocation = null;
-    this.peakHoldLocation = null;
-    this.bgMultiplierLocation = null;
-    this.canvasWidth = null;
-    this.channelCount = null;
-    this.canvasHeight = null;
+    this.gl = null!;
+    this.program = null!;
+    this.positionLocation = null!;
+    this.resolutionLocation = null!;
+    this.translationLocation = null!;
+    this.scaleLocation = null!;
+    this.volumeLocation = null!;
+    this.peakHoldLocation = null!;
+    this.bgMultiplierLocation = null!;
+    this.canvasWidth = 0;
+    this.channelCount = 0;
+    this.canvasHeight = 0;
 
     this.setCanvasSize();
     this.canvasWidthInterval = window.setInterval(() => this.setCanvasSize(), 500);
     this.requestedFrameId = requestAnimationFrame(t => this.onRequestAnimationFrameHandler(t));
 
-    this.gl = this.$refs.canvas.getContext('webgl', { alpha: false });
+    this.gl = getDefined(this.$refs.canvas.getContext('webgl', { alpha: false }));
     this.initWebglRendering();
     this.renderingInitialized = true;
   }
@@ -262,9 +277,9 @@ export default class GLVolmeters extends TsxComponent<VolmetersProps> {
   }
 
   private initWebglRendering() {
-    const vShader = compileShader(this.gl, vShaderSrc, this.gl.VERTEX_SHADER);
-    const fShader = compileShader(this.gl, fShaderSrc, this.gl.FRAGMENT_SHADER);
-    this.program = createProgram(this.gl, vShader, fShader);
+    const vShader = getDefined(compileShader(this.gl, vShaderSrc, this.gl.VERTEX_SHADER));
+    const fShader = getDefined(compileShader(this.gl, fShaderSrc, this.gl.FRAGMENT_SHADER));
+    this.program = getDefined(createProgram(this.gl, vShader, fShader));
 
     const positionBuffer = this.gl.createBuffer();
     this.gl.bindBuffer(this.gl.ARRAY_BUFFER, positionBuffer);
@@ -286,23 +301,28 @@ export default class GLVolmeters extends TsxComponent<VolmetersProps> {
     this.positionLocation = this.gl.getAttribLocation(this.program, 'a_position');
 
     // lookup uniforms
-    this.resolutionLocation = this.gl.getUniformLocation(this.program, 'u_resolution');
-    this.translationLocation = this.gl.getUniformLocation(this.program, 'u_translation');
-    this.scaleLocation = this.gl.getUniformLocation(this.program, 'u_scale');
-    this.volumeLocation = this.gl.getUniformLocation(this.program, 'u_volume');
-    this.peakHoldLocation = this.gl.getUniformLocation(this.program, 'u_peakHold');
-    this.bgMultiplierLocation = this.gl.getUniformLocation(this.program, 'u_bgMultiplier');
+    this.resolutionLocation = getDefined(this.gl.getUniformLocation(this.program, 'u_resolution'));
+    this.translationLocation = getDefined(
+      this.gl.getUniformLocation(this.program, 'u_translation'),
+    );
+    this.scaleLocation = getDefined(this.gl.getUniformLocation(this.program, 'u_scale'));
+    this.volumeLocation = getDefined(this.gl.getUniformLocation(this.program, 'u_volume'));
+    this.peakHoldLocation = getDefined(this.gl.getUniformLocation(this.program, 'u_peakHold'));
+    this.bgMultiplierLocation = getDefined(
+      this.gl.getUniformLocation(this.program, 'u_bgMultiplier'),
+    );
 
     this.gl.useProgram(this.program);
 
-    const warningLocation = this.gl.getUniformLocation(this.program, 'u_warning');
+    const warningLocation = getDefined(this.gl.getUniformLocation(this.program, 'u_warning'));
     this.gl.uniform1f(warningLocation, this.dbToUnitScalar(WARNING_LEVEL));
 
-    const dangerLocation = this.gl.getUniformLocation(this.program, 'u_danger');
+    const dangerLocation = getDefined(this.gl.getUniformLocation(this.program, 'u_danger'));
     this.gl.uniform1f(dangerLocation, this.dbToUnitScalar(DANGER_LEVEL));
 
     // Set colors
-    this.setColorUniform('u_green', GREEN);
+    const green = this.customizationService.views.isDarkTheme ? GREEN : LIGHT_MODE_GREEN;
+    this.setColorUniform('u_green', green);
     this.setColorUniform('u_yellow', YELLOW);
     this.setColorUniform('u_red', RED);
   }
@@ -314,8 +334,9 @@ export default class GLVolmeters extends TsxComponent<VolmetersProps> {
   }
 
   private setCanvasSize() {
-    const width = Math.floor(this.$refs.canvas.parentElement.offsetWidth);
-    const height = Math.floor(this.$refs.canvas.parentElement.offsetHeight);
+    const $parent = getDefined(this.$refs.canvas?.parentElement);
+    const width = Math.floor($parent.offsetWidth);
+    const height = Math.floor($parent.offsetHeight);
 
     if (width !== this.canvasWidth) {
       this.canvasWidth = width;

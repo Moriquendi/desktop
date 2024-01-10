@@ -1,7 +1,7 @@
 import TsxComponent from 'components/tsx-component';
 import { Watch } from 'vue-property-decorator';
 import { LayoutSlot, LayoutService, IVec2Array } from 'services/layout';
-import BaseElement from 'components/editor/elements/BaseElement';
+import BaseElement from 'components-react/editor/elements/BaseElement';
 import { Inject } from 'services/core';
 import { CustomizationService } from 'services/customization';
 import { WindowsService } from 'services/windows';
