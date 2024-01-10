@@ -50,6 +50,7 @@ import Projector from './windows/Projector';
 import SceneSelector from './editor/elements/SceneSelector';
 import AddSource from './windows/AddSource';
 import SourceSelector from './editor/elements/SourceSelector';
+import SourceAndMixerSelectorElement from './editor/elements/SourceAndMixerSelectorElement';
 import SideNav from './sidebar/SideNav';
 import WelcomeToPrime from './windows/WelcomeToPrime';
 import Notifications from './windows/notifications/Notifications';
@@ -125,6 +126,7 @@ export const components = {
   SceneSelector: createRoot(SceneSelector),
   AddSource,
   SourceSelector: createRoot(SourceSelector),
+  SourceAndMixerSelector: createRoot(SourceAndMixerSelectorElement),
   RecordingHistory: createRoot(RecordingHistory),
   RecentEventsWindow,
   SideNav,

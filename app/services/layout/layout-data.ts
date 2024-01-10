@@ -24,6 +24,7 @@ export enum ELayoutElement {
   StreamPreview = 'StreamPreview',
   RecordingPreview = 'RecordingPreview',
   Browser = 'Browser',
+  SourcesAndMixer = 'SourcesAndMixer',
 }
 
 type ILayoutData = {
@@ -87,6 +88,10 @@ export const ELEMENT_DATA = (): IElementData => ({
   [ELayoutElement.Mixer]: { title: $t('Audio Mixer'), component: Elements.Mixer },
   [ELayoutElement.Scenes]: { title: $t('Scene Selector'), component: Elements.SceneSelector },
   [ELayoutElement.Sources]: { title: $t('Source Selector'), component: Elements.SourceSelector },
+  [ELayoutElement.SourcesAndMixer]: {
+    title: $t('Source & Mixer Selector'),
+    component: Elements.SourceAndMixerSelector,
+  },
   [ELayoutElement.LegacyEvents]: { title: $t('Legacy Events'), component: Elements.LegacyEvents },
   [ELayoutElement.StreamPreview]: {
     title: $t('Stream Preview'),
