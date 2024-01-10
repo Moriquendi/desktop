@@ -215,7 +215,7 @@
   "Folder Expansion": "Map uitvouwen",
   "Wondering how to expand your folders? Just click on the <icon></icon> icon": "Wilt u weten hoe u mappen kunt uitvouwen? Klik gewoon op het pictogram <icon></icon>",
   "Use custom frame rate": "Aangepaste framerate gebruiken",
-  "Control audio via Buffed Desktop": "Audio regelen via Streamlabs Desktop",
+  "Control audio via Buffed Desktop": "Audio regelen via Buffed Desktop",
   "Custom CSS": "Aangepaste CSS",
   "Shutdown source when not visible": "Bron uitschakelen indien niet zichtbaar",
   "Refresh browser when scene becomes active": "Browser vernieuwen wanneer scène actief wordt",
@@ -354,5 +354,8 @@
   "Set scale filter 'Bicubic'": "Schaalfilter 'Bicubic' instellen",
   "Set scale filter 'Bilinear'": "Schaalfilter 'Bilineair' instellen",
   "Set scale filter 'Lanczos'": "Schaalfilter 'Lanczos' instellen",
-  "Set scale filter 'Area'": "Schaalfilter 'Area' instellen"
+  "Set scale filter 'Area'": "Schaalfilter 'Area' instellen",
+  "You currently have the same source on both canvases selected. Please select the source in the canvas to edit it independently.": "U heeft momenteel dezelfde bron op beide canvassen geselecteerd. Selecteer de bron op het canvas om deze onafhankelijk te bewerken.",
+  "Selective Recording can only be used with horizontal sources.": "Selectieve opname kan alleen worden gebruikt met horizontale bronnen.",
+  "Cannot move source outside canvas in Dual Output Mode.": "Kan bron niet buiten canvas verplaatsen in de Dual Output-modus."
 }

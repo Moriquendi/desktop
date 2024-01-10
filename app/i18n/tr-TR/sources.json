@@ -215,7 +215,7 @@
   "Folder Expansion": "Klasör Genişlemesi",
   "Wondering how to expand your folders? Just click on the <icon></icon> icon": "Klasörlerinizi nasıl genişleteceğinizi mi öğrenmek istiyorsunuz? <icon></icon> simgesine tıklamanız yeterli",
   "Use custom frame rate": "Özel kare hızı kullan",
-  "Control audio via Buffed Desktop": "Sesi, Streamlabs Desktop üzerinden kontrol et",
+  "Control audio via Buffed Desktop": "Sesi, Buffed Desktop üzerinden kontrol et",
   "Custom CSS": "Özel CSS",
   "Shutdown source when not visible": "Görünür olmadığında kaynağı kapat",
   "Refresh browser when scene becomes active": "Sahne etkinleştiğinde tarayıcıyı yenile",
@@ -354,5 +354,8 @@
   "Set scale filter 'Bicubic'": "Ölçek filtresini “Bikübik” olarak ayarla",
   "Set scale filter 'Bilinear'": "Ölçek filtresini “Bilineer” olarak ayarla",
   "Set scale filter 'Lanczos'": "Ölçek filtresini “Lanczos” olarak ayarla",
-  "Set scale filter 'Area'": "Ölçek filtresini “Alan” olarak ayarla"
+  "Set scale filter 'Area'": "Ölçek filtresini “Alan” olarak ayarla",
+  "You currently have the same source on both canvases selected. Please select the source in the canvas to edit it independently.": "Şu anda seçili olan her iki kanvasta da aynı kaynak mevcut. Bağımsız olarak düzenlemek için lütfen kanvastaki kaynağı seçin.",
+  "Selective Recording can only be used with horizontal sources.": "Seçici Kayıt yalnızca yatay kaynaklarla birlikte kullanılabilir.",
+  "Cannot move source outside canvas in Dual Output Mode.": "Dual Output Modunda kaynak, kanvasın dışına taşınamaz."
 }

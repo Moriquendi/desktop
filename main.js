@@ -268,10 +268,10 @@ global.indexUrl = `file://${__dirname}/index.html`;
 
 function openDevTools() {
   console.log(`Main: openDevTools`);
-  childWindow.webContents.openDevTools({ mode: 'undocked' });
-  mainWindow.webContents.openDevTools({ mode: 'undocked' });
-  workerWindow.webContents.openDevTools({ mode: 'undocked' });
-  monitorProcess?.webContents.openDevTools({ mode: 'undocked' }); // TODO: make sure monitorProcess exists by the time it's called
+  childWindow.webContents.openDevTools({ mode: 'detach' });
+  mainWindow.webContents.openDevTools({ mode: 'detach' });
+  workerWindow.webContents.openDevTools({ mode: 'detach' });
+  monitorProcess?.webContents.openDevTools({ mode: 'detach' }); // TODO: make sure monitorProcess exists by the time it's called
 }
 
 // TODO: Clean this up
@@ -340,23 +340,29 @@ async function startApp() {
     //   : pjson.sentryBackendClientURL;
 
     // if (submitURL) {
-    //   crashReporter.start({
-    //     productName: 'streamlabs-obs',
-    //     companyName: 'streamlabs',
-    //     ignoreSystemCrashHandler: true,
-    //     submitURL,
-    //     extra: {
-    //       processType: 'main',
-    //     },
-    //     globalExtra: {
-    //       'sentry[release]': pjson.version,
-    //       'sentry[user][ip]': '{{auto}}',
-    //     },
-    //   });
+      // crashReporter.start({
+      //   productName: 'streamlabs-obs',
+      //   companyName: 'streamlabs',
+      //   ignoreSystemCrashHandler: true,
+      //   submitURL,
+      //   extra: {
+      //     processType: 'main',
+      //   },
+      //   globalExtra: {
+      //     'sentry[release]': pjson.version,
+      //     'sentry[user][ip_address]': '{{auto}}',
+      //   },
+      // });
     // }
   }
 
   console.log(`Main: Start worker window`);
+
+  if (process.env.SLOBS_PRODUCTION_DEBUG) {
+    workerWindow.webContents.once('dom-ready', () => {
+      workerWindow.webContents.openDevTools({ mode: 'detach' });
+    });
+  }
 
   // All renderers should use ipcRenderer.sendTo to send to communicate with
   // the worker.  This still gets proxied via the main process, but eventually

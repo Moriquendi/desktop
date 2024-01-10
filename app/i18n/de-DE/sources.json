@@ -215,7 +215,7 @@
   "Folder Expansion": "Ordnererweiterung",
   "Wondering how to expand your folders? Just click on the <icon></icon> icon": "Sie möchten wissen, wie Sie die Ordneransicht erweitern? Klicken Sie einfach auf das <icon></icon>-Symbol",
   "Use custom frame rate": "Benutzerdefinierte Bildfrequenz verwenden",
-  "Control audio via Buffed Desktop": "Audio über Streamlabs Desktop steuern",
+  "Control audio via Buffed Desktop": "Audio über Buffed Desktop steuern",
   "Custom CSS": "Benutzerdefinierte CSS",
   "Shutdown source when not visible": "Quelle herunterfahren, wenn nicht sichtbar",
   "Refresh browser when scene becomes active": "Browserseite aktualisieren, wenn Szene aktiv wird",
@@ -354,5 +354,8 @@
   "Set scale filter 'Bicubic'": "Skalierungsfilter „Bikubisch“ festlegen",
   "Set scale filter 'Bilinear'": "Skalierungsfilter „Bilinear“ festlegen",
   "Set scale filter 'Lanczos'": "Skalierungsfilter „Lanczos“ festlegen",
-  "Set scale filter 'Area'": "Skalierungsfilter „Bereich“ festlegen"
+  "Set scale filter 'Area'": "Skalierungsfilter „Bereich“ festlegen",
+  "You currently have the same source on both canvases selected. Please select the source in the canvas to edit it independently.": "Sie haben derzeit dieselbe Quelle für beide Arbeitsflächen ausgewählt. Bitte wählen Sie die Quelle in der Arbeitsfläche aus, um sie unabhängig zu bearbeiten.",
+  "Selective Recording can only be used with horizontal sources.": "Die selektive Aufzeichnung kann nur mit horizontalen Quellen verwendet werden.",
+  "Cannot move source outside canvas in Dual Output Mode.": "Die Quelle kann im Dual Output Modus nicht aus der Arbeitsfläche heraus verschoben werden."
 }

@@ -17,6 +17,8 @@ import {
   PlatformAppStore,
   BrowseOverlays,
   PlatformAppMainPage,
+  RecordingHistory,
+  Studio,
 } from 'components/shared/ReactComponentList';
 import { ScenesService } from 'services/scenes';
 import { PlatformAppsService } from 'services/platform-apps';
@@ -28,7 +30,6 @@ import * as remote from '@electron/remote';
 Vue.use(VueResize);
 
 // Pages
-import Studio from '../pages/Studio';
 import { Inject } from '../../services/core/injector';
 import { CustomizationService } from 'services/customization';
 import { NavigationService } from 'services/navigation';
@@ -66,6 +67,7 @@ const loadedTheme = () => {
     LayoutEditor,
     AlertboxLibrary,
     ModalWrapper,
+    RecordingHistory,
     StreamScheduler,
     Highlighter,
     Grow,

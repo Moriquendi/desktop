@@ -1,56 +1,40 @@
+import React from 'react';
 import cx from 'classnames';
-import BaseLayout, { LayoutProps, ILayoutSlotArray } from './BaseLayout';
-import { createProps } from 'components/tsx-component';
-import { Component } from 'vue-property-decorator';
-import ResizeBar from 'components/shared/ResizeBar.vue';
+import useLayout, { LayoutProps } from './hooks';
+import ResizeBar from 'components-react/root/ResizeBar';
 import styles from './Layouts.m.less';
 
-@Component({ props: createProps(LayoutProps) })
-export default class OnePane extends BaseLayout {
-  isColumns = true;
+export function OnePane(p: React.PropsWithChildren<LayoutProps>) {
+  const { mins, bars, resizes, calculateMax, setBar, componentRef } = useLayout(
+    [['2'], ['1', ['3', '4', '5']]],
+    true,
+    p.childrenMins,
+    p.onTotalWidth,
+  );
 
-  async mounted() {
-    this.mountResize();
-    this.setMins(['2'], ['1', ['3', '4', '5']]);
-  }
-  destroyed() {
-    this.destroyResize();
-  }
-
-  get vectors() {
-    return ['2', ['1', ['3', '4', '5']]] as ILayoutSlotArray;
-  }
-
-  render() {
-    return (
-      <div class={cx(styles.columns, styles.sidePadded)}>
-        <div style={{ width: `${100 - this.resizes.bar1 * 100}%` }} class={styles.cell}>
-          {this.$slots['2']}
+  return (
+    <div className={cx(styles.columns, styles.sidePadded)} ref={componentRef}>
+      <ResizeBar
+        position="left"
+        value={bars.bar1}
+        onInput={(value: number) => setBar('bar1', value)}
+        max={calculateMax(mins.rest)}
+        min={mins.bar1}
+      >
+        <div style={{ width: `${100 - resizes.bar1 * 100}%` }} className={styles.cell}>
+          {p.children?.['2'] || <></>}
         </div>
-        <ResizeBar
-          position="left"
-          value={this.bar1}
-          onInput={(value: number) => this.setBar('bar1', value)}
-          onResizestart={() => this.resizeStartHandler()}
-          onResizestop={() => this.resizeStopHandler()}
-          max={this.calculateMax(this.mins.rest)}
-          min={this.mins.bar1}
-          reverse={true}
-        />
-        <div
-          class={styles.rows}
-          style={{ width: `${this.resizes.bar1 * 100}%`, paddingTop: '16px' }}
-        >
-          <div class={styles.cell} style={{ height: '100%' }}>
-            {this.$slots['1']}
-          </div>
-          <div class={styles.segmented}>
-            <div class={styles.cell}>{this.$slots['3']}</div>
-            <div class={styles.cell}>{this.$slots['4']}</div>
-            <div class={styles.cell}>{this.$slots['5']}</div>
-          </div>
+      </ResizeBar>
+      <div className={styles.rows} style={{ width: `${resizes.bar1 * 100}%`, paddingTop: '16px' }}>
+        <div className={styles.cell} style={{ height: '100%' }}>
+          {p.children?.['1'] || <></>}
+        </div>
+        <div className={styles.segmented}>
+          <div className={styles.cell}>{p.children?.['3'] || <></>}</div>
+          <div className={styles.cell}>{p.children?.['4'] || <></>}</div>
+          <div className={styles.cell}>{p.children?.['5'] || <></>}</div>
         </div>
       </div>
-    );
-  }
+    </div>
+  );
 }

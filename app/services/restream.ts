@@ -13,18 +13,18 @@ import { FacebookService } from './platforms/facebook';
 import { TiktokService } from './platforms/tiktok';
 import { TrovoService } from './platforms/trovo';
 import * as remote from '@electron/remote';
-import * as obs from 'obs-studio-node';
 import { VideoSettingsService, TDisplayType } from './settings-v2/video';
-import { GreenService } from './green';
+import { DualOutputService } from './dual-output';
+import { TwitterPlatformService } from './platforms/twitter';
+import { InstagramService } from './platforms/instagram';
 
+export type TOutputOrientation = 'landscape' | 'portrait';
 interface IRestreamTarget {
   id: number;
   platform: TPlatform;
   streamKey: string;
   mode?: TOutputOrientation;
 }
-
-export type TOutputOrientation = 'landscape' | 'portrait';
 
 interface IRestreamState {
   /**
@@ -54,8 +54,10 @@ export class RestreamService extends StatefulService<IRestreamState> {
   @Inject() facebookService: FacebookService;
   @Inject() tiktokService: TiktokService;
   @Inject() trovoService: TrovoService;
+  @Inject() instagramService: InstagramService;
   @Inject() videoSettingsService: VideoSettingsService;
-  @Inject() greenService: GreenService;
+  @Inject() dualOutputService: DualOutputService;
+  @Inject('TwitterPlatformService') twitterService: TwitterPlatformService;
 
   settings: IUserSettingsResponse;
 
@@ -111,29 +113,39 @@ export class RestreamService extends StatefulService<IRestreamState> {
       const videoId = fbView.state.settings.liveVideoId;
       const token = fbView.getDestinationToken();
       fbParams = `&fbVideoId=${videoId}`;
-      // all destinations except "page" require a token
-      if (fbView.state.settings.destinationType !== 'page') {
-        fbParams += `&fbToken=${token}`;
-      }
+      /*
+       * The chat widget on core still passes fbToken to Facebook comments API.
+       * Not sure if this has always been the case but assuming null for pages is no
+       * longer allowed.
+       */
+      fbParams += `&fbToken=${token}`;
     }
-    return `https://buffed.me/embed/chat?oauth_token=${this.userService.apiToken}${fbParams}`;
+    return `https://${this.host}/embed/chat?oauth_token=${this.userService.apiToken}${fbParams}`;
   }
 
   get shouldGoLiveWithRestream() {
-    return this.streamInfo.isMultiplatformMode || this.streamInfo.isGreen;
+    return this.streamInfo.isMultiplatformMode || this.streamInfo.isDualOutputMode;
   }
 
+  /**
+   * Fetches user settings for restream
+   * @remarks
+   * In dual output mode, tell the stream which context to use when streaming
+   *
+   * @param mode - Optional, orientation denoting output context
+   * @returns IUserSettings JSON response
+   */
   fetchUserSettings(mode?: 'landscape' | 'portrait'): Promise<IUserSettingsResponse> {
     const headers = authorizedHeaders(this.userService.apiToken);
 
     let url;
     switch (mode) {
       case 'landscape': {
-        url = 'https://beta.streamlabs.com/api/v1/rst/user/settings';
+        url = `https://${this.host}/api/v1/rst/user/settings?mode=landscape`;
         break;
       }
       case 'portrait': {
-        url = 'https://beta.streamlabs.com/api/v1/rst/user/settings?mode=portrait';
+        url = `https://${this.host}/api/v1/rst/user/settings?mode=portrait`;
         break;
       }
       default: {
@@ -175,6 +187,7 @@ export class RestreamService extends StatefulService<IRestreamState> {
       dcProtection: false,
       idleTimeout: 30,
     });
+
     const request = new Request(url, { headers, body, method: 'PUT' });
 
     return jfetch(request);
@@ -184,6 +197,15 @@ export class RestreamService extends StatefulService<IRestreamState> {
     await Promise.all([this.setupIngest(context, mode), this.setupTargets(!!mode)]);
   }
 
+  /**
+   * Setup restream ingest
+   * @remarks
+   * In dual output mode, assign a context to the ingest.
+   * Defaults to the horizontal context.
+   *
+   * @param context - Optional, display to stream
+   * @param mode - Optional, mode which denotes which context to stream
+   */
   async setupIngest(context?: TDisplayType, mode?: TOutputOrientation) {
     const ingest = (await this.fetchIngest()).server;
     const settings = mode ? await this.fetchUserSettings(mode) : this.settings;
@@ -205,7 +227,15 @@ export class RestreamService extends StatefulService<IRestreamState> {
     );
   }
 
-  async setupTargets(isGreenMode?: boolean) {
+  /**
+   * Setup restream targets
+   * @remarks
+   * In dual output mode, assign a contexts to the ingest targets.
+   * Defaults to the horizontal context.
+   *
+   * @param isDualOutputMode - Optional, boolean denoting if dual output mode is on
+   */
+  async setupTargets(isDualOutputMode?: boolean) {
     // delete existing targets
     const targets = await this.fetchTargets();
     const promises = targets.map(t => this.deleteTarget(t.id));
@@ -214,11 +244,11 @@ export class RestreamService extends StatefulService<IRestreamState> {
     // setup new targets
     const newTargets = [
       ...this.streamInfo.enabledPlatforms.map(platform =>
-        isGreenMode
+        isDualOutputMode
           ? {
               platform,
               streamKey: getPlatformService(platform).state.streamKey,
-              mode: this.greenService.views.getPlatformContextName(platform) ?? 'landscape',
+              mode: this.dualOutputService.views.getPlatformMode(platform),
             }
           : {
               platform,
@@ -228,13 +258,11 @@ export class RestreamService extends StatefulService<IRestreamState> {
       ...this.streamInfo.savedSettings.customDestinations
         .filter(dest => dest.enabled)
         .map(dest =>
-          isGreenMode
+          isDualOutputMode
             ? {
                 platform: 'relay' as 'relay',
                 streamKey: `${dest.url}${dest.streamKey}`,
-                mode:
-                  this.greenService.views.getPlatformContextName(dest.name as TPlatform) ??
-                  'landscape',
+                mode: this.dualOutputService.views.getMode(dest.display),
               }
             : {
                 platform: 'relay' as 'relay',
@@ -249,6 +277,29 @@ export class RestreamService extends StatefulService<IRestreamState> {
       const ttSettings = this.tiktokService.state.settings;
       tikTokTarget.platform = 'relay';
       tikTokTarget.streamKey = `${ttSettings.serverUrl}/${ttSettings.streamKey}`;
+      // FIXME: this might need fixing, since not checking for dual output mode might make it
+      // request horizontal stream keys from restream which means this can't be streamed with
+      // an horizontal context (such as Twitch)
+      tikTokTarget.mode = this.dualOutputService.views.getPlatformMode('tiktok');
+    }
+
+    // treat twitter as a custom destination
+    const twitterTarget = newTargets.find(t => t.platform === 'twitter');
+    if (twitterTarget) {
+      twitterTarget.platform = 'relay';
+      twitterTarget.streamKey = `${this.twitterService.state.ingest}/${this.twitterService.state.streamKey}`;
+      // FIXME: see comment above
+      twitterTarget.mode = this.dualOutputService.views.getPlatformMode('twitter');
+    }
+
+    // treat instagram as a custom destination
+    const instagramTarget = newTargets.find(t => t.platform === 'instagram');
+    if (instagramTarget) {
+      instagramTarget.platform = 'relay';
+      instagramTarget.streamKey = `${this.instagramService.state.settings.streamUrl}${this.instagramService.state.streamKey}`;
+      instagramTarget.mode = isDualOutputMode
+        ? this.dualOutputService.views.getPlatformMode('instagram')
+        : 'landscape';
     }
 
     await this.createTargets(newTargets);
@@ -263,6 +314,14 @@ export class RestreamService extends StatefulService<IRestreamState> {
     );
   }
 
+  /**
+   * Create restream targets
+   * @remarks
+   * In dual output mode, assign a context to the ingest using the mode property.
+   * Defaults to the horizontal context.
+   *
+   * @param targets - Object with the platform name/type, stream key, and output mode
+   */
   async createTargets(
     targets: {
       platform: TPlatform | 'relay';

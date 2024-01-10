@@ -1,65 +1,52 @@
+import React from 'react';
 import cx from 'classnames';
-import BaseLayout, { LayoutProps, ILayoutSlotArray } from './BaseLayout';
-import { createProps } from 'components/tsx-component';
-import { Component } from 'vue-property-decorator';
-import ResizeBar from 'components/shared/ResizeBar.vue';
+import useLayout, { LayoutProps } from './hooks';
+import ResizeBar from 'components-react/root/ResizeBar';
 import styles from './Layouts.m.less';
 
-@Component({ props: createProps(LayoutProps) })
-export default class FourByFour extends BaseLayout {
-  async mounted() {
-    this.mountResize();
-    this.setMins(['1'], ['2', '3'], ['4', '5']);
-  }
-  destroyed() {
-    this.destroyResize();
-  }
+export function FourByFour(p: React.PropsWithChildren<LayoutProps>) {
+  const { mins, bars, resizes, calculateMax, setBar, componentRef } = useLayout(
+    [['1'], ['2', '3'], ['4', '5']],
+    false,
+    p.childrenMins,
+    p.onTotalWidth,
+  );
 
-  get vectors() {
-    return ['1', ['2', '3'], ['4', '5']] as ILayoutSlotArray;
-  }
-
-  render() {
-    return (
-      <div class={styles.rows}>
-        <div
-          class={styles.cell}
-          style={{ height: `${100 - (this.resizes.bar1 + this.resizes.bar2) * 100}%` }}
-        >
-          {this.$slots['1']}
-        </div>
-        <ResizeBar
-          position="top"
-          value={this.bar1}
-          onInput={(value: number) => this.setBar('bar1', value)}
-          onResizestart={() => this.resizeStartHandler()}
-          onResizestop={() => this.resizeStopHandler()}
-          max={this.calculateMax(this.mins.rest + this.bar2)}
-          min={this.mins.bar1}
-          reverse={true}
-        />
-        <div class={styles.segmented} style={{ height: `${this.resizes.bar1 * 100}%` }}>
-          <div class={cx(styles.cell, 'no-top-padding')}>{this.$slots['2']}</div>
-          <div class={cx(styles.cell, 'no-top-padding')}>{this.$slots['3']}</div>
-        </div>
-        <ResizeBar
-          position="top"
-          value={this.bar2}
-          onInput={(value: number) => this.setBar('bar2', value)}
-          onResizestart={() => this.resizeStartHandler()}
-          onResizestop={() => this.resizeStopHandler()}
-          max={this.calculateMax(this.mins.rest + this.mins.bar1)}
-          min={this.mins.bar2}
-          reverse={true}
-        />
-        <div
-          class={styles.segmented}
-          style={{ height: `${this.resizes.bar2 * 100}%`, padding: '0 8px' }}
-        >
-          <div class={cx(styles.cell, 'no-top-padding')}>{this.$slots['4']}</div>
-          <div class={cx(styles.cell, 'no-top-padding')}>{this.$slots['5']}</div>
-        </div>
+  return (
+    <div className={styles.rows} ref={componentRef}>
+      <div
+        className={styles.cell}
+        style={{ height: `${100 - (resizes.bar1 + resizes.bar2) * 100}%` }}
+      >
+        {p.children?.['1'] || <></>}
       </div>
-    );
-  }
+      <ResizeBar
+        position="top"
+        value={bars.bar1}
+        onInput={(value: number) => setBar('bar1', value)}
+        max={calculateMax(mins.rest + bars.bar2)}
+        min={mins.bar1}
+      >
+        <div className={styles.segmented} style={{ height: `${resizes.bar1 * 100}%` }}>
+          <div className={cx(styles.cell, 'no-top-padding')}>{p.children?.['2'] || <></>}</div>
+          <div className={cx(styles.cell, 'no-top-padding')}>{p.children?.['3'] || <></>}</div>
+        </div>
+      </ResizeBar>
+      <ResizeBar
+        position="top"
+        value={bars.bar2}
+        onInput={(value: number) => setBar('bar2', value)}
+        max={calculateMax(mins.rest + mins.bar1)}
+        min={mins.bar2}
+      >
+        <div
+          className={styles.segmented}
+          style={{ height: `${resizes.bar2 * 100}%`, padding: '0 8px' }}
+        >
+          <div className={cx(styles.cell, 'no-top-padding')}>{p.children?.['4'] || <></>}</div>
+          <div className={cx(styles.cell, 'no-top-padding')}>{p.children?.['5'] || <></>}</div>
+        </div>
+      </ResizeBar>
+    </div>
+  );
 }

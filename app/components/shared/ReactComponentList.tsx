@@ -199,6 +199,15 @@ export class MiniFeed extends ReactComponent {}
 
 @Component({
   props: {
+    name: { default: 'Mixer' },
+    wrapperStyles: { default: () => ({ height: '100%' }) },
+    mins: { default: () => ({ x: 150, y: 120 }) },
+  },
+})
+export class Mixer extends ReactComponent {}
+
+@Component({
+  props: {
     name: { default: 'NameFolder' },
     wrapperStyles: { default: () => ({ height: '100%' }) },
   },
@@ -426,6 +435,9 @@ export class StartStreamingButton extends ReactComponent {}
 @Component({ props: { name: { default: 'StreamScheduler' } } })
 export class StreamScheduler extends ReactComponent {}
 
+@Component({ props: { name: { default: 'Studio' } } })
+export class Studio extends ReactComponent {}
+
 @Component({ props: { name: { default: 'StudioEditor' } } })
 export class StudioEditor extends ReactComponent {}
 
@@ -511,3 +523,13 @@ export class Hotkeys extends ReactComponent<{
   highlightSearch: (searchStr: string) => void;
   scanning: boolean;
 }> {}
+
+@Component({
+  props: {
+    name: { default: 'GLVolmeters' },
+    wrapperStyles: {
+      default: () => ({ position: 'absolute', left: '17px', right: '17px', height: '100%' }),
+    },
+  },
+})
+export class GLVolmeters extends ReactComponent {}

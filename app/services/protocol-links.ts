@@ -13,6 +13,7 @@ import { SideNavService, ESideNavKey, ProtocolLinkKeyMap } from './side-nav';
 import { EStreamingState, StreamingService } from './streaming';
 import { CustomizationService } from './customization';
 import Utils from './utils';
+import { Subject } from 'rxjs';
 
 function protocolHandler(base: string) {
   return (target: any, methodName: string, descriptor: PropertyDescriptor) => {
@@ -26,9 +27,14 @@ function protocolHandler(base: string) {
  * Describes a protocol link that was clicked
  */
 interface IProtocolLinkInfo {
+  url: string;
   base: string;
   path: string;
   query: URLSearchParams;
+}
+
+export interface IAppProtocolLink extends IProtocolLinkInfo {
+  appId: string;
 }
 
 export class ProtocolLinksService extends Service {
@@ -44,6 +50,8 @@ export class ProtocolLinksService extends Service {
 
   // Maps base URL components to handler function names
   private handlers: Dictionary<string>;
+
+  appProtocolLink = new Subject<IAppProtocolLink>();
 
   start(argv: string[]) {
     // Other instances started with a protocol link will receive this message
@@ -70,6 +78,7 @@ export class ProtocolLinksService extends Service {
     console.log(`HANDLE LINK: ${link}`);
     const parsed = new url.URL(link);
     const info: IProtocolLinkInfo = {
+      url: link,
       base: parsed.host,
       path: parsed.pathname,
       query: parsed.searchParams,
@@ -132,11 +141,19 @@ export class ProtocolLinksService extends Service {
 
     if (!this.userService.isLoggedIn) return;
 
-    const appId = info.path.replace('/', '');
+    const match = info.path.match(/(\w+)\/?/);
+
+    if (!match) {
+      // Malformed app link
+      return;
+    }
+
+    const appId = match[1];
 
     if (this.platformAppsService.views.getApp(appId)) {
       this.navigationService.navigate('PlatformAppMainPage', { appId });
       this.sideNavService.setCurrentMenuItem(appId);
+      this.appProtocolLink.next({ ...info, appId });
     } else {
       this.navigationService.navigate('PlatformAppStore', { appId });
       this.sideNavService.setCurrentMenuItem(ESideNavKey.AppsStoreHome);

@@ -1,49 +1,40 @@
+import React from 'react';
 import cx from 'classnames';
-import BaseLayout, { LayoutProps, ILayoutSlotArray } from './BaseLayout';
-import { createProps } from 'components/tsx-component';
-import { Component } from 'vue-property-decorator';
-import ResizeBar from 'components/shared/ResizeBar.vue';
+import useLayout, { LayoutProps } from './hooks';
+import ResizeBar from 'components-react/root/ResizeBar';
 import styles from './Layouts.m.less';
 
-@Component({ props: createProps(LayoutProps) })
-export default class Classic extends BaseLayout {
-  async mounted() {
-    this.mountResize();
-    this.setMins(['1'], ['2', '3', '4']);
-  }
-  destroyed() {
-    this.destroyResize();
-  }
+export function Classic(p: React.PropsWithChildren<LayoutProps>) {
+  const { mins, bars, resizes, calculateMax, setBar, componentRef } = useLayout(
+    [['1'], ['2', '3', '4']],
+    false,
+    p.childrenMins,
+    p.onTotalWidth,
+  );
 
-  get vectors() {
-    return ['1', ['2', '3', '4']] as ILayoutSlotArray;
-  }
-
-  render() {
-    return (
-      <div class={styles.rows}>
-        <div class={styles.cell} style={{ height: `${100 - this.resizes.bar1 * 100}%` }}>
-          {this.$slots['1']}
-        </div>
-        <ResizeBar
-          position="top"
-          value={this.bar1}
-          onInput={(value: number) => this.setBar('bar1', value)}
-          onResizestart={() => this.resizeStartHandler()}
-          onResizestop={() => this.resizeStopHandler()}
-          max={this.calculateMax(this.mins.rest)}
-          min={this.mins.bar1}
-          reverse={true}
-        />
+  return (
+    <div className={styles.rows} ref={componentRef}>
+      <div className={styles.cell} style={{ height: `${100 - resizes.bar1 * 100}%` }}>
+        {p.children?.['1'] || <></>}
+      </div>
+      <ResizeBar
+        position="top"
+        value={bars.bar1}
+        onInput={(value: number) => setBar('bar1', value)}
+        max={calculateMax(mins.rest)}
+        min={mins.bar1}
+      >
         <div
-          class={styles.segmented}
-          style={{ height: `${this.resizes.bar1 * 100}%`, padding: '0 8px' }}
+          className={styles.segmented}
+          style={{ height: `${resizes.bar1 * 100}%`, padding: '8px' }}
         >
           {['2', '3', '4'].map(slot => (
-            <div class={cx(styles.cell, 'no-top-padding')}>{this.$slots[slot]}</div>
+            <div key={slot} className={cx(styles.cell, 'no-top-padding')}>
+              {p.children?.[slot] || <></>}
+            </div>
           ))}
         </div>
-      </div>
-    );
-  }
+      </ResizeBar>
+    </div>
+  );
 }

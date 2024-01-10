@@ -130,9 +130,17 @@ export default function StartStreamingButton(p: { disabled?: boolean }) {
 
     return false;
 
-    // if (!UserService.isLoggedIn) return false;
-    // const primaryPlatform = UserService.state.auth?.primaryPlatform;
-    // const updateStreamInfoOnLive = CustomizationService.state.updateStreamInfoOnLive;
+    if (StreamingService.views.isDualOutputMode) {
+      return true;
+    }
+
+    // if (
+    //   !!UserService.state.auth?.platforms &&
+    //   StreamingService.views.isMultiplatformMode &&
+    //   Object.keys(UserService.state.auth?.platforms).length > 1
+    // ) {
+    //   return true;
+    // }
 
     // if (!primaryPlatform) return false;
 

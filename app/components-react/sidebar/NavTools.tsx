@@ -74,11 +74,7 @@ export default function SideNav() {
 
   async function upgradeToPrime() {
     UsageStatisticsService.actions.recordClick('SideNav2', 'prime');
-    if (isLoggedIn) {
-      MagicLinkService.linkToPrime('slobs-side-nav');
-    } else {
-      remote.shell.openExternal('https://buffed.me/ultra?checkout=1&refl=slobs-side-nav');
-    }
+    MagicLinkService.linkToPrime('slobs-side-nav');
   }
 
   const handleAuth = () => {
@@ -285,6 +281,7 @@ function LoginMenuItem(p: {
                   styles.platformLogo,
                   styles[`platform-logo-${platform?.type ?? 'default'}`],
                 )}
+                size={platform.type === 'twitter' ? 20 : undefined}
               />
             )} */}
             <span className={styles.username}>{platform?.username || $t('Log Out')}</span>
