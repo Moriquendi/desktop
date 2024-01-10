@@ -113,6 +113,7 @@ interface ILinkedPlatformsResponse {
   tiktok_account?: ILinkedPlatform;
   trovo_account?: ILinkedPlatform;
   streamlabs_account?: ILinkedPlatform;
+  twitter_account?: ILinkedPlatform;
   user_id: number;
   created_at: string;
   widget_token: string;
@@ -159,6 +160,15 @@ export function setSentryContext(ctx: ISentryContext) {
 class UserViews extends ViewHandler<IUserServiceState> {
   // Injecting HostsService since it's not stateful
   @Inject() hostsService: HostsService;
+  @Inject() magicLinkService: MagicLinkService;
+
+  get settingsServiceViews() {
+    return this.getServiceViews(SettingsService);
+  }
+
+  get streamSettingsServiceViews() {
+    return this.getServiceViews(StreamSettingsService);
+  }
 
   get customizationServiceViews() {
     return this.getServiceViews(CustomizationService);
@@ -206,6 +216,25 @@ class UserViews extends ViewHandler<IUserServiceState> {
     return this.isLoggedIn && this.platform.type === 'twitch';
   }
 
+  /*
+   * The method above doesn't take into account Advanced mode,
+   * resulting in platform-specific functionality (like VOD track on Twitch)
+   * to appear enabled when it shouldn't if the user has set a different Service
+   * in the advanced view.
+   *
+   * Does not modify the above method as we're not sure how many places this
+   * (perhaps more expensive) check is necessary, or whether it'd match the
+   * expected caller behavior.
+   *
+   * TODO: When going back to Recommended Settings, the Service setting here
+   * doesn't get reset.
+   */
+  get isTwitchAuthedAndActive() {
+    return this.streamSettingsServiceViews.state.protectedModeEnabled
+      ? this.isTwitchAuthed
+      : this.settingsServiceViews.streamPlatform === 'Twitch';
+  }
+
   get isFacebookAuthed() {
     return this.isLoggedIn && this.platform.type === 'facebook';
   }
@@ -222,19 +251,6 @@ class UserViews extends ViewHandler<IUserServiceState> {
     return this.state.auth;
   }
 
-  alertboxLibraryUrl(id?: string) {
-    const uiTheme = this.customizationServiceViews.isDarkTheme ? 'night' : 'day';
-    let url = `https://${this.hostsService.streamlabs}/alert-box-themes?mode=${uiTheme}&slobs`;
-
-    if (this.isLoggedIn) {
-      url += `&oauth_token=${this.auth.apiToken}`;
-    }
-
-    if (id) url += `&id=${id}`;
-
-    return url;
-  }
-
   appStoreUrl(params?: { appId?: string | undefined; type?: string | undefined }) {
     const host = this.hostsService.platform;
     const token = this.auth.apiToken;
@@ -249,28 +265,6 @@ class UserViews extends ViewHandler<IUserServiceState> {
     }
 
     return `${url}?token=${token}&mode=${nightMode}`;
-  }
-
-  overlaysUrl(type?: 'overlay' | 'widget-themes' | 'site-themes', id?: string) {
-    const uiTheme = this.customizationServiceViews.isDarkTheme ? 'night' : 'day';
-
-    let url = `https://${this.hostsService.streamlabs}/library`;
-
-    if (type && !id) {
-      url += `/${type}`;
-    }
-
-    url += `?mode=${uiTheme}&slobs`;
-
-    if (this.isLoggedIn) {
-      url += `&oauth_token=${this.auth.apiToken}`;
-    }
-
-    if (type && id) {
-      url += `#/?type=${type}&id=${id}`;
-    }
-
-    return url;
   }
 }
 
@@ -637,6 +631,17 @@ export class UserService extends PersistentStatefulService<IUserServiceState> {
       this.UNLINK_SLID();
     }
 
+    if (linkedPlatforms.twitter_account) {
+      this.UPDATE_PLATFORM({
+        type: 'twitter',
+        username: linkedPlatforms.twitter_account.platform_name,
+        id: linkedPlatforms.twitter_account.platform_id,
+        token: linkedPlatforms.twitter_account.access_token,
+      });
+    } else if (this.state.auth.primaryPlatform !== 'twitter') {
+      this.UNLINK_PLATFORM('twitter');
+    }
+
     if (linkedPlatforms.force_login_required) return true;
   }
 
@@ -824,6 +829,33 @@ export class UserService extends PersistentStatefulService<IUserServiceState> {
     return `https://${this.hostsService.streamlabs}/slobs/dashboard?oauth_token=${token}&mode=${nightMode}&r=${subPage}&l=${locale}&hidenav=${hideNav}`;
   }
 
+  async alertboxLibraryUrl(id?: string) {
+    const uiTheme = this.customizationService.views.isDarkTheme ? 'night' : 'day';
+    let url = `https://${this.hostsService.streamlabs}/alert-box-themes?mode=${uiTheme}&slobs`;
+
+    if (id) url += `&id=${id}`;
+
+    return await this.magicLinkService.actions.return.getMagicSessionUrl(url);
+  }
+
+  async overlaysUrl(type?: 'overlay' | 'widget-themes' | 'site-themes', id?: string) {
+    const uiTheme = this.customizationService.views.isDarkTheme ? 'night' : 'day';
+
+    let url = `https://${this.hostsService.streamlabs}/library`;
+
+    if (type && !id) {
+      url += `/${type}`;
+    }
+
+    url += `?mode=${uiTheme}&slobs`;
+
+    if (type && id) {
+      url += `#/?type=${type}&id=${id}`;
+    }
+
+    return await this.magicLinkService.actions.return.getMagicSessionUrl(url);
+  }
+
   getDonationSettings() {
     const host = this.hostsService.streamlabs;
     const url = `https://${host}/api/v5/slobs/donation/settings`;
@@ -970,13 +1002,10 @@ export class UserService extends PersistentStatefulService<IUserServiceState> {
     const url = `https://${this.hostsService.streamlabs}/slobs/login?${query}`;
 
     this.SET_AUTH_STATE(EAuthProcessState.Loading);
-    const auth = await this.authModule.startExternalAuth(
-      url,
-      () => {
-        this.SET_AUTH_STATE(EAuthProcessState.Idle);
-      },
-      false,
-    );
+
+    const auth = await this.authModule.startPkceAuth(url, () => {
+      this.SET_AUTH_STATE(EAuthProcessState.Idle);
+    });
 
     this.LOGOUT();
     this.LOGIN(auth);
@@ -1033,7 +1062,7 @@ export class UserService extends PersistentStatefulService<IUserServiceState> {
     this.SET_AUTH_STATE(EAuthProcessState.Loading);
     const onWindowShow = () => this.SET_AUTH_STATE(EAuthProcessState.Idle);
 
-    const auth = await this.authModule.startExternalAuth(authUrl, onWindowShow, true);
+    const auth = await this.authModule.startPkceAuth(authUrl, onWindowShow, () => {}, true);
 
     this.SET_AUTH_STATE(EAuthProcessState.Loading);
     this.SET_IS_RELOG(false);
@@ -1058,6 +1087,28 @@ export class UserService extends PersistentStatefulService<IUserServiceState> {
       throw new Error('Account merging can only be performed while logged in');
     }
 
+    // HACK: faking instagram login
+    if (platform === 'instagram') {
+      const auth = {
+        widgetToken: '',
+        apiToken: '',
+        primaryPlatform: 'instagram' as TPlatform,
+        platforms: {
+          instagram: {
+            type: 'instagram' as TPlatform,
+            // HACK: faking instagram username
+            username: 'linked',
+            token: '',
+            id: 'instagram',
+          },
+        },
+        hasRelogged: true,
+      };
+
+      this.UPDATE_PLATFORM(auth.platforms[auth.primaryPlatform]);
+      return EPlatformCallResult.Success;
+    }
+
     this.SET_AUTH_STATE(EAuthProcessState.Loading);
     const onWindowShow = () =>
       this.SET_AUTH_STATE(
@@ -1065,18 +1116,14 @@ export class UserService extends PersistentStatefulService<IUserServiceState> {
       );
     const onWindowClose = () => this.SET_AUTH_STATE(EAuthProcessState.Idle);
 
-    const auth =
-      mode === 'internal'
-        ? /* eslint-disable */
-          await this.authModule.startInternalAuth(
-            authUrl,
-            service.authWindowOptions,
-            onWindowShow,
-            onWindowClose,
-            merge,
-          )
-        : await this.authModule.startExternalAuth(authUrl, onWindowShow, merge);
-    /* eslint-enable */
+    const auth = await this.authModule.startPkceAuth(
+      authUrl,
+      onWindowShow,
+      onWindowClose,
+      merge,
+      mode === 'external',
+      service.authWindowOptions,
+    );
 
     this.SET_AUTH_STATE(EAuthProcessState.Loading);
     this.SET_IS_RELOG(false);

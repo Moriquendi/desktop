@@ -7,6 +7,9 @@ import { IStreamError } from './stream-error';
 import { ICustomStreamDestination } from '../settings/streaming';
 import { ITiktokStartStreamOptions } from '../platforms/tiktok';
 import { ITrovoStartStreamOptions } from '../platforms/trovo';
+import { IVideo } from 'obs-studio-node';
+import { ITwitterStartStreamOptions } from 'services/platforms/twitter';
+import { IInstagramStartStreamOptions } from 'services/platforms/instagram';
 
 export enum EStreamingState {
   Offline = 'offline',
@@ -48,10 +51,11 @@ export interface IStreamInfo {
     facebook: TGoLiveChecklistItemState;
     tiktok: TGoLiveChecklistItemState;
     trovo: TGoLiveChecklistItemState;
+    twitter: TGoLiveChecklistItemState;
+    instagram: TGoLiveChecklistItemState;
     setupMultistream: TGoLiveChecklistItemState;
-    setupGreen: TGoLiveChecklistItemState;
+    setupDualOutput: TGoLiveChecklistItemState;
     startVideoTransmission: TGoLiveChecklistItemState;
-    postTweet: TGoLiveChecklistItemState;
   };
 }
 
@@ -64,6 +68,8 @@ export interface IStreamSettings {
     facebook?: IPlatformFlags & IFacebookStartStreamOptions;
     tiktok?: IPlatformFlags & ITiktokStartStreamOptions;
     trovo?: IPlatformFlags & ITrovoStartStreamOptions;
+    twitter?: IPlatformFlags & ITwitterStartStreamOptions;
+    instagram?: IPlatformFlags & IInstagramStartStreamOptions;
   };
   customDestinations: ICustomStreamDestination[];
   advancedMode: boolean;
@@ -81,6 +87,7 @@ export interface IGoLiveSettings extends IStreamSettings {
 export interface IPlatformFlags {
   enabled: boolean;
   useCustomFields: boolean;
+  video?: IVideo;
 }
 
 export interface IStreamingServiceState {
@@ -91,6 +98,7 @@ export interface IStreamingServiceState {
   replayBufferStatus: EReplayBufferState;
   replayBufferStatusTime: string;
   selectiveRecording: boolean;
+  dualOutputMode: boolean;
   info: IStreamInfo;
 }
 

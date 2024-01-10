@@ -2,11 +2,14 @@ import { ITwitchStartStreamOptions, TwitchService } from './twitch';
 import { IYoutubeStartStreamOptions, YoutubeService } from './youtube';
 import { FacebookService, IFacebookStartStreamOptions } from './facebook';
 import { ITiktokStartStreamOptions, TiktokService } from './tiktok';
+import { InstagramService, IInstagramStartStreamOptions } from './instagram';
+import { TwitterPlatformService } from './twitter';
 import { TTwitchOAuthScope } from './twitch/index';
 import { IGoLiveSettings } from 'services/streaming';
 import { WidgetType } from '../widgets';
 import { ITrovoStartStreamOptions, TrovoService } from './trovo';
-import { TDisplayType } from 'services/settings-v2/video';
+import { TDisplayType } from 'services/settings-v2';
+import { $t } from 'services/i18n';
 
 export type Tag = string;
 export interface IGame {
@@ -137,7 +140,8 @@ export type TStartStreamOptions =
   | IYoutubeStartStreamOptions
   | Partial<IFacebookStartStreamOptions>
   | Partial<ITiktokStartStreamOptions>
-  | Partial<ITrovoStartStreamOptions>;
+  | Partial<ITrovoStartStreamOptions>
+  | Partial<IInstagramStartStreamOptions>;
 
 // state applicable for all platforms
 export interface IPlatformState {
@@ -220,7 +224,46 @@ export interface IUserInfo {
   username?: string;
 }
 
-export type TPlatform = 'twitch' | 'facebook' | 'youtube' | 'tiktok' | 'trovo';
+export enum EPlatform {
+  Twitch = 'twitch',
+  YouTube = 'youtube',
+  Facebook = 'facebook',
+  TikTok = 'tiktok',
+  Trovo = 'trovo',
+  Twitter = 'twitter',
+  Instagram = 'instagram',
+}
+
+export type TPlatform =
+  | 'twitch'
+  | 'youtube'
+  | 'facebook'
+  | 'tiktok'
+  | 'trovo'
+  | 'twitter'
+  | 'instagram';
+
+export const platformList = [
+  EPlatform.Facebook,
+  EPlatform.TikTok,
+  EPlatform.Trovo,
+  EPlatform.Twitch,
+  EPlatform.YouTube,
+  EPlatform.Twitter,
+  EPlatform.Instagram,
+];
+
+export const platformLabels = (platform: TPlatform | string) =>
+  ({
+    [EPlatform.Twitch]: $t('Twitch'),
+    [EPlatform.YouTube]: $t('YouTube'),
+    [EPlatform.Facebook]: $t('Facebook'),
+    [EPlatform.TikTok]: $t('TikTok'),
+    [EPlatform.Trovo]: $t('Trovo'),
+    // TODO: translate
+    [EPlatform.Twitter]: 'Twitter',
+    [EPlatform.Instagram]: $t('Instagram'),
+  }[platform]);
 
 export function getPlatformService(platform: TPlatform): IPlatformService {
   return {
@@ -229,6 +272,8 @@ export function getPlatformService(platform: TPlatform): IPlatformService {
     facebook: FacebookService.instance,
     tiktok: TiktokService.instance,
     trovo: TrovoService.instance,
+    twitter: TwitterPlatformService.instance,
+    instagram: InstagramService.instance,
   }[platform];
 }
 

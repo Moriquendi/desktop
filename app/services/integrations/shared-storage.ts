@@ -1,4 +1,4 @@
-import { HostsService } from 'app-services';
+import { HostsService, MarkersService } from 'app-services';
 import fs from 'fs';
 import path from 'path';
 import { Service, Inject, ViewHandler } from 'services/core';
@@ -39,6 +39,9 @@ class SharedStorageServiceViews extends ViewHandler<{}> {
     if (platform === 'typestudio') {
       return `https://podcasteditor.streamlabs.com/storage/${id}`;
     }
+    if (platform === 'videoeditor') {
+      return `https://videoeditor.streamlabs.com/import/${id}`;
+    }
     return '';
   }
 }
@@ -46,6 +49,7 @@ class SharedStorageServiceViews extends ViewHandler<{}> {
 export class SharedStorageService extends Service {
   @Inject() userService: UserService;
   @Inject() hostsService: HostsService;
+  @Inject() markersService: MarkersService;
 
   id: string;
   cancel: () => void;
@@ -66,12 +70,13 @@ export class SharedStorageService extends Service {
     onError?: (error: unknown) => void,
     platform?: string,
   ) {
+    let uploadInfo;
     try {
       if (this.uploading) {
         throw new Error($t('Upload already in progress'));
       }
       this.uploading = true;
-      const uploadInfo = await this.prepareUpload(filepath, platform);
+      uploadInfo = await this.prepareUpload(filepath, platform);
       this.id = uploadInfo.file.id;
       this.uploader = new S3Uploader({
         fileInfo: uploadInfo,
@@ -83,14 +88,18 @@ export class SharedStorageService extends Service {
     } catch (e: unknown) {
       onError(e);
     }
-    return { cancel: this.cancelUpload.bind(this), complete: this.performUpload() };
+    return {
+      cancel: this.cancelUpload.bind(this),
+      complete: this.performUpload(filepath),
+      size: uploadInfo?.file?.size,
+    };
   }
 
-  async performUpload() {
+  async performUpload(filepath: string) {
     const { uploaded, reqBody } = await this.uploadS3File();
     if (uploaded) {
       await this.completeUpload(reqBody);
-      return await this.generateShare();
+      return await this.generateShare(filepath);
     } else {
       return Promise.reject('The upload was canceled');
     }
@@ -98,7 +107,7 @@ export class SharedStorageService extends Service {
 
   validateFile(filepath: string, platform?: string) {
     const stats = fs.lstatSync(filepath);
-    if (platform) {
+    if (platform && PLATFORM_RULES[platform]) {
       if (stats.size > PLATFORM_RULES[platform].size) {
         throw new Error($t('File is too large to upload'));
       }
@@ -127,6 +136,7 @@ export class SharedStorageService extends Service {
     this.cancel();
     this.id = undefined;
     this.cancel = undefined;
+    this.uploading = false;
     return await jfetch(new Request(url, { headers, method: 'DELETE' }));
   }
 
@@ -142,6 +152,10 @@ export class SharedStorageService extends Service {
       return await jfetch(new Request(url, { headers, body, method: 'POST' }));
     } catch (e: unknown) {
       this.uploading = false;
+      // Signifies an API failure
+      if (e.toString() === '[object Object]') {
+        return Promise.reject('Error preparing storage upload');
+      }
       return Promise.reject(e);
     }
   }
@@ -150,16 +164,28 @@ export class SharedStorageService extends Service {
     return await this.uploader.start();
   }
 
-  private async generateShare(): Promise<{ id: string }> {
+  private async generateShare(filepath: string): Promise<{ id: string }> {
     if (!this.id) return;
+    const { name, dir } = path.parse(filepath);
+    const bookmarksFile = path.join(dir, `${name}_markers.csv`);
+    let bookmarks;
+    if (fs.existsSync(bookmarksFile)) bookmarks = await this.parseBookmarks(bookmarksFile);
     const url = `${this.host}/storage/v1/temporary-shares`;
     const headers = authorizedHeaders(
       this.userService.apiToken,
       new Headers({ 'Content-Type': 'application/json' }),
     );
-    const body = JSON.stringify({ temporary_file_id: this.id, type: 'video' });
+    const body = JSON.stringify({
+      temporary_file_id: this.id,
+      type: 'video',
+      metadata: { name, bookmarks },
+    });
     this.uploading = false;
     return await jfetch(new Request(url, { method: 'POST', headers, body }));
+  }
+
+  private async parseBookmarks(filpath: string) {
+    return await this.markersService.actions.return.parseCSV(filpath);
   }
 }
 
