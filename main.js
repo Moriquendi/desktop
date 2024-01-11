@@ -358,11 +358,11 @@ async function startApp() {
 
   console.log(`Main: Start worker window`);
 
-  if (process.env.SLOBS_PRODUCTION_DEBUG) {
-    workerWindow.webContents.once('dom-ready', () => {
-      workerWindow.webContents.openDevTools({ mode: 'detach' });
-    });
-  }
+  // if (process.env.SLOBS_PRODUCTION_DEBUG) {
+  //   workerWindow.webContents.once('dom-ready', () => {
+  //     workerWindow.webContents.openDevTools({ mode: 'detach' });
+  //   });
+  // }
 
   // All renderers should use ipcRenderer.sendTo to send to communicate with
   // the worker.  This still gets proxied via the main process, but eventually
@@ -579,7 +579,7 @@ function recreateAndShowMainWindow() {
   ///////////////////////////////////////
   const mainWindowState = windowStateKeeper({
     defaultWidth: 900,
-    defaultHeight: 850,
+    defaultHeight: 600,
   });
   mainWindow = new BrowserWindow({
     minWidth: 800,

@@ -100,7 +100,13 @@ export default function StudioFooterComponent() {
   }
 
   return (
-    <div className={cx('footer', styles.footer)} style={{ height: '200px' }}>
+    <div
+      className={cx('footer', styles.footer)}
+      style={{
+        height: '200px',
+        // border: '1px solid green'
+      }}
+    >
       <div className={cx('flex flex--center flex--justify-start', styles.footerLeft)}>
         {/* <Tooltip placement="left" title={$t('Open Performance Window')}>
           <i

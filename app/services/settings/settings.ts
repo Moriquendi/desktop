@@ -375,7 +375,7 @@ export class SettingsService extends StatefulService<ISettingsServiceState> {
     //categories.splice(1, 0, 'Multistreaming');
     categories = categories.concat([
       // 'Scene Collections',
-      'Notifications',
+      // 'Notifications',
       // 'Appearance',
       // 'Remote Control',
       // 'Virtual Webcam',

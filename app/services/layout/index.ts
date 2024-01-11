@@ -119,8 +119,8 @@ export class LayoutService extends PersistentStatefulService<ILayoutServiceState
         slottedElements: {
           [ELayoutElement.Display]: { slot: '1' },
           // [ELayoutElement.Minifeed]: { slot: '2' },
-          // [ELayoutElement.Scenes]: { slot: '3' },
-          [ELayoutElement.SourcesAndMixer]: { slot: '4' },
+          // [ELayoutElement.Scenes]: { slot: '2' },
+          [ELayoutElement.SourcesAndMixer]: { slot: '2' },
           // [ELayoutElement.Mixer]: { slot: '5' },
         },
         resizes: {

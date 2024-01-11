@@ -484,8 +484,8 @@ export function VideoSettings() {
     <>
       <div className={styles.videoSettingsHeader}>
         <h2>{$t('Video')}</h2>
-        <div className={styles.doToggle}>
-          {/* THIS CHECKBOX TOGGLES DUAL OUTPUT MODE FOR THE ENTIRE APP */}
+        {/* <div className={styles.doToggle}>
+          THIS CHECKBOX TOGGLES DUAL OUTPUT MODE FOR THE ENTIRE APP
           <CheckboxInput
             id="dual-output-checkbox"
             name="dual-output-checkbox"
@@ -506,7 +506,7 @@ export function VideoSettings() {
           >
             <i className="icon-information" />
           </Tooltip>
-        </div>
+        </div> */}
         {/* )} */}
       </div>
       {showDualOutputSettings && <Tabs onChange={setDisplay} />}

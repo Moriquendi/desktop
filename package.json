@@ -95,6 +95,7 @@
     "raven": "^2.6.4",
     "react-colorful": "^5.5.0",
     "react-devtools-electron": "^4.7.0",
+    "react-resizable": "3.0.1",
     "react-transition-group": "^4.4.1",
     "rimraf": "^2.6.1",
     "semver": "^5.5.1",
@@ -195,7 +196,6 @@
     "rc-animate": "3.1.1",
     "react": "17.0.2",
     "react-dom": "17.0.2",
-    "react-resizable": "3.0.1",
     "react-sortablejs": "6.0.0",
     "recursive-readdir": "2.2.2",
     "rxjs": "6.3.3",
@@ -253,7 +253,8 @@
     "minimist": "1.2.6",
     "xmlhttprequest-ssl": "1.6.2",
     "ws@~6.1.0": "6.2.2",
-    "got@^9.6.0": "11.8.5"
+    "got@^9.6.0": "11.8.5",
+    "@types/react": "17.0.8"
   },
   "packageManager": "yarn@3.1.1"
 }

@@ -1,4 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { Mixer } from './Mixer';
+import { SourceSelectorElement } from './SourceSelector';
+import { Menu } from 'antd';
+import { $t } from 'services/i18n';
 
 // // import useBaseElement from '../../../components-react/editor/elements/hooks';
 // // import { SourceSelector } from 'components/shared/ReactComponentList';
@@ -30,39 +34,48 @@ import React from 'react';
 // //     components: { Mixer },
 // //   })
 
-export default function SourceAndMixerSelectorElement() {
-  //   // const containerRef = useRef<HTMLDivElement>(null);
-  //   //   const { sourcesElement } = useBaseElement(
-  //   //     <SourceSelectorElement />,
-  //   //     { x: 200, y: 120 },
-  //   //     containerRef.current,
-  //   //   );
-  //   // const { renderElement } = useBaseElement(
-  //   //   <Mixer />,
-  //   //   { x: 200, y: 120 },
-  //   //   containerRef.current,
-  //   // );
-  //   const [activeTab, setActiveTab] = useState('video');
-  //   //   const Element = Elements.Mixer.component('').
-  return <p></p>;
-  //   // return (
-  //   //   <div
-  //   //   // ref={containerRef}
-  //   //   // data-name="SourceAndMixerSelector"
-  //   //   // style={{ height: '100%', display: 'flex', flexDirection: 'column' }}
-  //   //   >
-  //   //     {/* <Menu
-  //   //         onClick={e => setActiveTab(e.key)}
-  //   //         selectedKeys={[activeTab]}
-  //   //         mode="horizontal"
-  //   //         style={{ marginBottom: '16px' }}
-  //   //       >
-  //   //         <Menu.Item key="video">{$t('Video')}</Menu.Item>
-  //   //         <Menu.Item key="audio">{$t('Audio')}</Menu.Item>
-  //   //       </Menu> */}
-  //   //     {/* <SourceSelectorElement /> */}
-  //   //     {/* {activeTab == 'video' && <SourceSelectorElement />} */}
-  //   //     {/* {activeTab == 'audio' && <Mixer />} */}
-  //   //   </div>
-  //   // );
+export function SourceAndMixerSelectorElement() {
+  // const containerRef = useRef<HTMLDivElement>(null);
+  //   const { sourcesElement } = useBaseElement(
+  //     <SourceSelectorElement />,
+  //     { x: 200, y: 120 },
+  //     containerRef.current,
+  //   );
+  // const { renderElement } = useBaseElement(
+  //   <Mixer />,
+  //   { x: 200, y: 120 },
+  //   containerRef.current,
+  // );
+  const [activeTab, setActiveTab] = useState('video');
+  //   const Element = Elements.Mixer.component('').
+  return (
+    <div
+      // ref={containerRef}
+      // data-name="SourceAndMixerSelector"
+      // style={{ height: '100%', display: 'flex', flexDirection: 'column' }}
+      style={{
+        height: '100%',
+        // border: '1px solid red',
+        // backgroundColor: 'red'
+      }}
+    >
+      <Menu
+        onClick={e => setActiveTab(e.key)}
+        selectedKeys={[activeTab]}
+        mode="horizontal"
+        style={{
+          marginBottom: '16px',
+          width: '100%',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
+      >
+        <Menu.Item key="video">{$t('Video')}</Menu.Item>
+        <Menu.Item key="audio">{$t('Audio')}</Menu.Item>
+      </Menu>
+      {/* <SourceSelectorElement /> */}
+      {activeTab == 'video' && <SourceSelectorElement />}
+      {activeTab == 'audio' && <Mixer />}
+    </div>
+  );
 }

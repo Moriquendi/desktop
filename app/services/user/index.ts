@@ -169,10 +169,6 @@ class UserViews extends ViewHandler<IUserServiceState> {
     return this.getServiceViews(SettingsService);
   }
 
-  get streamSettingsServiceViews() {
-    return this.getServiceViews(StreamSettingsService);
-  }
-
   get customizationServiceViews() {
     return this.getServiceViews(CustomizationService);
   }
