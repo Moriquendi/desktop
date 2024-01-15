@@ -137,7 +137,7 @@ export class SideNavService extends PersistentStatefulService<ISideNavServiceSta
 
       // add the recording history to the array of menu items
       const menuItems = [...this.state[ENavName.TopNav].menuItems];
-      menuItems.splice(index, 0, SideNavMenuItems()[EMenuItemKey.RecordingHistory]);
+      // menuItems.splice(index, 0, SideNavMenuItems()[EMenuItemKey.RecordingHistory]);
 
       // update the menu items
       this.UPDATE_MENU_ITEMS(ENavName.TopNav, menuItems);

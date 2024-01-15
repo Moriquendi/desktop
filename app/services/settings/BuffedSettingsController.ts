@@ -160,8 +160,10 @@ export class BuffedSettingsController {
     const isMac = byOS({ [OS.Windows]: false, [OS.Mac]: true });
     if (isMac) {
       const item = scene.createAndAddSource('Screen Capture', 'screen_capture', {}, {});
+      item.fitToScreen();
     } else {
       const item = scene.createAndAddSource('Game Capture', 'game_capture', {}, {});
+      item.fitToScreen();
 
       const sourceId = item.sourceId;
       const source = SourcesService.views.getSource(sourceId)!;
@@ -183,10 +185,13 @@ export class BuffedSettingsController {
       }
     }
 
-    await sleep(100);
     ////////////////////////////////////////
     // FIT TO SCREN
-    this.fitScreenContent();
+    setTimeout(() => {
+      console.log('after delay.');
+      this.fitScreenContent();
+    }, 1000); // 1000 milliseconds (1 second) delay
+
     ////////////////////////////////////////
 
     /////////////

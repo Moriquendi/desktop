@@ -117,7 +117,7 @@ export const loggedOutMenuItems: ISideNavItem[] = [
     key: EMenuItemKey.Editor,
     target: 'Studio',
   },
-  { key: EMenuItemKey.RecordingHistory, target: 'RecordingHistory' },
+  // { key: EMenuItemKey.RecordingHistory, target: 'RecordingHistory' },
 ];
 
 export const compactMenuItemKeys: EMenuItemKey[] = [
@@ -125,7 +125,7 @@ export const compactMenuItemKeys: EMenuItemKey[] = [
   EMenuItemKey.Themes,
   EMenuItemKey.AppStore,
   EMenuItemKey.Highlighter,
-  EMenuItemKey.RecordingHistory,
+  // EMenuItemKey.RecordingHistory,
 ];
 
 /**
