@@ -157,34 +157,37 @@ export class BuffedSettingsController {
 
     const scene = ScenesService.views.activeScene;
 
-    const isMac = byOS({ [OS.Windows]: false, [OS.Mac]: true });
-    if (isMac) {
-      const item = scene.createAndAddSource('Screen Capture', 'screen_capture', {}, {});
-      item.fitToScreen();
-    } else {
-      const item = scene.createAndAddSource('Game Capture', 'game_capture', {}, {});
-      item.fitToScreen();
+    try {
+      const isMac = byOS({ [OS.Windows]: false, [OS.Mac]: true });
+      if (isMac) {
+        const item = scene.createAndAddSource('Screen Capture', 'screen_capture', {}, {});
+        item.fitToScreen();
+      } else {
+        const item = scene.createAndAddSource('Game Capture', 'game_capture', {}, {});
+        item.fitToScreen();
 
-      const sourceId = item.sourceId;
-      const source = SourcesService.views.getSource(sourceId)!;
-      const sourceProperties = source.getPropertiesFormData();
+        const sourceId = item.sourceId;
+        const source = SourcesService.views.getSource(sourceId)!;
+        const sourceProperties = source.getPropertiesFormData();
 
-      console.log(`Source properties:`);
-      console.log(sourceProperties);
+        console.log(`Source properties:`);
+        console.log(sourceProperties);
 
-      const captureModeProp = sourceProperties.find(v => v.name === 'capture_mode');
-      if (captureModeProp) {
-        captureModeProp.value = 'any_fullscreen';
-        console.log(`Would set this:`);
-        console.log(captureModeProp);
-        EditorCommandsService.actions.executeCommand(
-          'EditSourcePropertiesCommand',
-          source.sourceId,
-          [captureModeProp],
-        );
+        const captureModeProp = sourceProperties.find(v => v.name === 'capture_mode');
+        if (captureModeProp) {
+          captureModeProp.value = 'any_fullscreen';
+          console.log(`Would set this:`);
+          console.log(captureModeProp);
+          EditorCommandsService.actions.executeCommand(
+            'EditSourcePropertiesCommand',
+            source.sourceId,
+            [captureModeProp],
+          );
+        }
       }
+    } catch (error) {
+      console.log('SOMETHING FAILED!', error);
     }
-
     ////////////////////////////////////////
     // FIT TO SCREN
     setTimeout(() => {
@@ -192,6 +195,10 @@ export class BuffedSettingsController {
       this.fitScreenContent();
     }, 1000); // 1000 milliseconds (1 second) delay
 
+    setTimeout(() => {
+      console.log('after delay #2');
+      this.fitScreenContent();
+    }, 5000); // 1000 milliseconds (5 second) delay
     ////////////////////////////////////////
 
     /////////////
