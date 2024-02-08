@@ -161,10 +161,19 @@ export class BuffedSettingsController {
       const isMac = byOS({ [OS.Windows]: false, [OS.Mac]: true });
       if (isMac) {
         const item = scene.createAndAddSource('Screen Capture', 'screen_capture', {}, {});
-        item.fitToScreen();
       } else {
-        const item = scene.createAndAddSource('Game Capture', 'game_capture', {}, {});
-        item.fitToScreen();
+        const item = scene.createAndAddSource('Game Capture', 'game_capture', {}, 
+        {
+         sourceAddOptions: {
+          propertiesManager: 'default',
+           propertiesManagerSettings: {},
+           guestCamStreamId: undefined,
+           sourceId: undefined
+          },
+          display: 'horizontal',
+          id: undefined
+        }
+        );
 
         const sourceId = item.sourceId;
         const source = SourcesService.views.getSource(sourceId)!;
@@ -189,17 +198,14 @@ export class BuffedSettingsController {
       console.log('SOMETHING FAILED!', error);
     }
     ////////////////////////////////////////
-    // FIT TO SCREN
-    setTimeout(() => {
-      console.log('after delay.');
-      this.fitScreenContent();
-    }, 1000); // 1000 milliseconds (1 second) delay
+    // FIT TO SCREN'
+    console.log('SHCEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEDULE')
+    this.fitScreenContent()
+    // setTimeout(() => {
+    //   console.log('after delay. 00000000000000000000000000000000');
+    //   this.fitScreenContent();
+    // }, 3000); // 1000 milliseconds (1 second) delay
 
-    setTimeout(() => {
-      console.log('after delay #2');
-      this.fitScreenContent();
-    }, 5000); // 1000 milliseconds (5 second) delay
-    ////////////////////////////////////////
 
     /////////////
     // console.log(`adding color block`);
@@ -272,7 +278,7 @@ export class BuffedSettingsController {
   }
 
   fitScreenContent() {
-    console.log(`Fit to screen all selection.`);
+    console.log(`>>>>>>>> Fit to screen all selection.`);
     const { ScenesService } = Services;
     const actScene = ScenesService.views.activeScene;
     const sceneSelection = actScene.getSelection();
