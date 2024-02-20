@@ -3,7 +3,7 @@ import { BuffedClient } from 'components-react/pages/onboarding/BuffedClient';
 import { Services } from 'components-react/service-provider';
 import electron from 'electron';
 import { Inject } from 'services/core/injector';
-import { ISourceAddOptions, TSourceType } from 'services/sources';
+import { SourcesService } from 'services/sources';
 import { OS, byOS } from 'util/operating-systems';
 
 export interface OBSSettings {
@@ -27,6 +27,8 @@ function sleep(ms: number) {
 export class BuffedSettingsController {
   @Inject() userService: UserService;
   @Inject() customizationService: CustomizationService;
+  @Inject() sourcesService: SourcesService;
+
 
   async otherStuff() {
     Services.SettingsService.actions.setSettingValue('Output', 'RecRB', false);
@@ -47,6 +49,14 @@ export class BuffedSettingsController {
       auto_streaming: false,
     };
     return settings;
+  }
+
+  setup() {
+    this.sourcesService.sourceUpdated.subscribe((source) => {
+       if (source.type === 'game_capture') {
+        this.fitScreenContent();
+      }
+    });
   }
 
   async setBuffedDetaultSettings() {
@@ -200,7 +210,6 @@ export class BuffedSettingsController {
     ////////////////////////////////////////
     // FIT TO SCREN'
     console.log('SHCEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEDULE')
-    this.fitScreenContent()
     // setTimeout(() => {
     //   console.log('after delay. 00000000000000000000000000000000');
     //   this.fitScreenContent();

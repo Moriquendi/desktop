@@ -100,6 +100,8 @@ export class AppService extends StatefulService<IAppState> {
   @Inject() private customizationService: CustomizationService;
   @Inject() private dualOutputService: DualOutputService;
 
+  private buffedController = new BuffedSettingsController();
+
   static initialState: IAppState = {
     loading: true,
     argv: remote.process.argv,
@@ -180,11 +182,12 @@ export class AppService extends StatefulService<IAppState> {
 
     ////////////////////////////////////////////////
     console.log(`start`);
-    const controller = new BuffedSettingsController();
-    await controller.setBuffedDetaultSettings();
+    this.buffedController.setup();
+
+    await this.buffedController.setBuffedDetaultSettings();
     this.userService.userLoginFinished.subscribe(async () => {
       console.log(`[Buffed settings] User logged in. Refresh buffed settings.`);
-      await controller.setBuffedDetaultSettings();
+      await this.buffedController.setBuffedDetaultSettings();
     });
 
     const setupAutoLogin = (enabled: boolean) => {
@@ -212,8 +215,6 @@ export class AppService extends StatefulService<IAppState> {
 
     ipcRenderer.send('AppInitFinished');
     this.metricsService.recordMetric('sceneCollectionLoadingTime');
-
-    controller.fitScreenContent();
   }
 
   shutdownStarted = new Subject();

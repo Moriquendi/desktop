@@ -397,11 +397,7 @@ export class SceneItem extends SceneItemNode {
 
   fitToScreen(display?: TDisplayType) {
     const rect = new ScalableRectangle(this.rectangle);
-    console.log('This rect: ', rect);
     rect.fitTo(this.videoService.getScreenRectangle(display));
-    
-    console.log('Fitting to: ', this.videoService.getScreenRectangle(display));
-    console.log('After fit: ', rect);
     this.setRect(rect);
   }
 
