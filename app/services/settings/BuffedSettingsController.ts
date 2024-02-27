@@ -1,10 +1,12 @@
 import { CustomizationService, UserService } from 'app-services';
 import { BuffedClient } from 'components-react/pages/onboarding/BuffedClient';
 import { Services } from 'components-react/service-provider';
+import { IObsListInput } from 'components/obs/inputs/ObsInput';
 import electron from 'electron';
 import { Inject } from 'services/core/injector';
 import { SourcesService } from 'services/sources';
 import { OS, byOS, getOS } from 'util/operating-systems';
+import { EObsSimpleEncoder } from './output';
 
 export interface OBSSettings {
   width: string;
@@ -147,6 +149,8 @@ export class BuffedSettingsController {
     });
     Services.SettingsService.actions.setSettings('Output', outputFormData);
 
+    this.ensureValidEncoder();
+
     // ADD SOURCE
 
     const hasAddedSources =
@@ -214,7 +218,6 @@ export class BuffedSettingsController {
     //   console.log('after delay. 00000000000000000000000000000000');
     //   this.fitScreenContent();
     // }, 3000); // 1000 milliseconds (1 second) delay
-
 
     /////////////
     // console.log(`adding color block`);
@@ -300,40 +303,19 @@ export class BuffedSettingsController {
   private ensureValidEncoder() {
     console.log('>>>>>>> Ensure valid encoder')
     if (getOS() === OS.Mac) return;
-
+    const { SettingsService } = Services;
+   
     const encoderSetting: IObsListInput<string> =
-      this.findSetting(this.state.Output.formData, 'Streaming', 'Encoder') ??
-      this.findSetting(this.state.Output.formData, 'Streaming', 'StreamEncoder');
+    SettingsService.findSetting(SettingsService.state.Output.formData, 'Streaming', 'Encoder') ??
+    SettingsService.findSetting(SettingsService.state.Output.formData, 'Streaming', 'StreamEncoder');
     const encoderIsValid = !!encoderSetting.options.find(opt => opt.value === encoderSetting.value);
 
-    console.log('>>>>>>> value: ', encoderSetting.value)
-    console.log('>>>>>>> options: ', encoderSetting.options.map((o) => o.value))
-
-
-    // The backend incorrectly defaults to obs_x264 in Simple mode rather x264.
-    // In this case we shouldn't do anything here.
-    if (encoderSetting.value === 'obs_x264') return;
-
-    console.log('>>>>>>>>> is valid ', encoderIsValid)
-    if (!encoderIsValid) {
-      const mode: string = this.findSettingValue(this.state.Output.formData, 'Untitled', 'Mode');
-
-      if (mode === 'Advanced') {
-        console.log('>>>>>>>> advanced set')
-        this.setSettingValue('Output', 'Encoder', 'obs_x264');
-      } else {
-        console.log('>>>>>>>> basic set')
-
-        this.setSettingValue('Output', 'StreamEncoder', 'x264');
-      }
-
-      remote.dialog.showMessageBox(this.windowsService.windows.main, {
-        type: 'error',
-        message:
-          'Your stream encoder has been reset to Software (x264). This can be caused by out of date graphics drivers. Please update your graphics drivers to continue using hardware encoding.',
-      });
+    const theOptions = encoderSetting.options.map((o) => o.value)
+    if (theOptions.includes(EObsSimpleEncoder.jim_nvenc)) {
+      console.log('>>>>>>>>> jim_nvenc set')
+      SettingsService.setSettingValue('Output', 'Encoder', EObsSimpleEncoder.jim_nvenc);
     }
-    console.log('>>>>>>>> elo melo bbbbb set')
+
 
   }
 }
