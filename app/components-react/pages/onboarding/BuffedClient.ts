@@ -1,5 +1,6 @@
 import fetch from 'node-fetch';
 import { OBSSettings } from '../../../services/settings/BuffedSettingsController';
+import * as remote from '@electron/remote';
 
 interface SignInOutput {
   id: number;
@@ -70,10 +71,12 @@ export class BuffedClient {
 
     console.log(`Fetching profile from ${url}`);
 
+    const appVersion = remote.app.getVersion();
     const result = await fetch(url, {
       method: 'get',
       headers: {
         'Content-Type': 'application/json',
+        'User-Agent': `BuffedDesktop/${appVersion}`,
       },
     });
     const output = (await result.json()) as UserProfile;
