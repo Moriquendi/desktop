@@ -236,6 +236,7 @@ export enum EPlatform {
   Trovo = 'trovo',
   Twitter = 'twitter',
   Instagram = 'instagram',
+  Buffed = 'buffed',
 }
 
 export type TPlatform =
@@ -256,6 +257,7 @@ export const platformList = [
   EPlatform.YouTube,
   EPlatform.Twitter,
   EPlatform.Instagram,
+  EPlatform.Buffed,
 ];
 
 export const platformLabels = (platform: TPlatform | string) =>

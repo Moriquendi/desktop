@@ -31,7 +31,6 @@ export class BuffedSettingsController {
   @Inject() customizationService: CustomizationService;
   @Inject() sourcesService: SourcesService;
 
-
   async otherStuff() {
     Services.SettingsService.actions.setSettingValue('Output', 'RecRB', false);
   }
@@ -54,8 +53,8 @@ export class BuffedSettingsController {
   }
 
   setup() {
-    this.sourcesService.sourceUpdated.subscribe((source) => {
-       if (source.type === 'game_capture') {
+    this.sourcesService.sourceUpdated.subscribe(source => {
+      if (source.type === 'game_capture') {
         this.fitScreenContent();
       }
     });
@@ -176,17 +175,20 @@ export class BuffedSettingsController {
       if (isMac) {
         const item = scene.createAndAddSource('Screen Capture', 'screen_capture', {}, {});
       } else {
-        const item = scene.createAndAddSource('Game Capture', 'game_capture', {}, 
-        {
-         sourceAddOptions: {
-          propertiesManager: 'default',
-           propertiesManagerSettings: {},
-           guestCamStreamId: undefined,
-           sourceId: undefined
+        const item = scene.createAndAddSource(
+          'Game Capture',
+          'game_capture',
+          {},
+          {
+            sourceAddOptions: {
+              propertiesManager: 'default',
+              propertiesManagerSettings: {},
+              guestCamStreamId: undefined,
+              sourceId: undefined,
+            },
+            display: 'horizontal',
+            id: undefined,
           },
-          display: 'horizontal',
-          id: undefined
-        }
         );
 
         const sourceId = item.sourceId;
@@ -213,7 +215,7 @@ export class BuffedSettingsController {
     }
     ////////////////////////////////////////
     // FIT TO SCREN'
-    console.log('SHCEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEDULE')
+    console.log('SHCEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEDULE');
     // setTimeout(() => {
     //   console.log('after delay. 00000000000000000000000000000000');
     //   this.fitScreenContent();
@@ -301,21 +303,23 @@ export class BuffedSettingsController {
   }
 
   private ensureValidEncoder() {
-    console.log('>>>>>>> Ensure valid encoder')
+    console.log('>>>>>>> Ensure valid encoder');
     if (getOS() === OS.Mac) return;
     const { SettingsService } = Services;
-   
+
     const encoderSetting: IObsListInput<string> =
-    SettingsService.findSetting(SettingsService.state.Output.formData, 'Streaming', 'Encoder') ??
-    SettingsService.findSetting(SettingsService.state.Output.formData, 'Streaming', 'StreamEncoder');
+      SettingsService.findSetting(SettingsService.state.Output.formData, 'Streaming', 'Encoder') ??
+      SettingsService.findSetting(
+        SettingsService.state.Output.formData,
+        'Streaming',
+        'StreamEncoder',
+      );
     const encoderIsValid = !!encoderSetting.options.find(opt => opt.value === encoderSetting.value);
 
-    const theOptions = encoderSetting.options.map((o) => o.value)
+    const theOptions = encoderSetting.options.map(o => o.value);
     if (theOptions.includes(EObsSimpleEncoder.jim_nvenc)) {
-      console.log('>>>>>>>>> jim_nvenc set')
+      console.log('>>>>>>>>> jim_nvenc set');
       SettingsService.setSettingValue('Output', 'Encoder', EObsSimpleEncoder.jim_nvenc);
     }
-
-
   }
 }
