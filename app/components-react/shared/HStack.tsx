@@ -23,10 +23,15 @@ export function HStack(props: HStackProps) {
         // justifyItems: 'flex-end',
         // content: 'fit-content',
         justifyContent: 'center',
+        alignItems: 'center',
         ...props.style,
       }}
     >
       {props.children}
     </div>
   );
+}
+
+export function Spacer() {
+  return <div style={{ flexGrow: 1 }} />;
 }

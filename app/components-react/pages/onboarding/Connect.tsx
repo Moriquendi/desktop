@@ -64,7 +64,7 @@ export function Connect() {
 
   function afterLogin() {
     OnboardingService.actions.setExistingCollections();
-    next();
+    //next();
   }
 
   const platforms = RecordingModeService.views.isRecordingModeEnabled

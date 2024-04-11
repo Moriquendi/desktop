@@ -12,7 +12,7 @@ import Form from 'components-react/shared/inputs/Form';
 import { BuffedClient } from './BuffedClient';
 import { Image, Alert, Button, ConfigProvider, Spin } from 'antd';
 import { SocialPlatform, TPlatform } from 'services/platforms';
-import { HStack } from 'components-react/shared/HStack';
+import { HStack, Spacer } from 'components-react/shared/HStack';
 
 interface Props {
   onAuth: (email: string, password: string) => Promise<void>;
@@ -44,11 +44,17 @@ export function BuffedPlatformConnect(props: Props) {
     remote.shell.openExternal(platformDefinition.helpUrl);
   }
 
-  async function onFinish(isRegister: boolean) {
-    setScreen('intro-screen');
-    return;
-    //////////////////////////
+  async function onPerformSocialAuth(p: SocialPlatform) {
+    try {
+      await props.authPlatform(p);
+      setScreen('intro-screen');
+    } catch {
+      console.error('Failed to auth with platform', error);
+      setError(error ?? 'Failed to auth with platform');
+    }
+  }
 
+  async function onPerformAuth(isRegister: boolean) {
     setIsLoading(true);
     setError(null);
 
@@ -60,14 +66,9 @@ export function BuffedPlatformConnect(props: Props) {
       }
 
       setScreen('intro-screen');
-      //
-      //next();
-      //
     } catch (e) {
       console.log(`Throwed error:`);
       const message = e.error ?? 'Something went wrong. Please try again.';
-      // console.log(e.message);
-      // console.log(e.error);
       setError(message);
     }
 
@@ -130,22 +131,24 @@ export function BuffedPlatformConnect(props: Props) {
     );
   }
 
-  function AuthMethodButtons() {
+  function AuthMethodButtons({ onSkip }: { onSkip: () => void }) {
     return (
-      <VStack>
-        <SocialAuthButtons
-          onAuth={async p => {
-            try {
-              setIsLoading(true);
-              await props.authPlatform(p);
-            } catch {
-              console.error('Failed to auth with platform', error);
-            }
-            setIsLoading(false);
-          }}
-        />
-        <EmailMethodButton />
-        <SignUpButton />
+      <VStack style={{ gap: 0, height: '100%' }}>
+        <Spacer />
+
+        <VStack>
+          <SocialAuthButtons
+            onAuth={async p => {
+              await onPerformSocialAuth(p);
+            }}
+          />
+          <EmailMethodButton />
+          <SignUpButton />
+          {isLoading && <Spin />}
+        </VStack>
+        <Spacer />
+
+        <ToolbarItems onSkip={onSkip} />
       </VStack>
     );
   }
@@ -153,33 +156,70 @@ export function BuffedPlatformConnect(props: Props) {
   const renderCurrentScreen = () => {
     switch (screen) {
       case 'auth-method-pick':
-        return <AuthMethodButtons />;
+        return <AuthMethodButtons onSkip={next} />;
       case 'auth-method-email':
         return (
-          <EmailForm
-            email={email}
-            setEmail={setEmail}
-            password={password}
-            setPassword={setPassword}
-            ctaTitle={$t('Log In')}
-            onFinish={() => onFinish(false)}
-          />
+          <VStack style={{ width: '100%', height: '100%', gap: 0 }}>
+            <Spacer />
+
+            <VStack>
+              <EmailForm
+                email={email}
+                setEmail={setEmail}
+                password={password}
+                setPassword={setPassword}
+                ctaTitle={$t('Log In')}
+                onFinish={() => onPerformAuth(false)}
+              />
+              {isLoading && <Spin />}
+            </VStack>
+            <Spacer />
+            <ToolbarItems
+              onBack={() => {
+                setScreen('auth-method-pick');
+              }}
+            />
+          </VStack>
         );
       case 'auth-signup':
         return (
-          <EmailForm
-            email={email}
-            setEmail={setEmail}
-            password={password}
-            setPassword={setPassword}
-            ctaTitle={$t('Register')}
-            onFinish={() => onFinish(true)}
-          />
+          <VStack style={{ width: '100%', height: '100%', gap: 0 }}>
+            <Spacer />
+            <VStack>
+              <EmailForm
+                email={email}
+                setEmail={setEmail}
+                password={password}
+                setPassword={setPassword}
+                ctaTitle={$t('Register')}
+                onFinish={() => onPerformAuth(true)}
+              />
+              {isLoading && <Spin />}
+            </VStack>
+            <Spacer />
+            <ToolbarItems
+              onBack={() => {
+                setScreen('auth-method-pick');
+              }}
+            />
+          </VStack>
         );
       case 'intro-screen':
-        return <IntroScreen />;
+        return (
+          <IntroScreen
+            onNext={() => {
+              setScreen('download-app');
+            }}
+          />
+        );
       case 'download-app':
-        return <DownloadAppScreen />;
+        return (
+          <DownloadAppScreen
+            onNext={() => {
+              next();
+            }}
+          />
+        );
     }
   };
 
@@ -222,33 +262,28 @@ export function BuffedPlatformConnect(props: Props) {
 
   return (
     <div className={styles.rootContainer}>
-      <div className={styles.fancyContainerBackground}> </div>
+      {screen == 'auth-method-pick' && <div className={styles.fancyContainerBackground} />}
 
-      <div style={{ position: 'relative', height: '100%' }}>
-        <div
-          className={styles.fancyContainer}
-          style={{ height: '100%', backgroundColor: 'orange' }}
-        >
+      <div style={{ position: 'relative', width: '100%', height: '100%' }}>
+        <div className={styles.fancyContainer} style={{ width: '100%', height: '100%' }}>
           {/* <p>
               <PlatformLogo platform={'buffed'} />
             </p>
             <h1>{$t('Connect to %{platform}', { platform: platformDefinition.name })}</h1> */}
 
           {/* <div className="flex flex--center flex--column" style={{ backgroundColor: 'purple' }}> */}
-          <VStack style={{ backgroundColor: 'red', height: '100%' }}>
+          <VStack style={{ width: '100%', height: '100%' }}>
             {error && (
               <div style={{ padding: 8 }}>
                 <Alert message={error} type="error" showIcon />
               </div>
             )}
 
-            <div style={{ backgroundColor: 'green', flexGrow: 1 }}>{renderCurrentScreen()}</div>
+            {renderCurrentScreen()}
 
-            {isLoading && <Spin />}
+            {/* {getNavButtons()} */}
 
-            {getNavButtons()}
-
-            {screen == 'auth-method-pick' && <HStack>{getGuideLink()}</HStack>}
+            {/* {screen == 'auth-method-pick' && <HStack>{getGuideLink()}</HStack>} */}
           </VStack>
           {/* </div> */}
         </div>
@@ -290,6 +325,8 @@ function VStack(props: { children: React.ReactNode; style?: React.CSSProperties 
         display: 'flex',
         flexDirection: 'column',
         gap: 30,
+        alignItems: 'center',
+        justifyItems: 'center',
         ...props.style,
       }}
     >
@@ -360,7 +397,7 @@ interface EmailFormProps {
 }
 function EmailForm({ email, setEmail, password, setPassword, ctaTitle, onFinish }: EmailFormProps) {
   return (
-    <Form>
+    <Form layout="vertical">
       <TextInput
         label={$t('Email')}
         value={email}
@@ -376,6 +413,16 @@ function EmailForm({ email, setEmail, password, setPassword, ctaTitle, onFinish 
         uncontrolled={false}
       />
 
+      {/* <div style={{ width: '100%', display: 'flex', justifyContent: 'flex-end' }}>
+        
+        <a className={styles.linkButton}
+          onClick={() => {
+            remote.shell.openExternal(
+              '',
+            )
+          }}>Forgot Password?</a>
+      </div> */}
+
       <button
         className="button button--action"
         onClick={() => {
@@ -390,50 +437,122 @@ function EmailForm({ email, setEmail, password, setPassword, ctaTitle, onFinish 
   );
 }
 
-function IntroScreen({}: {}) {
+function IntroScreen({ onNext }: { onNext: () => void }) {
   return (
     // <div style={{ height: '100%', backgroundColor: 'brown' }}>
-    <HStack
-      style={{
-        // flexGrow: 1,
-        height: '100%',
-        backgroundColor: 'green',
-      }}
-    >
-      <VStack>
-        <h2>Play on PCx</h2>
-
-        <img
-          style={{ maxHeight: '100%', maxWidth: '100%', width: 'auto', height: 'auto' }}
-          src={require(`../../../../media/images/buffed-onboarding/pc-play-intro-screen.png`)}
-          alt="Play on PC"
-        />
-      </VStack>
-      <VStack
+    <VStack style={{ gap: 0, width: '100%' }}>
+      <HStack
         style={{
+          // flexGrow: 1,
           height: '100%',
-          backgroundColor: 'magenta',
           overflow: 'hidden',
+          padding: '32px',
+          gap: 60,
+          justifyContent: 'center',
+          alignItems: 'center',
         }}
       >
-        <h1>Use on iOS</h1>
+        <div style={{ flexGrow: 1 }} />
+        <VStack style={{ flexGrow: 1, alignItems: 'center', gap: 60 }}>
+          <h1>Play on PC</h1>
+
+          <img
+            style={{ height: 330, maxHeight: '100%', maxWidth: '100%', width: 'auto' }}
+            src={require(`./Assets/pc-play-intro-screen.png`)}
+            alt="Play on PC"
+          />
+        </VStack>
 
         <img
-          style={{ width: '100%', height: '100%', objectFit: 'contain' }}
-          src={require('./Assets/ios-play-intro-screen.png')}
-          alt="Use on iOS"
+          style={{ width: 'auto', height: '40px' }}
+          src={require('./Assets/intro-link-icon.png')}
         />
-      </VStack>
-    </HStack>
-    // </div>
+
+        <VStack
+          style={{
+            flexGrow: 1,
+            height: '100%',
+            overflow: 'hidden',
+            alignItems: 'center',
+            gap: 60,
+          }}
+        >
+          <h1>Use on iOS</h1>
+
+          <div style={{ overflow: 'hidden' }}>
+            <img
+              style={{ height: 330, maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }}
+              src={require('./Assets/ios-play-intro-screen.png')}
+              alt="Use on iOS"
+            />
+          </div>
+        </VStack>
+
+        <div style={{ flexGrow: 1 }} />
+      </HStack>
+      <ToolbarItems onNext={onNext} />
+    </VStack>
   );
 }
 
-function DownloadAppScreen({}: {}) {
+function DownloadAppScreen({ onNext }: { onNext: () => void }) {
   return (
-    <VStack>
-      <img src={require(`../../../../media/images/buffed-onboarding/pc-play-intro-screen.png`)} />
-      <img src={require(`../../../../media/images/buffed-onboarding/pc-play-intro-screen.png`)} />
+    <VStack style={{ gap: 0, width: '100%', height: '100%' }}>
+      <VStack style={{ gap: 30, height: '100%', justifyContent: 'center' }}>
+        <img src={require(`./Assets/download-qr.png`)} />
+        <a
+          onClick={() =>
+            remote.shell.openExternal(
+              'https://apps.apple.com/us/app/buffed-clip-gaming-adventures/id6467634856',
+            )
+          }
+        >
+          <img src={require(`./Assets/download-badge.png`)} />
+        </a>
+      </VStack>
+
+      <div style={{ width: '100%' }}>
+        <ToolbarItems onNext={onNext} />
+      </div>
     </VStack>
+  );
+}
+
+function ToolbarItems(props: { onNext?: () => void; onBack?: () => void; onSkip?: () => void }) {
+  const { onNext, onBack, onSkip } = props;
+  return (
+    <HStack
+      style={{
+        justifyContent: 'space-between',
+        paddingLeft: 40,
+        paddingRight: 40,
+        paddingTop: 20,
+        paddingBottom: 20,
+      }}
+    >
+      {onBack && (
+        <a
+          className={styles.linkButton}
+          onClick={() => {
+            onBack();
+          }}
+        >
+          {$t('Back')}
+        </a>
+      )}
+      <Spacer />
+      {onSkip && (
+        <a className={styles.linkButton} onClick={() => onSkip()}>
+          {$t('Skip')}
+        </a>
+      )}
+      <Spacer />
+
+      {onNext && (
+        <a className={styles.linkButton} onClick={() => onNext()}>
+          {$t('Next')}
+        </a>
+      )}
+    </HStack>
   );
 }
