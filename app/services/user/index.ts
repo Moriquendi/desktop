@@ -1147,6 +1147,12 @@ export class UserService extends PersistentStatefulService<IUserServiceState> {
     return EPlatformCallResult.Success;
   }
 
+  async buffedAuthRegister(email: string, password: string) {
+    const buffedService = BuffedService.instance as BuffedService;
+    const authResult = await buffedService.register(email, password);
+    return this.buffedAuth(email, password);
+  }
+
   async buffedAuth(email: string, password: string) {
     // const service = getPlatformService('buffed')
     // const buffedService = service as any as BuffedService

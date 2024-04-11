@@ -1,6 +1,6 @@
 import { useModule } from 'slap';
 import PlatformLogo from 'components-react/shared/PlatformLogo';
-import React, { useState } from 'react';
+import React, { HTMLAttributes, useState } from 'react';
 import { $t } from 'services/i18n';
 import { LoginModule } from './Connect';
 import styles from './BuffedPlatformConnect.m.less';
@@ -16,13 +16,19 @@ import { HStack } from 'components-react/shared/HStack';
 
 interface Props {
   onAuth: (email: string, password: string) => Promise<void>;
+  onRegister: (email: string, password: string) => Promise<void>;
   authPlatform: (platform: SocialPlatform) => Promise<void>;
 }
 
-type Screen = 'auth-method-pick' | 'auth-method-email';
+type Screen =
+  | 'auth-method-pick'
+  | 'auth-method-email'
+  | 'auth-signup'
+  | 'intro-screen'
+  | 'download-app';
 
 export function BuffedPlatformConnect(props: Props) {
-  const onAuth = props.onAuth;
+  const { onAuth, onRegister } = props;
   const { selectedExtraPlatform, setExtraPlatform } = useModule(LoginModule);
   const { next } = useModule(OnboardingModule);
   const [email, setEmail] = useState('');
@@ -38,40 +44,25 @@ export function BuffedPlatformConnect(props: Props) {
     remote.shell.openExternal(platformDefinition.helpUrl);
   }
 
-  async function onFinish() {
+  async function onFinish(isRegister: boolean) {
+    setScreen('intro-screen');
+    return;
+    //////////////////////////
+
     setIsLoading(true);
     setError(null);
 
     try {
-      await onAuth(email, password);
-      next();
+      if (isRegister) {
+        await onRegister(email, password);
+      } else {
+        await onAuth(email, password);
+      }
 
-      return;
-      ////////////////////////////////////////////
-      Services.StreamSettingsService.setSettings({
-        key: '1231231231231',
-        streamType: 'rtmp_custom',
-        server: 'buffed.com.elomelo',
-      });
-      console.log('ok');
-      next();
-      return;
-      ////////////////////////////////////////////
-
-      const buffedClient = new BuffedClient();
-      console.error('Signing in to buffed');
-      const output = await buffedClient.signIn(email, password);
-      console.log(output);
-      console.error('Fetching profile....');
-      const userProfile = await buffedClient.profile(output.api_key);
-      console.log(userProfile);
-      console.error('Setting streaming settings for buffed');
-
-      Services.StreamSettingsService.setSettings({
-        key: userProfile.buffed_key!,
-        streamType: 'rtmp_custom',
-        server: platformDefinition.ingestUrl,
-      });
+      setScreen('intro-screen');
+      //
+      //next();
+      //
     } catch (e) {
       console.log(`Throwed error:`);
       const message = e.error ?? 'Something went wrong. Please try again.';
@@ -125,6 +116,20 @@ export function BuffedPlatformConnect(props: Props) {
     );
   }
 
+  function SignUpButton() {
+    return (
+      <button
+        className="button button--action"
+        onClick={() => {
+          setScreen('auth-signup');
+        }}
+        style={{ minWidth: '300px' }}
+      >
+        {$t('Register with Email')}
+      </button>
+    );
+  }
+
   function AuthMethodButtons() {
     return (
       <VStack>
@@ -140,6 +145,7 @@ export function BuffedPlatformConnect(props: Props) {
           }}
         />
         <EmailMethodButton />
+        <SignUpButton />
       </VStack>
     );
   }
@@ -155,9 +161,25 @@ export function BuffedPlatformConnect(props: Props) {
             setEmail={setEmail}
             password={password}
             setPassword={setPassword}
-            onFinish={onFinish}
+            ctaTitle={$t('Log In')}
+            onFinish={() => onFinish(false)}
           />
         );
+      case 'auth-signup':
+        return (
+          <EmailForm
+            email={email}
+            setEmail={setEmail}
+            password={password}
+            setPassword={setPassword}
+            ctaTitle={$t('Register')}
+            onFinish={() => onFinish(true)}
+          />
+        );
+      case 'intro-screen':
+        return <IntroScreen />;
+      case 'download-app':
+        return <DownloadAppScreen />;
     }
   };
 
@@ -203,29 +225,32 @@ export function BuffedPlatformConnect(props: Props) {
       <div className={styles.fancyContainerBackground}> </div>
 
       <div style={{ position: 'relative', height: '100%' }}>
-        <div className={styles.fancyContainer} style={{ height: '100%' }}>
+        <div
+          className={styles.fancyContainer}
+          style={{ height: '100%', backgroundColor: 'orange' }}
+        >
           {/* <p>
               <PlatformLogo platform={'buffed'} />
             </p>
             <h1>{$t('Connect to %{platform}', { platform: platformDefinition.name })}</h1> */}
 
-          <div className="flex flex--center flex--column">
-            <VStack>
-              {error && (
-                <div style={{ padding: 8 }}>
-                  <Alert message={error} type="error" showIcon />
-                </div>
-              )}
+          {/* <div className="flex flex--center flex--column" style={{ backgroundColor: 'purple' }}> */}
+          <VStack style={{ backgroundColor: 'red', height: '100%' }}>
+            {error && (
+              <div style={{ padding: 8 }}>
+                <Alert message={error} type="error" showIcon />
+              </div>
+            )}
 
-              {renderCurrentScreen()}
+            <div style={{ backgroundColor: 'green', flexGrow: 1 }}>{renderCurrentScreen()}</div>
 
-              {isLoading && <Spin />}
+            {isLoading && <Spin />}
 
-              {getNavButtons()}
+            {getNavButtons()}
 
-              {screen == 'auth-method-pick' && <HStack>{getGuideLink()}</HStack>}
-            </VStack>
-          </div>
+            {screen == 'auth-method-pick' && <HStack>{getGuideLink()}</HStack>}
+          </VStack>
+          {/* </div> */}
         </div>
       </div>
     </div>
@@ -258,8 +283,19 @@ interface ButtonsProps {
   onAuth: (platform: SocialPlatform) => Promise<void>;
 }
 
-function VStack(props: { children: React.ReactNode }) {
-  return <div style={{ display: 'flex', flexDirection: 'column', gap: 30 }}>{props.children}</div>;
+function VStack(props: { children: React.ReactNode; style?: React.CSSProperties }) {
+  return (
+    <div
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 30,
+        ...props.style,
+      }}
+    >
+      {props.children}
+    </div>
+  );
 }
 
 function SocialAuthButtons(props: ButtonsProps) {
@@ -319,9 +355,10 @@ interface EmailFormProps {
 
   password: string;
   setPassword: (password: string) => void;
+  ctaTitle: string;
   onFinish: () => void;
 }
-function EmailForm({ email, setEmail, password, setPassword, onFinish }: EmailFormProps) {
+function EmailForm({ email, setEmail, password, setPassword, ctaTitle, onFinish }: EmailFormProps) {
   return (
     <Form>
       <TextInput
@@ -347,8 +384,56 @@ function EmailForm({ email, setEmail, password, setPassword, onFinish }: EmailFo
         disabled={!(email.trim().length > 0 && password.trim().length > 0)}
         style={{ minWidth: '300px' }}
       >
-        {$t('Log In')}
+        {ctaTitle}
       </button>
     </Form>
+  );
+}
+
+function IntroScreen({}: {}) {
+  return (
+    // <div style={{ height: '100%', backgroundColor: 'brown' }}>
+    <HStack
+      style={{
+        // flexGrow: 1,
+        height: '100%',
+        backgroundColor: 'green',
+      }}
+    >
+      <VStack>
+        <h2>Play on PCx</h2>
+
+        <img
+          style={{ maxHeight: '100%', maxWidth: '100%', width: 'auto', height: 'auto' }}
+          src={require(`../../../../media/images/buffed-onboarding/pc-play-intro-screen.png`)}
+          alt="Play on PC"
+        />
+      </VStack>
+      <VStack
+        style={{
+          height: '100%',
+          backgroundColor: 'magenta',
+          overflow: 'hidden',
+        }}
+      >
+        <h1>Use on iOS</h1>
+
+        <img
+          style={{ width: '100%', height: '100%', objectFit: 'contain' }}
+          src={require('./Assets/ios-play-intro-screen.png')}
+          alt="Use on iOS"
+        />
+      </VStack>
+    </HStack>
+    // </div>
+  );
+}
+
+function DownloadAppScreen({}: {}) {
+  return (
+    <VStack>
+      <img src={require(`../../../../media/images/buffed-onboarding/pc-play-intro-screen.png`)} />
+      <img src={require(`../../../../media/images/buffed-onboarding/pc-play-intro-screen.png`)} />
+    </VStack>
   );
 }

@@ -34,6 +34,9 @@ export function Connect() {
       onAuth={(email: string, password: string) => {
         return authBuffed(email, password, afterLogin);
       }}
+      onRegister={(email: string, password: string) => {
+        return authBuffed(email, password, afterLogin);
+      }}
       authPlatform={socialPlatform => {
         return authSocialPlatform(socialPlatform, afterLogin);
       }}
@@ -170,6 +173,11 @@ export class LoginModule {
 
   async authBuffed(email: string, password: string, onSuccess: () => void) {
     await this.UserService.buffedAuth(email, password);
+    onSuccess();
+  }
+
+  async authBuffedRegister(email: string, password: string, onSuccess: () => void) {
+    await this.UserService.buffedAuthRegister(email, password);
     onSuccess();
   }
 

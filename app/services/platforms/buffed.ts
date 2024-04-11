@@ -129,12 +129,14 @@ export class BuffedService
     });
   }
 
-  async auth(email: string, password: string) {
-    // return {
-    //   token: 'elomelos',
-    //   streamKey: 'elomseloKey'
-    // }
+  async register(email: string, password: string) {
+    const buffedClient = new BuffedClient();
+    console.error('[Buffed Service] Register to buffed');
+    const output = await buffedClient.register(email, password);
+    return output;
+  }
 
+  async auth(email: string, password: string) {
     const buffedClient = new BuffedClient();
     console.error('[Buffed Service] Signing in to buffed');
     const output = await buffedClient.signIn(email, password);

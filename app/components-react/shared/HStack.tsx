@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { HTMLAttributes } from 'react';
 
 export interface HStackProps extends React.HTMLAttributes<HTMLDivElement> {
   spacing?: number;
+  style?: React.CSSProperties;
 }
 
 export function HStack(props: HStackProps) {
@@ -22,6 +23,7 @@ export function HStack(props: HStackProps) {
         // justifyItems: 'flex-end',
         // content: 'fit-content',
         justifyContent: 'center',
+        ...props.style,
       }}
     >
       {props.children}
