@@ -417,7 +417,7 @@ async function startApp() {
 
   console.log(`Main: Show dev tools: ${process.env.SLOBS_PRODUCTION_DEBUG}`);
   //if (process.env.SLOBS_PRODUCTION_DEBUG) openDevTools();
-  // openDevTools();
+  openDevTools();
 
   // simple messaging system for services between windows
   // WARNING! renderer windows use synchronous requests and will be frozen
@@ -684,21 +684,27 @@ function recreateAndShowMainWindow() {
   });
 
   //if (process.env.SLOBS_PRODUCTION_DEBUG) openDevTools();
-  //openDevTools();
+  openDevTools();
 }
 
 const haDisableFile = path.join(app.getPath('userData'), 'HADisable');
 if (fs.existsSync(haDisableFile)) app.disableHardwareAcceleration();
 
 //app.setAsDefaultProtocolClient('buffed');
-app.setAsDefaultProtocolClient('me.buffed.app.desktop');
+console.log('Setting as default protocol client: me.buffed.app.desktop');
+const ok = app.setAsDefaultProtocolClient('me.buffed.app.desktop');
+console.log(`Set as default protocol client: ${ok}`);
 
 app.on('second-instance', (event, argv, cwd) => {
   // Check for protocol links in the argv of the other process
+
+  console.log('ON SECOND INSTANCE EVENT.')
+
   argv.forEach(arg => {
     console.log(`Args: ${arg}`);
 
     if (arg.match(/^me\.buffed\.app\.desktop:\/\//)) {
+      console.log('Match. Send to protocol link.')
       workerWindow.send('protocolLink', arg);
     }
   });
@@ -722,7 +728,7 @@ let protocolLinkReady = false;
 let pendingLink;
 
 function handleDeeplink(url) {
-  console.log('Handle deeplink.')
+  console.log('Handle deeplink.', url)
 
   if (url.includes('/autostream')) {
     shouldFocusWindowOnNextShow = false;
