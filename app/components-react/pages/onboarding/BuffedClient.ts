@@ -7,7 +7,7 @@ interface SignInOutput {
   api_key: string;
 }
 
-interface UserProfile {
+export interface UserProfile {
   id: number;
   email: string;
   buffed_key: string | null;
@@ -61,8 +61,27 @@ export class BuffedClient {
     }
   }
 
-  signUp() {
-    const endpoint = 'users/sign_up';
+  async updateProfile(apiKey: string, profile: Partial<UserProfile>): Promise<UserProfile> {
+    const baseURL = 'https://buffed.me/api/v1/';
+    const endpoint = 'users/update';
+
+    let url = new URL(`${baseURL}${endpoint}`);
+    url.searchParams.append('api_key', apiKey);
+
+    const body = {
+      user: profile,
+    };
+
+    const result = await fetch(url, {
+      method: 'post',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(body),
+    });
+
+    const output = (await result.json()) as UserProfile;
+    return output;
   }
 
   async profile(apiKey: string): Promise<UserProfile> {

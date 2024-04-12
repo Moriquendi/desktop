@@ -15,16 +15,17 @@ import { TTwitchOAuthScope, TwitchTagsService } from './twitch/index';
 import { platformAuthorizedRequest } from './utils';
 import { CustomizationService } from 'services/customization';
 import { IGoLiveSettings } from 'services/streaming';
-import { InheritMutations, mutation } from 'services/core';
+import { InheritMutations, ViewHandler, mutation } from 'services/core';
 import { throwStreamError, TStreamErrorType } from 'services/streaming/stream-error';
 import { BasePlatformService } from './base-platform';
 import Utils from '../utils';
 import { IVideo } from 'obs-studio-node';
 import { TDisplayType } from 'services/settings-v2';
 import { TOutputOrientation } from 'services/restream';
-import { BuffedClient } from '../../components-react/pages/onboarding/BuffedClient';
+import { BuffedClient, UserProfile } from '../../components-react/pages/onboarding/BuffedClient';
 import { RunningAppsObserver } from 'services/games-monitor/RunningAppsObserver';
 import path from 'path';
+import { NavigationService } from 'app-services';
 
 export interface IBuffedStartStreamOptions {
   // title: string;
@@ -58,10 +59,17 @@ export interface IBuffedStartStreamOptions {
 //   user_id: string;
 // }
 
+class BuffedViews extends ViewHandler<IBuffedServiceState> {
+  get profile(): UserProfile | null {
+    return this.state.profile;
+  }
+}
+
 interface IBuffedServiceState extends IPlatformState {
   // hasUpdateTagsPermission: boolean;
   // hasPollsPermission: boolean;
   // settings: ITwitchStartStreamOptions;
+  profile: UserProfile | null;
 }
 
 const UNLISTED_GAME_CATEGORY = { id: '0', name: 'Unlisted', box_art_url: '' };
@@ -74,9 +82,11 @@ export class BuffedService
   @Inject() userService: UserService;
   // @Inject() customizationService: CustomizationService;
   // @Inject() twitchTagsService: TwitchTagsService;
+  @Inject() navigationService: NavigationService;
 
   static initialState: IBuffedServiceState = {
     ...BasePlatformService.initialState,
+    profile: null,
     // hasUpdateTagsPermission: false,
     // hasPollsPermission: false,
     // settings: {
@@ -133,6 +143,10 @@ export class BuffedService
     const buffedClient = new BuffedClient();
     console.error('[Buffed Service] Register to buffed');
     const output = await buffedClient.register(email, password);
+
+    // For users who sign up on desktop, auto set platform = pc
+    await buffedClient.updateProfile(output.api_key, { platform: 'pc' });
+
     return output;
   }
 
@@ -149,6 +163,7 @@ export class BuffedService
 
     console.error('[Buffed Service] Fetching profile....');
     const userProfile = await buffedClient.profile(token);
+    this.SET_PROFILE(userProfile);
     console.log(userProfile);
     console.error('Setting streaming settings for buffed');
 
@@ -157,6 +172,11 @@ export class BuffedService
       streamKey: userProfile.buffed_key,
       profile: userProfile,
     };
+  }
+
+  @mutation()
+  SET_PROFILE(profile: UserProfile) {
+    this.state.profile = profile;
   }
 
   get authUrl() {
@@ -202,11 +222,11 @@ export class BuffedService
 
   async beforeGoLive(goLiveSettings?: IGoLiveSettings, context?: TDisplayType) {
     console.log(`Buffed before go live`);
-    console.log(`Setting key to : ${this.userService.state.auth!.widgetToken}`);
+    console.log(`Setting key to : ${this.userService.state.auth!.platforms['buffed'].token}`);
 
     ////////////////////////////////////////
     this.streamSettingsService.setSettings({
-      key: this.userService.state.auth!.widgetToken,
+      key: this.userService.state.auth!.platforms['buffed'].token,
       streamType: 'rtmp_custom',
       server: 'rtmp://buffed.live/app',
     });
@@ -358,9 +378,27 @@ export class BuffedService
     // this.SET_STREAM_SETTINGS({ tags, title: channelInfo.title, game: channelInfo.game });
   }
 
+  async showPlatformSetup() {
+    //this.onboardingService.start({ isLogin: true });
+  }
+
+  get views() {
+    return new BuffedViews(this.state);
+  }
+
   async fetchUserInfo() {
+    console.error('[Buffed Service] Fetching profile....');
+    const token = this.userService.state.auth.apiToken;
+    const buffedClient = new BuffedClient();
+    const userProfile = await buffedClient.profile(token);
+    console.log('Set profile: ', userProfile);
+    this.SET_PROFILE(userProfile);
+
+    console.log('PPPROFILE: ', this.state.profile.platform);
+
     return {
       username: 'buffed-desktop',
+      ...userProfile,
     } as IUserInfo;
     // return platformAuthorizedRequest<{ login: string }[]>(
     //   'twitch',

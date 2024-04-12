@@ -1160,8 +1160,8 @@ export class UserService extends PersistentStatefulService<IUserServiceState> {
     const authResult = await buffedService.auth(email, password);
 
     const auth: IUserAuth = {
-      widgetToken: authResult.streamKey,
-      apiToken: authResult.token, // Streamlabs API Token
+      widgetToken: authResult.token,
+      apiToken: authResult.token,
 
       /**
        * Old key from when SLOBS only supported a single platform account
@@ -1181,7 +1181,7 @@ export class UserService extends PersistentStatefulService<IUserServiceState> {
         buffed: {
           type: 'buffed',
           username: '',
-          token: '',
+          token: authResult.streamKey,
           id: '',
         },
         //[platform in TPlatform]?: IPlatformAuth

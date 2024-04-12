@@ -139,7 +139,7 @@ export class AuthModule {
 
     console.log('Authed!');
     const authData: IUserAuth = {
-      widgetToken: userAuthInfo.streamKey,
+      widgetToken: userAuthInfo.token,
       apiToken: userAuthInfo.token,
 
       primaryPlatform: 'buffed' as any,
@@ -148,7 +148,7 @@ export class AuthModule {
         buffed: {
           type: 'buffed',
           username: '',
-          token: '',
+          token: userAuthInfo.streamKey,
           id: '',
         },
       },

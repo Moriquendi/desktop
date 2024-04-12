@@ -25,6 +25,7 @@ export function Connect() {
     authSocialPlatform,
     setExtraPlatform,
     authBuffed,
+    authBuffedRegister,
   } = useModule(LoginModule);
   const { next } = useModule(OnboardingModule);
   const { UsageStatisticsService, OnboardingService, RecordingModeService } = Services;
@@ -35,7 +36,7 @@ export function Connect() {
         return authBuffed(email, password, afterLogin);
       }}
       onRegister={(email: string, password: string) => {
-        return authBuffed(email, password, afterLogin);
+        return authBuffedRegister(email, password, afterLogin);
       }}
       authPlatform={socialPlatform => {
         return authSocialPlatform(socialPlatform, afterLogin);

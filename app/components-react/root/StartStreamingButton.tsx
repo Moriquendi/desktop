@@ -12,6 +12,7 @@ export default function StartStreamingButton(p: { disabled?: boolean }) {
     StreamingService,
     StreamSettingsService,
     UserService,
+    BuffedService,
     CustomizationService,
     MediaBackupService,
     SourcesService,
@@ -48,6 +49,12 @@ export default function StartStreamingButton(p: { disabled?: boolean }) {
     console.log('CTA CLICK');
 
     if (!UserService.isLoggedIn) {
+      UserService.actions.showLogin();
+      return;
+    }
+
+    const profilePlatform = BuffedService.state.profile?.platform;
+    if (profilePlatform !== 'pc') {
       UserService.actions.showLogin();
       return;
     }

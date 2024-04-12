@@ -24,6 +24,7 @@ type Screen =
   | 'auth-method-pick'
   | 'auth-method-email'
   | 'auth-signup'
+  | 'switch-platform'
   | 'intro-screen'
   | 'download-app';
 
@@ -37,6 +38,8 @@ export function BuffedPlatformConnect(props: Props) {
 
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const { BuffedService, UserService } = Services;
 
   //   if (!selectedExtraPlatform) return <div></div>;
 
@@ -65,7 +68,7 @@ export function BuffedPlatformConnect(props: Props) {
         await onAuth(email, password);
       }
 
-      setScreen('intro-screen');
+      goNextScreenAfterAuth();
     } catch (e) {
       console.log(`Throwed error:`);
       const message = e.error ?? 'Something went wrong. Please try again.';
@@ -73,6 +76,21 @@ export function BuffedPlatformConnect(props: Props) {
     }
 
     setIsLoading(false);
+  }
+
+  function goNextScreenAfterAuth() {
+    console.log('Buffed service ', BuffedService.views.profile);
+    console.log('User service ', UserService.views.isPrime);
+    console.log('In UI profile ', BuffedService.state.profile?.platform);
+    console.log('In UI profile by view ', BuffedService.views.profile?.platform);
+
+    if (BuffedService.state.profile?.platform == 'pc') {
+      console.log('Go to intro screen.');
+      setScreen('intro-screen');
+    } else {
+      console.log('Go to switch platform.');
+      setScreen('switch-platform');
+    }
   }
 
   //   const platformDefinition = {
@@ -217,6 +235,20 @@ export function BuffedPlatformConnect(props: Props) {
           <DownloadAppScreen
             onNext={() => {
               next();
+            }}
+          />
+        );
+      case 'switch-platform':
+        return (
+          <SwitchPlatformScreen
+            isLoading={isLoading}
+            onNext={async () => {
+              setIsLoading(true);
+              try {
+                await BuffedService.fetchUserInfo();
+              } catch {}
+              setIsLoading(false);
+              goNextScreenAfterAuth();
             }}
           />
         );
@@ -554,5 +586,79 @@ function ToolbarItems(props: { onNext?: () => void; onBack?: () => void; onSkip?
         </a>
       )}
     </HStack>
+  );
+}
+
+function SwitchPlatformScreen({ isLoading, onNext }: { isLoading: boolean; onNext: () => void }) {
+  return (
+    // <div style={{ height: '100%', backgroundColor: 'brown' }}>
+    <VStack style={{ gap: 0, width: '100%' }}>
+      <h2>Currently your Buffed is configured to work with console.</h2>
+      <h1>To use Buffed with PC please change it in Buffed mobile app.</h1>
+      <HStack
+        style={{
+          // flexGrow: 1,
+          height: '100%',
+          overflow: 'hidden',
+          padding: '32px',
+          gap: 20,
+          justifyContent: 'center',
+          alignItems: 'center',
+        }}
+      >
+        <div style={{ flexGrow: 1 }} />
+        <VStack style={{ flexGrow: 1, alignItems: 'center', gap: 10 }}>
+          <h3>Go to Settings</h3>
+
+          <img
+            style={{ height: 340, maxHeight: '100%', maxWidth: '100%', width: 'auto' }}
+            src={require(`./Assets/howto-setup-1.png`)}
+          />
+        </VStack>
+
+        <img
+          style={{ width: 'auto', height: '23px' }}
+          src={require('./Assets/arrow-right-buffed.png')}
+        />
+
+        <VStack
+          style={{
+            flexGrow: 1,
+            height: '100%',
+            overflow: 'hidden',
+            alignItems: 'center',
+            gap: 10,
+          }}
+        >
+          <h3>Start Setup Again</h3>
+
+          <div style={{ overflow: 'hidden' }}>
+            <img
+              style={{ height: 340, maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }}
+              src={require('./Assets/howto-setup-2.png')}
+            />
+          </div>
+        </VStack>
+
+        <div style={{ flexGrow: 1 }} />
+      </HStack>
+
+      <HStack
+        style={{
+          justifyContent: 'space-between',
+          paddingLeft: 40,
+          paddingRight: 40,
+          paddingTop: 20,
+          paddingBottom: 20,
+        }}
+      >
+        <Spacer />
+        {isLoading && <Spin />}
+
+        <a className={styles.linkButton} onClick={() => onNext()}>
+          {$t('Ok, Try Again')}
+        </a>
+      </HStack>
+    </VStack>
   );
 }
