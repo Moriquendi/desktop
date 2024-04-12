@@ -63,8 +63,13 @@ export class ProtocolLinksService extends Service {
     // Check if this instance was started with a protocol link
     byOS({
       [OS.Windows]: () => {
+        console.log('By windows....');
         argv.forEach(arg => {
-          if (arg.match(/^me\.buffed\.app\.desktop:\/\//)) this.handleLink(arg);
+          console.log(`ARG: ${arg}`);
+          if (arg.match(/^me\.buffed\.app\.desktop:\/\//)) {
+            console.log(`HANDLE LINK: ${arg}`);
+            this.handleLink(arg);
+          }
         });
         electron.ipcRenderer.send('protocolLinkReady');
       },
