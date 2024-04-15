@@ -14,6 +14,7 @@ import { EStreamingState, StreamingService } from './streaming';
 import { CustomizationService } from './customization';
 import Utils from './utils';
 import { Subject } from 'rxjs';
+import { StreamSettingsService } from './settings/streaming';
 
 function protocolHandler(base: string) {
   return (target: any, methodName: string, descriptor: PropertyDescriptor) => {
@@ -46,6 +47,7 @@ export class ProtocolLinksService extends Service {
   @Inject() guestCamService: GuestCamService;
   @Inject() sideNavService: SideNavService;
   @Inject() streamingService: StreamingService;
+  @Inject() streamSettingsService: StreamSettingsService;
   @Inject() customizationService: CustomizationService;
 
   // Maps base URL components to handler function names
@@ -201,6 +203,12 @@ export class ProtocolLinksService extends Service {
       console.log(`Wait for app to finish init...`);
       await this.awaitForAllSetupDone();
       console.log(`STREAMING GO`);
+
+      if (this.streamSettingsService.views.settings.key.length <= 0) {
+        console.warn('Streaming key not set. Cannot start streaming.');
+        return;
+      }
+
       this.streamingService.toggleStreaming();
     } else if (!isOffline && !shouldStart) {
       console.log('Turning off streaming.');

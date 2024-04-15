@@ -1,6 +1,6 @@
 import { useModule } from 'slap';
 import PlatformLogo from 'components-react/shared/PlatformLogo';
-import React, { HTMLAttributes, useState } from 'react';
+import React, { HTMLAttributes, useEffect, useState } from 'react';
 import { $t } from 'services/i18n';
 import { LoginModule } from './Connect';
 import styles from './BuffedPlatformConnect.m.less';
@@ -42,6 +42,15 @@ export function BuffedPlatformConnect(props: Props) {
   const { BuffedService, UserService } = Services;
 
   //   if (!selectedExtraPlatform) return <div></div>;
+
+  useEffect(() => {
+    const initialSetup = () => {
+      if (BuffedService.state.profile !== null && BuffedService.state.profile.platform !== 'pc') {
+        setScreen('switch-platform');
+      }
+    };
+    initialSetup();
+  }, []);
 
   function openHelp() {
     remote.shell.openExternal(platformDefinition.helpUrl);
@@ -188,6 +197,7 @@ export function BuffedPlatformConnect(props: Props) {
                 setPassword={setPassword}
                 ctaTitle={$t('Log In')}
                 onFinish={() => onPerformAuth(false)}
+                showForgotPassword={true}
               />
               {isLoading && <Spin />}
             </VStack>
@@ -211,6 +221,7 @@ export function BuffedPlatformConnect(props: Props) {
                 setPassword={setPassword}
                 ctaTitle={$t('Register')}
                 onFinish={() => onPerformAuth(true)}
+                showForgotPassword={false}
               />
               {isLoading && <Spin />}
             </VStack>
@@ -426,8 +437,18 @@ interface EmailFormProps {
   setPassword: (password: string) => void;
   ctaTitle: string;
   onFinish: () => void;
+
+  showForgotPassword: boolean;
 }
-function EmailForm({ email, setEmail, password, setPassword, ctaTitle, onFinish }: EmailFormProps) {
+function EmailForm({
+  email,
+  setEmail,
+  password,
+  setPassword,
+  ctaTitle,
+  onFinish,
+  showForgotPassword,
+}: EmailFormProps) {
   return (
     <Form layout="vertical">
       <TextInput
@@ -445,15 +466,25 @@ function EmailForm({ email, setEmail, password, setPassword, ctaTitle, onFinish 
         uncontrolled={false}
       />
 
-      {/* <div style={{ width: '100%', display: 'flex', justifyContent: 'flex-end' }}>
-        
-        <a className={styles.linkButton}
-          onClick={() => {
-            remote.shell.openExternal(
-              '',
-            )
-          }}>Forgot Password?</a>
-      </div> */}
+      {showForgotPassword && (
+        <div
+          style={{
+            width: '100%',
+            display: 'flex',
+            justifyContent: 'flex-end',
+            paddingBottom: '15px',
+          }}
+        >
+          <a
+            className={styles.linkButton}
+            onClick={() => {
+              remote.shell.openExternal('https://buffed.me/users/reset_password');
+            }}
+          >
+            <h3>Forgot Password?</h3>
+          </a>
+        </div>
+      )}
 
       <button
         className="button button--action"
@@ -472,7 +503,9 @@ function EmailForm({ email, setEmail, password, setPassword, ctaTitle, onFinish 
 function IntroScreen({ onNext }: { onNext: () => void }) {
   return (
     // <div style={{ height: '100%', backgroundColor: 'brown' }}>
-    <VStack style={{ gap: 0, width: '100%' }}>
+    <VStack style={{ gap: 0, width: '100%', height: '100%' }}>
+      <div style={{ flexGrow: 1 }} />
+
       <HStack
         style={{
           // flexGrow: 1,
@@ -485,8 +518,8 @@ function IntroScreen({ onNext }: { onNext: () => void }) {
         }}
       >
         <div style={{ flexGrow: 1 }} />
-        <VStack style={{ flexGrow: 1, alignItems: 'center', gap: 60 }}>
-          <h1>Play on PC</h1>
+        <VStack style={{ alignItems: 'center', gap: 55 }}>
+          <h2>Play on PC</h2>
 
           <img
             style={{ height: 330, maxHeight: '100%', maxWidth: '100%', width: 'auto' }}
@@ -496,20 +529,19 @@ function IntroScreen({ onNext }: { onNext: () => void }) {
         </VStack>
 
         <img
-          style={{ width: 'auto', height: '40px' }}
+          style={{ width: 'auto', height: '30px', marginTop: '70px' }}
           src={require('./Assets/intro-link-icon.png')}
         />
 
         <VStack
           style={{
-            flexGrow: 1,
             height: '100%',
             overflow: 'hidden',
             alignItems: 'center',
-            gap: 60,
+            gap: 55,
           }}
         >
-          <h1>Use on iOS</h1>
+          <h2>Use on Mobile</h2>
 
           <div style={{ overflow: 'hidden' }}>
             <img
@@ -522,6 +554,9 @@ function IntroScreen({ onNext }: { onNext: () => void }) {
 
         <div style={{ flexGrow: 1 }} />
       </HStack>
+
+      <div style={{ flexGrow: 1 }} />
+
       <ToolbarItems onNext={onNext} />
     </VStack>
   );
@@ -531,7 +566,10 @@ function DownloadAppScreen({ onNext }: { onNext: () => void }) {
   return (
     <VStack style={{ gap: 0, width: '100%', height: '100%' }}>
       <VStack style={{ gap: 30, height: '100%', justifyContent: 'center' }}>
-        <img src={require(`./Assets/download-qr.png`)} />
+        <img
+          style={{ width: '240px', height: '240px', objectFit: 'contain' }}
+          src={require(`./Assets/download-qr.png`)}
+        />
         <a
           onClick={() =>
             remote.shell.openExternal(
@@ -593,21 +631,37 @@ function SwitchPlatformScreen({ isLoading, onNext }: { isLoading: boolean; onNex
   return (
     // <div style={{ height: '100%', backgroundColor: 'brown' }}>
     <VStack style={{ gap: 0, width: '100%' }}>
-      <h2>Currently your Buffed is configured to work with console.</h2>
-      <h1>To use Buffed with PC please change it in Buffed mobile app.</h1>
+      <div
+        style={{
+          backgroundColor: 'black',
+          height: '34px',
+          width: '100%',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+        }}
+      >
+        <div className={styles.warningText}>
+          Currently your Buffed is configured to work with console.
+        </div>
+      </div>
+      <div style={{ paddingTop: '20px' }}>
+        <h2>To use Buffed with PC please change it in Buffed mobile app.</h2>
+      </div>
       <HStack
         style={{
           // flexGrow: 1,
           height: '100%',
           overflow: 'hidden',
-          padding: '32px',
-          gap: 20,
+          padding: '20px',
+          gap: 15,
           justifyContent: 'center',
           alignItems: 'center',
+          alignContent: 'center',
         }}
       >
         <div style={{ flexGrow: 1 }} />
-        <VStack style={{ flexGrow: 1, alignItems: 'center', gap: 10 }}>
+        <VStack style={{ alignItems: 'center', gap: 5 }}>
           <h3>Go to Settings</h3>
 
           <img
@@ -623,11 +677,10 @@ function SwitchPlatformScreen({ isLoading, onNext }: { isLoading: boolean; onNex
 
         <VStack
           style={{
-            flexGrow: 1,
             height: '100%',
             overflow: 'hidden',
             alignItems: 'center',
-            gap: 10,
+            gap: 5,
           }}
         >
           <h3>Start Setup Again</h3>

@@ -55,7 +55,7 @@ export default function StartStreamingButton(p: { disabled?: boolean }) {
 
     const profilePlatform = BuffedService.state.profile?.platform;
     if (profilePlatform !== 'pc') {
-      UserService.actions.showLogin();
+      BuffedService.actions.showPlatformSetup();
       return;
     }
 

@@ -25,7 +25,7 @@ import { TOutputOrientation } from 'services/restream';
 import { BuffedClient, UserProfile } from '../../components-react/pages/onboarding/BuffedClient';
 import { RunningAppsObserver } from 'services/games-monitor/RunningAppsObserver';
 import path from 'path';
-import { NavigationService } from 'app-services';
+import { NavigationService, OnboardingService } from 'app-services';
 
 export interface IBuffedStartStreamOptions {
   // title: string;
@@ -83,6 +83,7 @@ export class BuffedService
   // @Inject() customizationService: CustomizationService;
   // @Inject() twitchTagsService: TwitchTagsService;
   @Inject() navigationService: NavigationService;
+  @Inject() private onboardingService: OnboardingService;
 
   static initialState: IBuffedServiceState = {
     ...BasePlatformService.initialState,
@@ -379,7 +380,7 @@ export class BuffedService
   }
 
   async showPlatformSetup() {
-    //this.onboardingService.start({ isLogin: true });
+    this.onboardingService.start({ isLogin: true });
   }
 
   get views() {
