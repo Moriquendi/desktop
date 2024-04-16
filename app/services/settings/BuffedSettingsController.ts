@@ -61,7 +61,7 @@ export class BuffedSettingsController {
   }
 
   async setBuffedDetaultSettings() {
-    this.userService.views.streamSettingsServiceViews;
+    // this.userService.views.streamSettingsServiceViews;
     const client = new BuffedClient();
 
     let settings: OBSSettings = this.getDefaultSettings();

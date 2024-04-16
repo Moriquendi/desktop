@@ -13,6 +13,7 @@ export interface UserProfile {
   buffed_key: string | null;
   twitch_key: string | null;
   platform: string | null;
+  created_at: string;
 
   nickname: string | null;
 

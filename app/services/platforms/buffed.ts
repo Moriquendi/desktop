@@ -146,9 +146,16 @@ export class BuffedService
     const output = await buffedClient.register(email, password);
 
     // For users who sign up on desktop, auto set platform = pc
-    await buffedClient.updateProfile(output.api_key, { platform: 'pc' });
+    await this.setUserPlatformToPC(output.api_key);
 
     return output;
+  }
+
+  async setUserPlatformToPC(apiKey: string) {
+    const buffedClient = new BuffedClient();
+    await buffedClient.updateProfile(apiKey, { platform: 'pc' });
+    const userProfile = await buffedClient.profile(apiKey);
+    this.SET_PROFILE(userProfile);
   }
 
   async auth(email: string, password: string) {
@@ -165,7 +172,7 @@ export class BuffedService
     console.error('[Buffed Service] Fetching profile....');
     const userProfile = await buffedClient.profile(token);
     this.SET_PROFILE(userProfile);
-    console.log(userProfile);
+    console.log(JSON.stringify(userProfile, null, 2));
     console.error('Setting streaming settings for buffed');
 
     return {
@@ -392,7 +399,7 @@ export class BuffedService
     const token = this.userService.state.auth.apiToken;
     const buffedClient = new BuffedClient();
     const userProfile = await buffedClient.profile(token);
-    console.log('Set profile: ', userProfile);
+    console.log('Set profile: ', userProfile.platform);
     this.SET_PROFILE(userProfile);
 
     console.log('PPPROFILE: ', this.state.profile.platform);

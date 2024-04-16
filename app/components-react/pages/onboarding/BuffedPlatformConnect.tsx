@@ -9,15 +9,26 @@ import { TextInput } from 'components-react/shared/inputs/TextInput';
 import { OnboardingModule } from './Onboarding';
 import { Services } from 'components-react/service-provider';
 import Form from 'components-react/shared/inputs/Form';
-import { BuffedClient } from './BuffedClient';
+import { BuffedClient, UserProfile } from './BuffedClient';
 import { Image, Alert, Button, ConfigProvider, Spin } from 'antd';
 import { SocialPlatform, TPlatform } from 'services/platforms';
 import { HStack, Spacer } from 'components-react/shared/HStack';
+import { useVuex } from 'components-react/hooks';
 
 interface Props {
   onAuth: (email: string, password: string) => Promise<void>;
   onRegister: (email: string, password: string) => Promise<void>;
   authPlatform: (platform: SocialPlatform) => Promise<void>;
+}
+export function sleep(ms: number, countdown = false) {
+  function countdownTick(ms: number) {
+    if (ms < 0) return;
+    console.log('sleep', ms);
+    setTimeout(() => countdownTick(ms - 1000), 1000);
+  }
+  if (countdown) countdownTick(ms);
+
+  return new Promise(resolve => setTimeout(resolve, ms));
 }
 
 type Screen =
@@ -41,6 +52,10 @@ export function BuffedPlatformConnect(props: Props) {
 
   const { BuffedService, UserService } = Services;
 
+  const { userProfile } = useVuex(() => ({
+    userProfile: BuffedService.views.profile,
+  }));
+
   //   if (!selectedExtraPlatform) return <div></div>;
 
   useEffect(() => {
@@ -59,7 +74,7 @@ export function BuffedPlatformConnect(props: Props) {
   async function onPerformSocialAuth(p: SocialPlatform) {
     try {
       await props.authPlatform(p);
-      setScreen('intro-screen');
+      goNextScreenAfterAuth();
     } catch {
       console.error('Failed to auth with platform', error);
       setError(error ?? 'Failed to auth with platform');
@@ -88,10 +103,8 @@ export function BuffedPlatformConnect(props: Props) {
   }
 
   function goNextScreenAfterAuth() {
-    console.log('Buffed service ', BuffedService.views.profile);
-    console.log('User service ', UserService.views.isPrime);
     console.log('In UI profile ', BuffedService.state.profile?.platform);
-    console.log('In UI profile by view ', BuffedService.views.profile?.platform);
+    console.log('In UI View ', BuffedService.views.profile?.platform);
 
     if (BuffedService.state.profile?.platform == 'pc') {
       console.log('Go to intro screen.');
@@ -252,14 +265,25 @@ export function BuffedPlatformConnect(props: Props) {
       case 'switch-platform':
         return (
           <SwitchPlatformScreen
+            profile={userProfile}
             isLoading={isLoading}
             onNext={async () => {
               setIsLoading(true);
               try {
                 await BuffedService.fetchUserInfo();
               } catch {}
+
+              // IDK why BuffedService.views.profile?.platform has old data
+              // when accessed here. Not sure how this is propagated to react components.
+              // but sleeping fixes the problem.
+              await sleep(200);
+
               setIsLoading(false);
               goNextScreenAfterAuth();
+            }}
+            onLogout={() => {
+              UserService.actions.logOut();
+              next();
             }}
           />
         );
@@ -518,7 +542,13 @@ function IntroScreen({ onNext }: { onNext: () => void }) {
         }}
       >
         <div style={{ flexGrow: 1 }} />
-        <VStack style={{ alignItems: 'center', gap: 55 }}>
+        <VStack
+          style={{
+            height: '100%',
+            alignItems: 'center',
+            gap: 55,
+          }}
+        >
           <h2>Play on PC</h2>
 
           <img
@@ -627,7 +657,27 @@ function ToolbarItems(props: { onNext?: () => void; onBack?: () => void; onSkip?
   );
 }
 
-function SwitchPlatformScreen({ isLoading, onNext }: { isLoading: boolean; onNext: () => void }) {
+function SwitchPlatformScreen({
+  profile,
+  isLoading,
+  onNext,
+  onLogout,
+}: {
+  profile: UserProfile | null;
+  isLoading: boolean;
+  onNext: () => void;
+  onLogout: () => void;
+}) {
+  const platformName = () => {
+    if (profile?.platform == 'ps') {
+      return 'PS5';
+    } else if (profile?.platform == 'xbox') {
+      return 'Xbox';
+    } else {
+      return 'PC';
+    }
+  };
+
   return (
     // <div style={{ height: '100%', backgroundColor: 'brown' }}>
     <VStack style={{ gap: 0, width: '100%' }}>
@@ -642,7 +692,7 @@ function SwitchPlatformScreen({ isLoading, onNext }: { isLoading: boolean; onNex
         }}
       >
         <div className={styles.warningText}>
-          Currently your Buffed is configured to work with console.
+          {`Currently your Buffed is configured to work with ${platformName()}`}
         </div>
       </div>
       <div style={{ paddingTop: '20px' }}>
@@ -705,11 +755,15 @@ function SwitchPlatformScreen({ isLoading, onNext }: { isLoading: boolean; onNex
           paddingBottom: 20,
         }}
       >
+        <a className={styles.linkButton} onClick={() => onLogout()}>
+          {$t('Logout')}
+        </a>
         <Spacer />
+
         {isLoading && <Spin />}
 
         <a className={styles.linkButton} onClick={() => onNext()}>
-          {$t('Ok, Try Again')}
+          {$t('Ok, Try Now')}
         </a>
       </HStack>
     </VStack>

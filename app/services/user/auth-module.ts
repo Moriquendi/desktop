@@ -12,6 +12,8 @@ import crypto from 'crypto';
 import { Inject } from 'services/core';
 import { HostsService } from 'app-services';
 import { jfetch } from 'util/requests';
+import parseISO from 'date-fns/parseISO';
+import differenceInSeconds from 'date-fns/differenceInSeconds';
 
 interface IPkceAuthResponse {
   data: {
@@ -136,6 +138,15 @@ export class AuthModule {
     console.log('Continue auth...');
     const buffedService = BuffedService.instance as BuffedService;
     const userAuthInfo = await buffedService.continueAuth(buffedAuthData.token);
+
+    if (!userAuthInfo.profile.platform) {
+      const createdAt = parseISO(userAuthInfo.profile.created_at);
+      const diff = differenceInSeconds(new Date(), createdAt);
+      if (diff < 60) {
+        console.log('Auto-set user platform to PC. Diff:', diff);
+        await buffedService.setUserPlatformToPC(buffedAuthData.token);
+      }
+    }
 
     console.log('Authed!');
     const authData: IUserAuth = {
