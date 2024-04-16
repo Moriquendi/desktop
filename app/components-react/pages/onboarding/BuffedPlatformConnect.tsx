@@ -60,7 +60,7 @@ export function BuffedPlatformConnect(props: Props) {
 
   useEffect(() => {
     const initialSetup = () => {
-      if (BuffedService.state.profile !== null && BuffedService.state.profile.platform !== 'pc') {
+      if (userProfile !== null && userProfile.platform !== 'pc') {
         setScreen('switch-platform');
       }
     };
@@ -526,9 +526,8 @@ function EmailForm({
 
 function IntroScreen({ onNext }: { onNext: () => void }) {
   return (
-    // <div style={{ height: '100%', backgroundColor: 'brown' }}>
     <VStack style={{ gap: 0, width: '100%', height: '100%' }}>
-      <div style={{ flexGrow: 1 }} />
+      <div style={{ flexGrow: 1, backgroundColor: 'green' }} />
 
       <HStack
         style={{
@@ -539,12 +538,12 @@ function IntroScreen({ onNext }: { onNext: () => void }) {
           gap: 60,
           justifyContent: 'center',
           alignItems: 'center',
+          alignContent: 'center',
         }}
       >
         <div style={{ flexGrow: 1 }} />
         <VStack
           style={{
-            height: '100%',
             alignItems: 'center',
             gap: 55,
           }}
@@ -565,7 +564,6 @@ function IntroScreen({ onNext }: { onNext: () => void }) {
 
         <VStack
           style={{
-            height: '100%',
             overflow: 'hidden',
             alignItems: 'center',
             gap: 55,
@@ -680,7 +678,8 @@ function SwitchPlatformScreen({
 
   return (
     // <div style={{ height: '100%', backgroundColor: 'brown' }}>
-    <VStack style={{ gap: 0, width: '100%' }}>
+    <VStack style={{ gap: 0, width: '100%', height: '100%' }}>
+      {/* TOP BARNNER */}
       <div
         style={{
           backgroundColor: 'black',
@@ -695,13 +694,17 @@ function SwitchPlatformScreen({
           {`Currently your Buffed is configured to work with ${platformName()}`}
         </div>
       </div>
+
+      <Spacer />
+
+      {/* HEADER */}
       <div style={{ paddingTop: '20px' }}>
         <h2>To use Buffed with PC please change it in Buffed mobile app.</h2>
       </div>
+
+      {/* IMAGES */}
       <HStack
         style={{
-          // flexGrow: 1,
-          height: '100%',
           overflow: 'hidden',
           padding: '20px',
           gap: 15,
@@ -746,6 +749,9 @@ function SwitchPlatformScreen({
         <div style={{ flexGrow: 1 }} />
       </HStack>
 
+      <Spacer />
+
+      {/* TOOLBAR */}
       <HStack
         style={{
           justifyContent: 'space-between',

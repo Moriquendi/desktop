@@ -33,5 +33,13 @@ export function HStack(props: HStackProps) {
 }
 
 export function Spacer() {
-  return <div style={{ flexGrow: 1 }} />;
+  return (
+    <div
+      style={{
+        flexGrow: 1,
+        alignSelf: 'stretch',
+        justifySelf: 'stretch',
+      }}
+    />
+  );
 }
