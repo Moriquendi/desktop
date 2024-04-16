@@ -137,6 +137,11 @@ export class BuffedService
       //   // Check for updated tags scopes
       //   this.validateTagsScope();
       // }
+
+      // this.userService.userLogin.subscribe(() => this.loadUserSettings());
+      this.userService.userLogout.subscribe(() => {
+        this.SET_PROFILE(null);
+      });
     });
   }
 
