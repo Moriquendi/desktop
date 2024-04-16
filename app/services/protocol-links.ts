@@ -202,13 +202,14 @@ export class ProtocolLinksService extends Service {
       await electron.ipcRenderer.invoke('SHOW_APP', { focus: false });
       console.log(`Wait for app to finish init...`);
       await this.awaitForAllSetupDone();
-      console.log(`STREAMING GO`);
 
-      if (this.streamSettingsService.views.settings.key.length <= 0) {
-        console.warn('Streaming key not set. Cannot start streaming.');
+      const buffedKey = this.userService.views.auth?.platforms['buffed']?.token ?? '';
+      if (buffedKey.length <= 0) {
+        console.warn('Streaming key not set. Cannot start streaming.', buffedKey);
         return;
       }
 
+      console.log(`STREAMING GO`);
       this.streamingService.toggleStreaming();
     } else if (!isOffline && !shouldStart) {
       console.log('Turning off streaming.');
