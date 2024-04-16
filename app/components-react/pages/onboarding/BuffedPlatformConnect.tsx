@@ -175,7 +175,7 @@ export function BuffedPlatformConnect(props: Props) {
         </VStack>
         <Spacer />
 
-        <ToolbarItems onSkip={onSkip} />
+        {/* <ToolbarItems onSkip={onSkip} /> */}
       </VStack>
     );
   }
