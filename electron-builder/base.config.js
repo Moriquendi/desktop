@@ -30,7 +30,8 @@ const base = {
     perMachine: true,
     allowToChangeInstallationDirectory: true,
     include: 'installer.nsh',
-    include: 'uninstaller.nsh', // Reference to your uninstaller script
+    deleteAppDataOnUninstall: true,
+    // include: 'uninstaller.nsh', // Reference to your uninstaller script
 
   },
   asarUnpack: [
