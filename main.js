@@ -417,7 +417,7 @@ async function startApp() {
 
   console.log(`Main: Show dev tools: ${process.env.SLOBS_PRODUCTION_DEBUG}`);
   //if (process.env.SLOBS_PRODUCTION_DEBUG) openDevTools();
-  openDevTools();
+  //openDevTools();
 
   // simple messaging system for services between windows
   // WARNING! renderer windows use synchronous requests and will be frozen
@@ -503,9 +503,9 @@ async function startApp() {
     //   openDevTools();
     // }, 10 * 1000);
   }
-    setTimeout(() => {
-      openDevTools();
-    }, 4 * 1000);
+    // setTimeout(() => {
+    //   openDevTools();
+    // }, 4 * 1000);
 
   //////////////////////////////////////////////////
   // Games Monitor Setup
@@ -687,7 +687,7 @@ function recreateAndShowMainWindow() {
   });
 
   // if (process.env.SLOBS_PRODUCTION_DEBUG) openDevTools();
-  openDevTools();
+  //openDevTools();
 }
 
 const haDisableFile = path.join(app.getPath('userData'), 'HADisable');
