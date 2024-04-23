@@ -49,12 +49,10 @@ const base = {
   win: {
     executableName: 'Buffed OBS',
     extraFiles: ['LICENSE', 'AGREEMENT', 'shared-resources/**/*', '!shared-resources/README'],
-    rfc3161TimeStampServer: 'http://timestamp.digicert.com',
-    timeStampServer: 'http://timestamp.digicert.com',
+    rfc3161TimeStampServer: 'http://ts.ssl.com',
+    timeStampServer: 'http://ts.ssl.com',
     signDlls: true,
     async sign(config) {
-      console.log('Windows signing disabled for now....');
-      return;
       if (process.env.SLOBS_NO_SIGN) return;
 
       if (
@@ -66,9 +64,10 @@ const base = {
 
       console.log(`Signing [${config.hash} ${config.path}]`);
       await signtool.sign(config.path, {
-        subject: 'Streamlabs (General Workings, Inc.)',
-        rfcTimestamp: 'http://timestamp.digicert.com',
-        algorithm: config.hash,
+      subject: 'Paweł Niżnik',
+        rfcTimestamp: 'http://ts.ssl.com',
+        algorithm: 'sha256',
+        timestampAlgo: 'sha256',
         append: config.isNest,
         description: config.name,
         url: config.site,
