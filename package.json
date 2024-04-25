@@ -5,7 +5,7 @@
   "name": "buffed-client",
   "productName": "Buffed Desktop",
   "description": "Buffed streaming software",
-  "author": "Buffed, Inc.",
+  "author": "Paweł Niżnik",
   "license": "GPL-3.0",
   "version": "1.0.21",
   "main": "main.js",
