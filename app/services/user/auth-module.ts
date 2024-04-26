@@ -144,7 +144,7 @@ export class AuthModule {
       const diff = differenceInSeconds(new Date(), createdAt);
       if (diff < 60) {
         console.log('Auto-set user platform to PC. Diff:', diff);
-        await buffedService.setUserPlatformToPC(buffedAuthData.token);
+        await buffedService.setUserPlatformAndSignUpSourceToPC(buffedAuthData.token);
       }
     }
 

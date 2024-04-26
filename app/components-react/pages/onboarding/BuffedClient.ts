@@ -14,6 +14,7 @@ export interface UserProfile {
   twitch_key: string | null;
   platform: string | null;
   created_at: string;
+  signed_up_via: 'windows_app' | 'web' | 'ios';
 
   nickname: string | null;
 

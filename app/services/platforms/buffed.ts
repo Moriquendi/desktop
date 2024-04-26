@@ -151,14 +151,17 @@ export class BuffedService
     const output = await buffedClient.register(email, password);
 
     // For users who sign up on desktop, auto set platform = pc
-    await this.setUserPlatformToPC(output.api_key);
+    await this.setUserPlatformAndSignUpSourceToPC(output.api_key);
 
     return output;
   }
 
-  async setUserPlatformToPC(apiKey: string) {
+  async setUserPlatformAndSignUpSourceToPC(apiKey: string) {
     const buffedClient = new BuffedClient();
-    await buffedClient.updateProfile(apiKey, { platform: 'pc' });
+    await buffedClient.updateProfile(apiKey, {
+      platform: 'pc',
+      signed_up_via: 'windows_app',
+    });
     const userProfile = await buffedClient.profile(apiKey);
     this.SET_PROFILE(userProfile);
   }
