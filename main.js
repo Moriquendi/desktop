@@ -340,19 +340,19 @@ async function startApp() {
     //   : pjson.sentryBackendClientURL;
 
     // if (submitURL) {
-      // crashReporter.start({
-      //   productName: 'streamlabs-obs',
-      //   companyName: 'streamlabs',
-      //   ignoreSystemCrashHandler: true,
-      //   submitURL,
-      //   extra: {
-      //     processType: 'main',
-      //   },
-      //   globalExtra: {
-      //     'sentry[release]': pjson.version,
-      //     'sentry[user][ip_address]': '{{auto}}',
-      //   },
-      // });
+    // crashReporter.start({
+    //   productName: 'streamlabs-obs',
+    //   companyName: 'streamlabs',
+    //   ignoreSystemCrashHandler: true,
+    //   submitURL,
+    //   extra: {
+    //     processType: 'main',
+    //   },
+    //   globalExtra: {
+    //     'sentry[release]': pjson.version,
+    //     'sentry[user][ip_address]': '{{auto}}',
+    //   },
+    // });
     // }
   }
 
@@ -503,9 +503,9 @@ async function startApp() {
     //   openDevTools();
     // }, 10 * 1000);
   }
-    // setTimeout(() => {
-    //   openDevTools();
-    // }, 4 * 1000);
+  // setTimeout(() => {
+  //   openDevTools();
+  // }, 4 * 1000);
 
   //////////////////////////////////////////////////
   // Games Monitor Setup
@@ -604,7 +604,9 @@ function recreateAndShowMainWindow() {
   });
   remote.enable(mainWindow.webContents);
   // setTimeout(() => {
-  mainWindow.loadURL(`${global.indexUrl}?windowId=main&show=${shouldFocusWindowOnNextShow ? 'true' : 'false'}`);
+  mainWindow.loadURL(
+    `${global.indexUrl}?windowId=main&show=${shouldFocusWindowOnNextShow ? 'true' : 'false'}`,
+  );
   // }, 5 * 1000)
   mainWindowState.manage(mainWindow);
   mainWindow.removeMenu();
@@ -701,13 +703,13 @@ console.log(`Set as default protocol client: ${ok}`);
 app.on('second-instance', (event, argv, cwd) => {
   // Check for protocol links in the argv of the other process
 
-  console.log('ON SECOND INSTANCE EVENT.')
+  console.log('ON SECOND INSTANCE EVENT.');
 
   argv.forEach(arg => {
     console.log(`Args: ${arg}`);
 
     if (arg.match(/^me\.buffed\.app\.desktop:\/\//)) {
-      console.log('Match. Send to protocol link.')
+      console.log('Match. Send to protocol link.');
       workerWindow.send('protocolLink', arg);
     }
   });
@@ -731,7 +733,7 @@ let protocolLinkReady = false;
 let pendingLink;
 
 function handleDeeplink(url) {
-  console.log('Handle deeplink.', url)
+  console.log('Handle deeplink.', url);
 
   if (url.includes('/autostream')) {
     shouldFocusWindowOnNextShow = false;
@@ -752,8 +754,6 @@ app.on('open-url', (e, url) => {
   handleDeeplink(url);
 });
 
-
-
 ipcMain.on('protocolLinkReady', () => {
   protocolLinkReady = true;
   console.log(`Pendinglink: ${pendingLink}`);
@@ -765,7 +765,13 @@ console.log(`Main: app.on('ready')`);
 app.on('ready', () => {
   console.log(`On app ready`);
 
+  // RELEASE CONFIG
+  // STEAM / WINDOWS Store = True
+  // Manual distribution = False
+  const SKIP_UPDATE = false;
+
   if (
+    !SKIP_UPDATE &&
     !process.argv.includes('--skip-update') &&
     (process.env.NODE_ENV === 'production' || process.env.SLOBS_FORCE_AUTO_UPDATE)
   ) {
