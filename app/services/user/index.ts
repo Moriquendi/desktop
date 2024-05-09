@@ -1056,11 +1056,10 @@ export class UserService extends PersistentStatefulService<IUserServiceState> {
     // Find out if the user has any additional platforms linked
     await this.updateLinkedPlatforms();
 
-    console.log('KUPA done');
-
     const primaryPlatform: TPlatform = 'buffed';
     this.SET_PRIMARY_PLATFORM(primaryPlatform);
     const service = getPlatformService(primaryPlatform);
+
     this.SET_AUTH_STATE(EAuthProcessState.Loading);
     const result = await this.login(service);
     this.SET_AUTH_STATE(EAuthProcessState.Idle);
@@ -1215,11 +1214,12 @@ export class UserService extends PersistentStatefulService<IUserServiceState> {
     const primaryPlatform: TPlatform = 'buffed';
     this.SET_PRIMARY_PLATFORM(primaryPlatform);
     const service = getPlatformService(primaryPlatform);
+
     this.SET_AUTH_STATE(EAuthProcessState.Loading);
     const result = await this.login(service, auth);
     this.SET_AUTH_STATE(EAuthProcessState.Idle);
+
     return result;
-    //const result = await this.login(buffedService, auth);
   }
 
   /**

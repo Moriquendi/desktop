@@ -143,6 +143,9 @@ export class BuffedService
         this.SET_PROFILE(null);
       });
     });
+
+    // Refresh user info at launch
+    this.fetchUserInfo();
   }
 
   async register(email: string, password: string) {
@@ -184,6 +187,7 @@ export class BuffedService
     console.error('Setting streaming settings for buffed');
 
     return {
+      id: userProfile.id,
       token: token,
       streamKey: userProfile.buffed_key,
       profile: userProfile,
@@ -242,7 +246,7 @@ export class BuffedService
 
     ////////////////////////////////////////
     this.streamSettingsService.setSettings({
-      key: this.userService.state.auth!.platforms['buffed'].token,
+      key: this.userService.views.auth!.platforms['buffed'].token,
       streamType: 'rtmp_custom',
       server: 'rtmp://buffed.live/app',
     });
@@ -404,11 +408,13 @@ export class BuffedService
 
   async fetchUserInfo() {
     console.error('[Buffed Service] Fetching profile....');
-    const token = this.userService.state.auth.apiToken;
+    const token = this.userService.views.auth.apiToken;
     const buffedClient = new BuffedClient();
     const userProfile = await buffedClient.profile(token);
     console.log('Set profile: ', userProfile.platform);
+
     this.SET_PROFILE(userProfile);
+    this.userService.updatePlatformToken('buffed', userProfile.buffed_key);
 
     console.log('PPPROFILE: ', this.state.profile.platform);
 
