@@ -70,6 +70,7 @@ export interface ISettingsValues {
     VodTrackEnabled?: boolean;
     VodTrackIndex?: string;
     keyint_sec?: number;
+    psycho_aq?: boolean;
   };
   Video: {
     // default video context

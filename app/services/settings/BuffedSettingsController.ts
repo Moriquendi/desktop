@@ -307,6 +307,9 @@ export class BuffedSettingsController {
     if (getOS() === OS.Mac) return;
     const { SettingsService } = Services;
 
+    // disable 'visual tunning' setting stupid
+    SettingsService.setSettingsPatch({ Output: { psycho_aq: false } });
+
     const encoderSetting: IObsListInput<string> =
       SettingsService.findSetting(SettingsService.state.Output.formData, 'Streaming', 'Encoder') ??
       SettingsService.findSetting(
