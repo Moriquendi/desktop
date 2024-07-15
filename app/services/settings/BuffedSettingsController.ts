@@ -1,4 +1,4 @@
-import { CustomizationService, UserService } from 'app-services';
+import { CustomizationService, Scene, UserService } from 'app-services';
 import { BuffedClient } from 'components-react/pages/onboarding/BuffedClient';
 import { Services } from 'components-react/service-provider';
 import { IObsListInput } from 'components/obs/inputs/ObsInput';
@@ -152,9 +152,13 @@ export class BuffedSettingsController {
 
     // ADD SOURCE
 
+    console.log(`Service: ${ScenesService.views}`);
+    console.log(`Active scene: ${ScenesService.views.activeScene}`);
+
+    const scene: Scene | null = ScenesService.views.activeScene;
     const hasAddedSources =
       ScenesService.views.activeScene
-        .getNestedSources()
+        ?.getNestedSources()
         .filter(s => s.type === 'screen_capture' || s.type === 'game_capture').length > 0;
     if (hasAddedSources) {
       console.log(`Sources are added. Skipping...`);
@@ -163,12 +167,9 @@ export class BuffedSettingsController {
       console.log(`Adding source`);
     }
 
-    const activeSceneId = ScenesService.views.activeSceneId;
-
+    // const activeSceneId = ScenesService.views.activeSceneId;
     // const source = SourcesService.createSource('Screen Capture', 'screen_capture', {}, {});
     // SourcesService.addSource('Screen Capture', {}, {})
-
-    const scene = ScenesService.views.activeScene;
 
     try {
       const isMac = byOS({ [OS.Windows]: false, [OS.Mac]: true });
