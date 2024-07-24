@@ -13,7 +13,7 @@ import PlatformLogo from 'components-react/shared/PlatformLogo';
 import { EAuthProcessState } from 'services/user';
 import { ListInput } from 'components-react/shared/inputs';
 import Form from 'components-react/shared/inputs/Form';
-import { BuffedPlatformConnect } from './BuffedPlatformConnect';
+import { BuffedPlatformConnect } from './Buffed/BuffedPlatformConnect';
 
 export function Connect() {
   const {

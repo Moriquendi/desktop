@@ -2,18 +2,21 @@ import { useModule } from 'slap';
 import PlatformLogo from 'components-react/shared/PlatformLogo';
 import React, { HTMLAttributes, useEffect, useState } from 'react';
 import { $t } from 'services/i18n';
-import { LoginModule } from './Connect';
+import { LoginModule } from '../Connect';
 import styles from './BuffedPlatformConnect.m.less';
 import * as remote from '@electron/remote';
 import { TextInput } from 'components-react/shared/inputs/TextInput';
-import { OnboardingModule } from './Onboarding';
+import { OnboardingModule } from '../Onboarding';
 import { Services } from 'components-react/service-provider';
 import Form from 'components-react/shared/inputs/Form';
-import { BuffedClient, UserProfile } from './BuffedClient';
+import { BuffedClient, UserProfile } from '../BuffedClient';
 import { Image, Alert, Button, ConfigProvider, Spin } from 'antd';
 import { SocialPlatform, TPlatform } from 'services/platforms';
 import { HStack, Spacer } from 'components-react/shared/HStack';
 import { useVuex } from 'components-react/hooks';
+import { VStack } from './VStack';
+import { ToolbarItems } from './ToolbarItems';
+import { BuffedIntroFullScreenGame } from './BuffedIntroFullScreenGame';
 
 interface Props {
   onAuth: (email: string, password: string) => Promise<void>;
@@ -196,6 +199,7 @@ export function BuffedPlatformConnect(props: Props) {
   const renderCurrentScreen = () => {
     switch (screen) {
       case 'auth-method-pick':
+        return <BuffedIntroFullScreenGame onNext={() => {}} />;
         return <AuthMethodButtons onSkip={next} />;
       case 'auth-method-email':
         return (
@@ -383,23 +387,6 @@ interface SocialButtonProps {
 
 interface ButtonsProps {
   onAuth: (platform: SocialPlatform) => Promise<void>;
-}
-
-function VStack(props: { children: React.ReactNode; style?: React.CSSProperties }) {
-  return (
-    <div
-      style={{
-        display: 'flex',
-        flexDirection: 'column',
-        gap: 30,
-        alignItems: 'center',
-        justifyItems: 'center',
-        ...props.style,
-      }}
-    >
-      {props.children}
-    </div>
-  );
 }
 
 function SocialAuthButtons(props: ButtonsProps) {
@@ -613,45 +600,6 @@ function DownloadAppScreen({ onNext }: { onNext: () => void }) {
         <ToolbarItems onNext={onNext} />
       </div>
     </VStack>
-  );
-}
-
-function ToolbarItems(props: { onNext?: () => void; onBack?: () => void; onSkip?: () => void }) {
-  const { onNext, onBack, onSkip } = props;
-  return (
-    <HStack
-      style={{
-        justifyContent: 'space-between',
-        paddingLeft: 40,
-        paddingRight: 40,
-        paddingTop: 20,
-        paddingBottom: 20,
-      }}
-    >
-      {onBack && (
-        <a
-          className={styles.linkButton}
-          onClick={() => {
-            onBack();
-          }}
-        >
-          {$t('Back')}
-        </a>
-      )}
-      <Spacer />
-      {onSkip && (
-        <a className={styles.linkButton} onClick={() => onSkip()}>
-          {$t('Skip')}
-        </a>
-      )}
-      <Spacer />
-
-      {onNext && (
-        <a className={styles.linkButton} onClick={() => onNext()}>
-          {$t('Next')}
-        </a>
-      )}
-    </HStack>
   );
 }
 
