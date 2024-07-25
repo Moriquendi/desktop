@@ -13,17 +13,8 @@ export function HStack(props: HStackProps) {
         display: 'flex',
         flexDirection: 'row',
         gap: props.spacing ?? 30,
-        // borderWidth: 2,
-        // borderColor: '#fff',
-        // borderStyle: 'solid',
-        // alignItems: 'center',
-        // alignContent: 'flex-end',
-        // flexBasis: 'auto',
-        // alignItems: 'flex-end',
-        // justifyItems: 'flex-end',
-        // content: 'fit-content',
         justifyContent: 'center',
-        alignItems: 'center',
+        alignItems: 'flex-start',
         ...props.style,
       }}
     >

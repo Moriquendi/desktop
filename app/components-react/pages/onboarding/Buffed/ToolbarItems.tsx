@@ -7,8 +7,9 @@ export function ToolbarItems(props: {
   onNext?: () => void;
   onBack?: () => void;
   onSkip?: () => void;
+  centerItem?: React.ReactNode;
 }) {
-  const { onNext, onBack, onSkip } = props;
+  const { onNext, onBack, onSkip, centerItem } = props;
   return (
     <HStack
       style={{
@@ -30,6 +31,9 @@ export function ToolbarItems(props: {
         </a>
       )}
       <Spacer />
+
+      {centerItem && <>{centerItem}</>}
+
       {onSkip && (
         <a className={styles.linkButton} onClick={() => onSkip()}>
           {$t('Skip')}
