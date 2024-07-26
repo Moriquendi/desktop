@@ -7,24 +7,15 @@ import { Inject } from 'services/core/injector';
 import { SourcesService } from 'services/sources';
 import { OS, byOS, getOS } from 'util/operating-systems';
 import { EObsSimpleEncoder } from './output';
+import { Source } from '../sources/source';
+import { OBSSettings } from 'components-react/pages/onboarding/BuffedTypes';
 
-export interface OBSSettings {
-  width: string;
-  height: string;
-  fps: string;
-  rate_control: string;
-  bitrate: string;
-  max_bitrate: string;
-  keyint_sec: string;
-  preset: string;
-  profile: string;
-  tune: string;
-  auto_streaming: boolean;
-}
 function sleep(ms: number) {
   console.log(`Sleep for ${ms}`);
   return new Promise(resolve => setTimeout(resolve, ms));
 }
+
+export type BuffedCaptureSource = 'game' | 'display';
 
 export class BuffedSettingsController {
   @Inject() userService: UserService;
@@ -58,6 +49,111 @@ export class BuffedSettingsController {
         this.fitScreenContent();
       }
     });
+  }
+
+  getActiveSourceType(): BuffedCaptureSource | null {
+    if (this.getActiveSourceWithType('game')) {
+      return 'game';
+    } else if (this.getActiveSourceWithType('display')) {
+      return 'display';
+    } else {
+      return null;
+    }
+  }
+
+  getActiveSourceWithType(type: BuffedCaptureSource): Source | null {
+    const { ScenesService } = Services;
+    const scene = ScenesService.views.activeScene;
+    const sources = scene?.getNestedSources();
+
+    let lookForType: string;
+    switch (type) {
+      case 'display':
+        lookForType = 'screen_capture';
+      case 'game':
+        lookForType = 'game_capture';
+    }
+
+    const match = sources.find(s => s.type === lookForType);
+    return match ?? null;
+  }
+
+  addSourceForType(type: BuffedCaptureSource): void {
+    console.log(`[Action] AddSourceForType ${type}`);
+    const { ScenesService, EditorCommandsService, SourcesService } = Services;
+    const scene: Scene | null = ScenesService.views.activeScene;
+    switch (type) {
+      case 'display':
+        console.log('Adding DISPLAY');
+        const item = scene.createAndAddSource('Screen Capture', 'screen_capture', {}, {});
+        break;
+      case 'game':
+        try {
+          const isMac = byOS({ [OS.Windows]: false, [OS.Mac]: true });
+          if (isMac) {
+            // Not supported on mac
+            console.log('Game not supported on Mac. Use Display instead');
+            this.addSourceForType('display');
+            return;
+          } else {
+            console.log('Adding GAME');
+            const item = scene.createAndAddSource(
+              'Game Capture',
+              'game_capture',
+              {},
+              {
+                sourceAddOptions: {
+                  propertiesManager: 'default',
+                  propertiesManagerSettings: {},
+                  guestCamStreamId: undefined,
+                  sourceId: undefined,
+                },
+                display: 'horizontal',
+                id: undefined,
+              },
+            );
+
+            const sourceId = item.sourceId;
+            const source = SourcesService.views.getSource(sourceId)!;
+            const sourceProperties = source.getPropertiesFormData();
+
+            console.log(`Source properties:`);
+            console.log(sourceProperties);
+
+            const captureModeProp = sourceProperties.find(v => v.name === 'capture_mode');
+            if (captureModeProp) {
+              captureModeProp.value = 'any_fullscreen';
+              console.log(`Would set this:`);
+              console.log(captureModeProp);
+              EditorCommandsService.actions.executeCommand(
+                'EditSourcePropertiesCommand',
+                source.sourceId,
+                [captureModeProp],
+              );
+            }
+          }
+          break;
+        } catch (error) {
+          console.log('SOMETHING FAILED!', error);
+        }
+    }
+  }
+
+  async setSourceSettingsFor(source: BuffedCaptureSource) {
+    const { ScenesService } = Services;
+    const scene: Scene | null = ScenesService.views.activeScene;
+
+    // Remove counter-source
+    const counterSource: BuffedCaptureSource = source === 'display' ? 'game' : 'display';
+    console.log(`Remove counter source if needed: ${counterSource}`);
+    this.getActiveSourceWithType(counterSource)?.remove();
+
+    if (this.getActiveSourceWithType(source) === null) {
+      console.log(`Tell to add source ${source}`);
+      this.addSourceForType(source);
+    } else {
+      console.log('Skip. Theres already active source for it');
+    }
   }
 
   async setBuffedDetaultSettings() {
@@ -171,49 +267,8 @@ export class BuffedSettingsController {
     // const source = SourcesService.createSource('Screen Capture', 'screen_capture', {}, {});
     // SourcesService.addSource('Screen Capture', {}, {})
 
-    try {
-      const isMac = byOS({ [OS.Windows]: false, [OS.Mac]: true });
-      if (isMac) {
-        const item = scene.createAndAddSource('Screen Capture', 'screen_capture', {}, {});
-      } else {
-        const item = scene.createAndAddSource(
-          'Game Capture',
-          'game_capture',
-          {},
-          {
-            sourceAddOptions: {
-              propertiesManager: 'default',
-              propertiesManagerSettings: {},
-              guestCamStreamId: undefined,
-              sourceId: undefined,
-            },
-            display: 'horizontal',
-            id: undefined,
-          },
-        );
+    this.addSourceForType('game');
 
-        const sourceId = item.sourceId;
-        const source = SourcesService.views.getSource(sourceId)!;
-        const sourceProperties = source.getPropertiesFormData();
-
-        console.log(`Source properties:`);
-        console.log(sourceProperties);
-
-        const captureModeProp = sourceProperties.find(v => v.name === 'capture_mode');
-        if (captureModeProp) {
-          captureModeProp.value = 'any_fullscreen';
-          console.log(`Would set this:`);
-          console.log(captureModeProp);
-          EditorCommandsService.actions.executeCommand(
-            'EditSourcePropertiesCommand',
-            source.sourceId,
-            [captureModeProp],
-          );
-        }
-      }
-    } catch (error) {
-      console.log('SOMETHING FAILED!', error);
-    }
     ////////////////////////////////////////
     // FIT TO SCREN'
     console.log('SHCEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEDULE');

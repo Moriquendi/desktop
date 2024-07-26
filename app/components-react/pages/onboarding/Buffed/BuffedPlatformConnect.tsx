@@ -9,7 +9,6 @@ import { TextInput } from 'components-react/shared/inputs/TextInput';
 import { OnboardingModule } from '../Onboarding';
 import { Services } from 'components-react/service-provider';
 import Form from 'components-react/shared/inputs/Form';
-import { BuffedClient, UserProfile } from '../BuffedClient';
 import { Image, Alert, Button, ConfigProvider, Spin } from 'antd';
 import { SocialPlatform, TPlatform } from 'services/platforms';
 import { HStack, Spacer } from 'components-react/shared/HStack';
@@ -17,6 +16,11 @@ import { useVuex } from 'components-react/hooks';
 import { VStack } from './VStack';
 import { ToolbarItems } from './ToolbarItems';
 import { BuffedIntroFullScreenGame } from './BuffedIntroFullScreenGame';
+import { BuffedIntroSourceEdit } from './BuffedIntroSourceEdit';
+import { BuffedIntroAutoCapture } from './BuffedIntroAutoCapture';
+import { BuffedIntroEnjoy } from './BuffedIntroEnjoy';
+import { BuffedIntroSelectSource } from './BuffedIntroSelectSource';
+import { UserProfile } from '../BuffedTypes';
 
 interface Props {
   onAuth: (email: string, password: string) => Promise<void>;
@@ -199,8 +203,14 @@ export function BuffedPlatformConnect(props: Props) {
   const renderCurrentScreen = () => {
     switch (screen) {
       case 'auth-method-pick':
+        // return <AuthMethodButtons onSkip={next} />;
+
+        return <BuffedIntroSelectSource onNext={() => {}} />;
+        return <BuffedIntroEnjoy onNext={() => {}} />;
+        return <BuffedIntroAutoCapture onNext={() => {}} />;
+        return <BuffedIntroSourceEdit onNext={() => {}} />;
         return <BuffedIntroFullScreenGame onNext={() => {}} />;
-        return <AuthMethodButtons onSkip={next} />;
+
       case 'auth-method-email':
         return (
           <VStack style={{ width: '100%', height: '100%', gap: 0 }}>

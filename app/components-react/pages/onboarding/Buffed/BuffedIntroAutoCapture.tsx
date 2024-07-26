@@ -1,10 +1,10 @@
-import { VStack } from './VStack';
 import React from 'react';
-import { ToolbarItems } from './ToolbarItems';
 import * as remote from '@electron/remote';
+import { VStack } from './VStack';
 import { IntroScreenHeader } from './IntroScreenHeader';
+import { ToolbarItems } from './ToolbarItems';
 
-export function BuffedIntroFullScreenGame({ onNext }: { onNext: () => void }) {
+export function BuffedIntroAutoCapture({ onNext }: { onNext: () => void }) {
   function openDiscord() {
     remote.shell.openExternal('https://discord.gg/ysrAn9unC3');
   }
@@ -35,20 +35,21 @@ export function BuffedIntroFullScreenGame({ onNext }: { onNext: () => void }) {
           alignItems: 'center',
           gap: 0,
           paddingTop: '0px',
+          width: '100%',
           height: '100%',
         }}
       >
         <IntroScreenHeader
-          step={'1.'}
+          step={'4.'}
           text={
-            'Start your game and please make sure it runs in Full Screen or Windowed Full Screen mode.'
+            'Buffed Desktop App will detect your game and start the capture automatically. You can always start or stop it manually.'
           }
         />
         <div style={{ flexGrow: 1 }} />
         <img
           style={{ maxHeight: '100%', maxWidth: '100%', width: 'auto' }}
-          src={require(`./Assets/intro-game-fullscren.png`)}
-          alt="Set game settings to full screen"
+          src={require(`./Assets/intro-auto-capture.png`)}
+          alt="Starting capture"
         />
         <div style={{ flexGrow: 1 }} />
       </VStack>

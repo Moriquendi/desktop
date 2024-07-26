@@ -45,7 +45,7 @@ import { OS, getOS } from 'util/operating-systems';
 import * as remote from '@electron/remote';
 import { BuffedSettingsController } from 'services/settings/BuffedSettingsController';
 import { CustomizationService, ICustomizationServiceState } from 'services/customization';
-import { StreamingService } from 'app-services';
+import { BuffedService, StreamingService } from 'app-services';
 
 interface IAppState {
   loading: boolean;
@@ -99,8 +99,7 @@ export class AppService extends StatefulService<IAppState> {
   @Inject() private videoSettingsService: VideoSettingsService;
   @Inject() private customizationService: CustomizationService;
   @Inject() private dualOutputService: DualOutputService;
-
-  private buffedController = new BuffedSettingsController();
+  @Inject() private buffedService: BuffedService;
 
   static initialState: IAppState = {
     loading: true,
@@ -182,12 +181,13 @@ export class AppService extends StatefulService<IAppState> {
 
     ////////////////////////////////////////////////
     console.log(`start`);
-    this.buffedController.setup();
+    const buffedController = this.buffedService.buffedController;
+    buffedController.setup();
 
-    await this.buffedController.setBuffedDetaultSettings();
+    await buffedController.setBuffedDetaultSettings();
     this.userService.userLoginFinished.subscribe(async () => {
       console.log(`[Buffed settings] User logged in. Refresh buffed settings.`);
-      await this.buffedController.setBuffedDetaultSettings();
+      await buffedController.setBuffedDetaultSettings();
     });
 
     const setupAutoLogin = (enabled: boolean) => {

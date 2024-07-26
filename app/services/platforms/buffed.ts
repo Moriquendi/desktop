@@ -7,25 +7,21 @@ import {
   IUserInfo,
   TPlatformCapability,
 } from '.';
-import { HostsService } from 'services/hosts';
 import { Inject } from 'services/core/injector';
-import { authorizedHeaders, jfetch } from 'util/requests';
 import { UserService } from 'services/user';
-import { TTwitchOAuthScope, TwitchTagsService } from './twitch/index';
-import { platformAuthorizedRequest } from './utils';
-import { CustomizationService } from 'services/customization';
 import { IGoLiveSettings } from 'services/streaming';
 import { InheritMutations, ViewHandler, mutation } from 'services/core';
-import { throwStreamError, TStreamErrorType } from 'services/streaming/stream-error';
 import { BasePlatformService } from './base-platform';
-import Utils from '../utils';
-import { IVideo } from 'obs-studio-node';
 import { TDisplayType } from 'services/settings-v2';
-import { TOutputOrientation } from 'services/restream';
-import { BuffedClient, UserProfile } from '../../components-react/pages/onboarding/BuffedClient';
+import { BuffedClient } from '../../components-react/pages/onboarding/BuffedClient';
 import { RunningAppsObserver } from 'services/games-monitor/RunningAppsObserver';
 import path from 'path';
 import { NavigationService, OnboardingService } from 'app-services';
+import {
+  BuffedCaptureSource,
+  BuffedSettingsController,
+} from 'services/settings/BuffedSettingsController';
+import { UserProfile } from 'components-react/pages/onboarding/BuffedTypes';
 
 export interface IBuffedStartStreamOptions {
   // title: string;
@@ -98,6 +94,7 @@ export class BuffedService
     // },
   };
 
+  buffedController = new BuffedSettingsController();
   readonly apiBase = 'https://api.buffed.com';
   readonly platform = 'buffed';
   readonly displayName = 'Buffed';
@@ -494,6 +491,14 @@ export class BuffedService
   //     return { id: g.id, name: g.name, image };
   //   })[0];
   // }
+
+  async setBuffedCaptureSource(source: BuffedCaptureSource) {
+    this.buffedController.setSourceSettingsFor(source);
+  }
+
+  get activeSourceType(): BuffedCaptureSource {
+    return this.buffedController.getActiveSourceType();
+  }
 
   get chatUrl(): string {
     return '';

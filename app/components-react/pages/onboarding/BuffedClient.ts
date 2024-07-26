@@ -1,24 +1,10 @@
 import fetch from 'node-fetch';
-import { OBSSettings } from '../../../services/settings/BuffedSettingsController';
 import * as remote from '@electron/remote';
+import { UserProfile } from './BuffedTypes';
 
 interface SignInOutput {
   id: number;
   api_key: string;
-}
-
-export interface UserProfile {
-  id: number;
-  email: string;
-  buffed_key: string | null;
-  twitch_key: string | null;
-  platform: string | null;
-  created_at: string;
-  signed_up_via: 'windows_app' | 'web' | 'ios';
-
-  nickname: string | null;
-
-  obs_settings?: OBSSettings;
 }
 
 export class BuffedClient {

@@ -14,7 +14,7 @@ export function HStack(props: HStackProps) {
         flexDirection: 'row',
         gap: props.spacing ?? 30,
         justifyContent: 'center',
-        alignItems: 'flex-start',
+        alignItems: 'center',
         ...props.style,
       }}
     >
