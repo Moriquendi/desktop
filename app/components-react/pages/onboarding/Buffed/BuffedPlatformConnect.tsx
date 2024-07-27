@@ -5,10 +5,10 @@ import { $t } from 'services/i18n';
 import { LoginModule } from '../Connect';
 import styles from './BuffedPlatformConnect.m.less';
 import * as remote from '@electron/remote';
-import { TextInput } from 'components-react/shared/inputs/TextInput';
+
 import { OnboardingModule } from '../Onboarding';
 import { Services } from 'components-react/service-provider';
-import Form from 'components-react/shared/inputs/Form';
+
 import { Image, Alert, Button, ConfigProvider, Spin } from 'antd';
 import { SocialPlatform, TPlatform } from 'services/platforms';
 import { HStack, Spacer } from 'components-react/shared/HStack';
@@ -21,6 +21,9 @@ import { BuffedIntroAutoCapture } from './BuffedIntroAutoCapture';
 import { BuffedIntroEnjoy } from './BuffedIntroEnjoy';
 import { BuffedIntroSelectSource } from './BuffedIntroSelectSource';
 import { UserProfile } from '../BuffedTypes';
+import { BuffedAuthMethodEmail } from './BuffedAuthMethodEmail';
+import { SocialAuthButtons } from './SocialAuthButtons';
+import { BuffedAuthSignUp } from './BuffedAuthSignUp';
 
 interface Props {
   onAuth: (email: string, password: string) => Promise<void>;
@@ -44,7 +47,12 @@ type Screen =
   | 'auth-signup'
   | 'switch-platform'
   | 'intro-screen'
-  | 'download-app';
+  | 'download-app'
+  | 'intro-screen-full-screen'
+  | 'intro-screen-source-pick'
+  | 'intro-screen-source-edit-later'
+  | 'intro-screen-auto-capture'
+  | 'intro-screen-enjoy';
 
 export function BuffedPlatformConnect(props: Props) {
   const { onAuth, onRegister } = props;
@@ -203,63 +211,82 @@ export function BuffedPlatformConnect(props: Props) {
   const renderCurrentScreen = () => {
     switch (screen) {
       case 'auth-method-pick':
-        // return <AuthMethodButtons onSkip={next} />;
+        return <AuthMethodButtons onSkip={next} />;
+      case 'download-app':
+        return (
+          <DownloadAppScreen
+            onNext={() => {
+              setScreen('intro-screen-full-screen');
+            }}
+          />
+        );
 
-        return <BuffedIntroSelectSource onNext={() => {}} />;
-        return <BuffedIntroEnjoy onNext={() => {}} />;
-        return <BuffedIntroAutoCapture onNext={() => {}} />;
-        return <BuffedIntroSourceEdit onNext={() => {}} />;
-        return <BuffedIntroFullScreenGame onNext={() => {}} />;
-
+      case 'intro-screen-full-screen':
+        return (
+          <BuffedIntroFullScreenGame
+            onNext={() => {
+              setScreen('intro-screen-source-pick');
+            }}
+          />
+        );
+      case 'intro-screen-source-pick':
+        return (
+          <BuffedIntroSelectSource
+            onNext={() => {
+              setScreen('intro-screen-source-edit-later');
+            }}
+          />
+        );
+      case 'intro-screen-source-edit-later':
+        return (
+          <BuffedIntroSourceEdit
+            onNext={() => {
+              setScreen('intro-screen-auto-capture');
+            }}
+          />
+        );
+      case 'intro-screen-auto-capture':
+        return (
+          <BuffedIntroAutoCapture
+            onNext={() => {
+              setScreen('intro-screen-enjoy');
+            }}
+          />
+        );
+      case 'intro-screen-enjoy':
+        return (
+          <BuffedIntroEnjoy
+            onNext={() => {
+              next();
+            }}
+          />
+        );
       case 'auth-method-email':
         return (
-          <VStack style={{ width: '100%', height: '100%', gap: 0 }}>
-            <Spacer />
-
-            <VStack>
-              <EmailForm
-                email={email}
-                setEmail={setEmail}
-                password={password}
-                setPassword={setPassword}
-                ctaTitle={$t('Log In')}
-                onFinish={() => onPerformAuth(false)}
-                showForgotPassword={true}
-              />
-              {isLoading && <Spin />}
-            </VStack>
-            <Spacer />
-            <ToolbarItems
-              onBack={() => {
-                setScreen('auth-method-pick');
-              }}
-            />
-          </VStack>
+          <BuffedAuthMethodEmail
+            email={email}
+            setEmail={setEmail}
+            password={password}
+            setPassword={setPassword}
+            onPerformAuth={onPerformAuth}
+            isLoading={isLoading}
+            onBack={() => {
+              setScreen('auth-method-pick');
+            }}
+          />
         );
       case 'auth-signup':
-        return (
-          <VStack style={{ width: '100%', height: '100%', gap: 0 }}>
-            <Spacer />
-            <VStack>
-              <EmailForm
-                email={email}
-                setEmail={setEmail}
-                password={password}
-                setPassword={setPassword}
-                ctaTitle={$t('Register')}
-                onFinish={() => onPerformAuth(true)}
-                showForgotPassword={false}
-              />
-              {isLoading && <Spin />}
-            </VStack>
-            <Spacer />
-            <ToolbarItems
-              onBack={() => {
-                setScreen('auth-method-pick');
-              }}
-            />
-          </VStack>
-        );
+        <BuffedAuthSignUp
+          email={email}
+          setEmail={setEmail}
+          password={password}
+          setPassword={setPassword}
+          onPerformAuth={onPerformAuth}
+          isLoading={isLoading}
+          onBack={() => {
+            setScreen('auth-method-pick');
+          }}
+        />;
       case 'intro-screen':
         return (
           <IntroScreen
@@ -268,14 +295,7 @@ export function BuffedPlatformConnect(props: Props) {
             }}
           />
         );
-      case 'download-app':
-        return (
-          <DownloadAppScreen
-            onNext={() => {
-              next();
-            }}
-          />
-        );
+
       case 'switch-platform':
         return (
           <SwitchPlatformScreen
@@ -370,154 +390,6 @@ export function BuffedPlatformConnect(props: Props) {
         </div>
       </div>
     </div>
-  );
-}
-
-function SocialLogo(props: { social: 'apple' | 'discord' | 'google' }) {
-  let className = '';
-  switch (props.social) {
-    case 'apple':
-      className = styles.appleIcon;
-      break;
-    case 'discord':
-      className = styles.discordIcon;
-      break;
-    case 'google':
-      className = styles.googleIcon;
-      break;
-  }
-  return <div className={className} />;
-}
-
-interface SocialButtonProps {
-  name: string;
-  social: 'apple' | 'discord' | 'google';
-  onClick: () => Promise<void>;
-}
-
-interface ButtonsProps {
-  onAuth: (platform: SocialPlatform) => Promise<void>;
-}
-
-function SocialAuthButtons(props: ButtonsProps) {
-  const onAuth = props.onAuth;
-  return (
-    <VStack>
-      <SocialButton
-        name="Discord"
-        social="discord"
-        onClick={async () => {
-          await onAuth('discord');
-        }}
-      />
-      <SocialButton
-        name="Google"
-        social="google"
-        onClick={async () => {
-          await onAuth('google');
-        }}
-      />
-      <SocialButton
-        name="Apple"
-        social="apple"
-        onClick={async () => {
-          await onAuth('apple');
-        }}
-      />
-    </VStack>
-  );
-}
-
-function SocialButton(props: SocialButtonProps) {
-  return (
-    <button
-      className="button button--action"
-      onClick={props.onClick}
-      style={{
-        minWidth: '300px',
-        // borderColor: '#ff00ff',
-        // borderStyle: 'solid',
-        // justifyContent: 'center',
-        // alignItems: 'center',
-        // alignContent: 'center',
-      }}
-    >
-      <HStack spacing={8}>
-        <SocialLogo social={props.social} />
-        {$t(`Sign In with ${props.name}`)}
-      </HStack>
-    </button>
-  );
-}
-
-interface EmailFormProps {
-  email: string;
-  setEmail: (email: string) => void;
-
-  password: string;
-  setPassword: (password: string) => void;
-  ctaTitle: string;
-  onFinish: () => void;
-
-  showForgotPassword: boolean;
-}
-function EmailForm({
-  email,
-  setEmail,
-  password,
-  setPassword,
-  ctaTitle,
-  onFinish,
-  showForgotPassword,
-}: EmailFormProps) {
-  return (
-    <Form layout="vertical">
-      <TextInput
-        label={$t('Email')}
-        value={email}
-        onChange={setEmail}
-        isPassword={false}
-        uncontrolled={false}
-      />
-      <TextInput
-        label={$t('Password')}
-        value={password}
-        onChange={setPassword}
-        isPassword={true}
-        uncontrolled={false}
-      />
-
-      {showForgotPassword && (
-        <div
-          style={{
-            width: '100%',
-            display: 'flex',
-            justifyContent: 'flex-end',
-            paddingBottom: '15px',
-          }}
-        >
-          <a
-            className={styles.linkButton}
-            onClick={() => {
-              remote.shell.openExternal('https://buffed.me/users/reset_password');
-            }}
-          >
-            <h3>Forgot Password?</h3>
-          </a>
-        </div>
-      )}
-
-      <button
-        className="button button--action"
-        onClick={() => {
-          onFinish();
-        }}
-        disabled={!(email.trim().length > 0 && password.trim().length > 0)}
-        style={{ minWidth: '300px' }}
-      >
-        {ctaTitle}
-      </button>
-    </Form>
   );
 }
 
