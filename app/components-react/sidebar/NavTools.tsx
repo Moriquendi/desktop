@@ -77,9 +77,11 @@ export default function SideNav() {
     MagicLinkService.linkToPrime('slobs-side-nav');
   }
 
-  const handleAuth = () => {
+  const handleAuth = async () => {
     if (isLoggedIn) {
       UserService.actions.logOut();
+      await Utils.sleep(300)
+      UserService.actions.showLogin();
     } else {
       WindowsService.actions.closeChildWindow();
       UserService.actions.showLogin();

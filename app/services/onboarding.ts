@@ -356,6 +356,12 @@ export class OnboardingService extends StatefulService<IOnboardingServiceState> 
       return true;
     }
 
+    if (!this.userService.isLoggedIn) {
+      console.log('require onboarding because auth not authorized')
+      this.start();
+      return true;
+    }
+
     if (localStorage.getItem(this.localStorageKey)) {
       return false;
     }
