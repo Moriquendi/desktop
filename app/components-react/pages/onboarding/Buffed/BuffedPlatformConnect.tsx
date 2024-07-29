@@ -24,6 +24,8 @@ import { UserProfile } from '../BuffedTypes';
 import { BuffedAuthMethodEmail } from './BuffedAuthMethodEmail';
 import { SocialAuthButtons } from './SocialAuthButtons';
 import { BuffedAuthSignUp } from './BuffedAuthSignUp';
+import { BuffedIntroAndroidApp } from './BuffedIntroAndroidApp';
+import { DownloadAppScreen } from './DownloadAppScreen';
 
 interface Props {
   onAuth: (email: string, password: string) => Promise<void>;
@@ -52,7 +54,8 @@ type Screen =
   | 'intro-screen-source-pick'
   | 'intro-screen-source-edit-later'
   | 'intro-screen-auto-capture'
-  | 'intro-screen-enjoy';
+  | 'intro-screen-enjoy'
+  | 'intro-screen-android';
 
 export function BuffedPlatformConnect(props: Props) {
   const { onAuth, onRegister } = props;
@@ -212,9 +215,20 @@ export function BuffedPlatformConnect(props: Props) {
     switch (screen) {
       case 'auth-method-pick':
         return <AuthMethodButtons onSkip={next} />;
+      case 'intro-screen-android':
+        return (
+          <BuffedIntroAndroidApp
+            onBack={() => {
+              setScreen('download-app');
+            }}
+          />
+        );
       case 'download-app':
         return (
           <DownloadAppScreen
+            onRequestAndroid={() => {
+              setScreen('intro-screen-android');
+            }}
             onNext={() => {
               setScreen('intro-screen-full-screen');
             }}
@@ -455,32 +469,6 @@ function IntroScreen({ onNext }: { onNext: () => void }) {
       <div style={{ flexGrow: 1 }} />
 
       <ToolbarItems onNext={onNext} />
-    </VStack>
-  );
-}
-
-function DownloadAppScreen({ onNext }: { onNext: () => void }) {
-  return (
-    <VStack style={{ gap: 0, width: '100%', height: '100%' }}>
-      <VStack style={{ gap: 30, height: '100%', justifyContent: 'center' }}>
-        <img
-          style={{ width: '240px', height: '240px', objectFit: 'contain' }}
-          src={require(`./Assets/download-qr.png`)}
-        />
-        <a
-          onClick={() =>
-            remote.shell.openExternal(
-              'https://apps.apple.com/us/app/buffed-clip-gaming-adventures/id6467634856',
-            )
-          }
-        >
-          <img src={require(`./Assets/download-badge.png`)} />
-        </a>
-      </VStack>
-
-      <div style={{ width: '100%' }}>
-        <ToolbarItems onNext={onNext} />
-      </div>
     </VStack>
   );
 }
