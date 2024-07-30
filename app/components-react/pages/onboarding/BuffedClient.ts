@@ -49,6 +49,25 @@ export class BuffedClient {
     }
   }
 
+  async requestAndroid(apiKey: string) {
+    const baseURL = 'https://buffed.me/api/v1/';
+    const endpoint = 'android_requests';
+
+    let url = new URL(`${baseURL}${endpoint}`);
+    url.searchParams.append('api_key', apiKey);
+
+    const body = {};
+    const result = await fetch(url, {
+      method: 'post',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(body),
+    });
+
+    console.log('Request android output: ', result);
+  }
+
   async updateProfile(apiKey: string, profile: Partial<UserProfile>): Promise<UserProfile> {
     const baseURL = 'https://buffed.me/api/v1/';
     const endpoint = 'users/update';

@@ -13,7 +13,13 @@ import { first } from 'lodash';
 import { BuffedCaptureSource } from 'services/settings/BuffedSettingsController';
 import { Services } from 'components-react/service-provider';
 
-export function BuffedIntroSelectSource({ onNext }: { onNext: () => void }) {
+export function BuffedIntroSelectSource({
+  onNext,
+  onBack,
+}: {
+  onNext: () => void;
+  onBack: () => void;
+}) {
   const [source, setSource] = useState<BuffedCaptureSource>('game');
   const { BuffedService, SourcesService } = Services;
 
@@ -74,7 +80,7 @@ export function BuffedIntroSelectSource({ onNext }: { onNext: () => void }) {
         <div style={{ flexGrow: 1 }} />
       </VStack>
 
-      <ToolbarItems centerItem={helperText} onNext={onNext} />
+      <ToolbarItems centerItem={helperText} onBack={onBack} onNext={onNext} />
     </VStack>
   );
 }

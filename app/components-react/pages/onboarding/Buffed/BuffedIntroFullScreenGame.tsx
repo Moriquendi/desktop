@@ -4,7 +4,13 @@ import { ToolbarItems } from './ToolbarItems';
 import * as remote from '@electron/remote';
 import { IntroScreenHeader } from './IntroScreenHeader';
 
-export function BuffedIntroFullScreenGame({ onNext }: { onNext: () => void }) {
+export function BuffedIntroFullScreenGame({
+  onNext,
+  onBack,
+}: {
+  onNext: () => void;
+  onBack: () => void;
+}) {
   function openDiscord() {
     remote.shell.openExternal('https://discord.gg/ysrAn9unC3');
   }
@@ -53,7 +59,7 @@ export function BuffedIntroFullScreenGame({ onNext }: { onNext: () => void }) {
         <div style={{ flexGrow: 1 }} />
       </VStack>
 
-      <ToolbarItems centerItem={helperText} onNext={onNext} />
+      <ToolbarItems centerItem={helperText} onBack={onBack} onNext={onNext} />
     </VStack>
   );
 }

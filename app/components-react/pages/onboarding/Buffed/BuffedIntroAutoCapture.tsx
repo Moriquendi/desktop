@@ -4,7 +4,13 @@ import { VStack } from './VStack';
 import { IntroScreenHeader } from './IntroScreenHeader';
 import { ToolbarItems } from './ToolbarItems';
 
-export function BuffedIntroAutoCapture({ onNext }: { onNext: () => void }) {
+export function BuffedIntroAutoCapture({
+  onNext,
+  onBack,
+}: {
+  onNext: () => void;
+  onBack: () => void;
+}) {
   function openDiscord() {
     remote.shell.openExternal('https://discord.gg/ysrAn9unC3');
   }
@@ -54,7 +60,7 @@ export function BuffedIntroAutoCapture({ onNext }: { onNext: () => void }) {
         <div style={{ flexGrow: 1 }} />
       </VStack>
 
-      <ToolbarItems centerItem={helperText} onNext={onNext} />
+      <ToolbarItems centerItem={helperText} onBack={onBack} onNext={onNext} />
     </VStack>
   );
 }

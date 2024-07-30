@@ -26,6 +26,7 @@ import { SocialAuthButtons } from './SocialAuthButtons';
 import { BuffedAuthSignUp } from './BuffedAuthSignUp';
 import { BuffedIntroAndroidApp } from './BuffedIntroAndroidApp';
 import { DownloadAppScreen } from './DownloadAppScreen';
+import { BuffedClient } from '../BuffedClient';
 
 interface Props {
   onAuth: (email: string, password: string) => Promise<void>;
@@ -74,6 +75,13 @@ export function BuffedPlatformConnect(props: Props) {
     userProfile: BuffedService.views.profile,
   }));
 
+  const requestAndroid = async () => {
+    const client = new BuffedClient();
+    const token = UserService.views.auth?.apiToken;
+    console.log('Requesting with ', token);
+    await client.requestAndroid(token!);
+    console.log('Did request android.');
+  };
   //   if (!selectedExtraPlatform) return <div></div>;
 
   useEffect(() => {
@@ -228,6 +236,7 @@ export function BuffedPlatformConnect(props: Props) {
           <DownloadAppScreen
             onRequestAndroid={() => {
               setScreen('intro-screen-android');
+              requestAndroid();
             }}
             onNext={() => {
               setScreen('intro-screen-full-screen');
@@ -238,6 +247,9 @@ export function BuffedPlatformConnect(props: Props) {
       case 'intro-screen-full-screen':
         return (
           <BuffedIntroFullScreenGame
+            onBack={() => {
+              setScreen('download-app');
+            }}
             onNext={() => {
               setScreen('intro-screen-source-pick');
             }}
@@ -246,6 +258,9 @@ export function BuffedPlatformConnect(props: Props) {
       case 'intro-screen-source-pick':
         return (
           <BuffedIntroSelectSource
+            onBack={() => {
+              setScreen('intro-screen-full-screen');
+            }}
             onNext={() => {
               setScreen('intro-screen-source-edit-later');
             }}
@@ -254,6 +269,9 @@ export function BuffedPlatformConnect(props: Props) {
       case 'intro-screen-source-edit-later':
         return (
           <BuffedIntroSourceEdit
+            onBack={() => {
+              setScreen('intro-screen-source-pick');
+            }}
             onNext={() => {
               setScreen('intro-screen-auto-capture');
             }}
@@ -262,6 +280,9 @@ export function BuffedPlatformConnect(props: Props) {
       case 'intro-screen-auto-capture':
         return (
           <BuffedIntroAutoCapture
+            onBack={() => {
+              setScreen('intro-screen-source-edit-later');
+            }}
             onNext={() => {
               setScreen('intro-screen-enjoy');
             }}
@@ -270,6 +291,9 @@ export function BuffedPlatformConnect(props: Props) {
       case 'intro-screen-enjoy':
         return (
           <BuffedIntroEnjoy
+            onBack={() => {
+              setScreen('intro-screen-auto-capture');
+            }}
             onNext={() => {
               next();
             }}

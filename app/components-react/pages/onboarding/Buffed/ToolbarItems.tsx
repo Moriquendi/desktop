@@ -8,8 +8,9 @@ export function ToolbarItems(props: {
   onBack?: () => void;
   onSkip?: () => void;
   centerItem?: React.ReactNode;
+  leftItem?: React.ReactNode;
 }) {
-  const { onNext, onBack, onSkip, centerItem } = props;
+  const { onNext, onBack, onSkip, leftItem, centerItem } = props;
   return (
     <HStack
       style={{
@@ -20,6 +21,7 @@ export function ToolbarItems(props: {
         paddingBottom: 20,
       }}
     >
+      {leftItem && <>{leftItem}</>}
       {onBack && (
         <a
           className={styles.linkButton}

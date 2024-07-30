@@ -5,7 +5,7 @@ import { IntroScreenHeader } from './IntroScreenHeader';
 import { ToolbarItems } from './ToolbarItems';
 import { HStack } from 'components-react/shared/HStack';
 
-export function BuffedIntroEnjoy({ onNext }: { onNext: () => void }) {
+export function BuffedIntroEnjoy({ onNext, onBack }: { onNext: () => void; onBack: () => void }) {
   function openDiscord() {
     remote.shell.openExternal('https://discord.gg/ysrAn9unC3');
   }
@@ -54,7 +54,7 @@ export function BuffedIntroEnjoy({ onNext }: { onNext: () => void }) {
         <div style={{ flexGrow: 1 }} />
       </VStack>
 
-      <ToolbarItems onNext={onNext} />
+      <ToolbarItems onBack={onBack} onNext={onNext} />
     </VStack>
   );
 }

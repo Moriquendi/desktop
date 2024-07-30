@@ -31,25 +31,26 @@ export function DownloadAppScreen({
       </VStack>
 
       <div style={{ width: '100%' }}>
-        <HStack style={{ width: '100%' }}>
-          <a className={styles.linkButton} onClick={() => onRequestAndroid()}>
-            <HStack spacing={3}>
-              <p>
-                Request Android
+        <ToolbarItems
+          onNext={onNext}
+          leftItem={
+            <a
+              className={styles.linkButton}
+              style={{ padding: 0, margin: 0 }}
+              onClick={() => onRequestAndroid()}
+            >
+              <p style={{ padding: 0, margin: 0 }}>
+                Request Android{' '}
                 <img
-                  style={{ height: '17px' }}
+                  style={{ width: '29px', height: 'auto', margin: 0, padding: 0 }}
                   src={require(`./Assets/android-face.png`)}
                   alt="Android logo"
-                />
+                />{' '}
                 App
               </p>
-
-              {/* <p>App</p> */}
-            </HStack>
-          </a>
-          <Spacer />
-          <ToolbarItems onNext={onNext} />
-        </HStack>
+            </a>
+          }
+        />
       </div>
     </VStack>
   );
