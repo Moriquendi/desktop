@@ -64,15 +64,21 @@ const base = {
       }
 
       console.log(`Signing [${config.hash} ${config.path}]`);
-      await signtool.sign(config.path, {
-      subject: 'Paweł Niżnik',
-        rfcTimestamp: 'http://ts.ssl.com',
-        algorithm: 'sha256',
-        timestampAlgo: 'sha256',
-        append: config.isNest,
-        description: config.name,
-        url: config.site,
-      });
+
+      return;
+
+
+
+
+      // await signtool.sign(config.path, {
+      // subject: 'Paweł Niżnik',
+      //   rfcTimestamp: 'http://ts.ssl.com',
+      //   algorithm: 'sha256',
+      //   timestampAlgo: 'sha256',
+      //   append: config.isNest,
+      //   description: config.name,
+      //   url: config.site,
+      // });
     },
   },
   mac: {
