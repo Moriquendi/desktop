@@ -50,8 +50,8 @@ const base = {
     target: 'msi',
     executableName: 'Buffed OBS',
     extraFiles: ['LICENSE', 'AGREEMENT', 'shared-resources/**/*', '!shared-resources/README'],
-    rfc3161TimeStampServer: 'http://ts.ssl.com',
-    timeStampServer: 'http://ts.ssl.com',
+    rfc3161TimeStampServer: 'http://timestamp.acs.microsoft.com',
+    timeStampServer: 'http://timestamp.acs.microsoft.com',
     signDlls: true,
     async sign(config) {
       if (process.env.SLOBS_NO_SIGN) return;
@@ -65,10 +65,17 @@ const base = {
 
       console.log(`Signing [${config.hash} ${config.path}]`);
 
-      return;
+      //return;
 
+      const command = `/c/Users/michal/Desktop/signtool-x64/signtool.exe sign -v -debug -fd SHA256 -tr "http://timestamp.acs.microsoft.com" -td SHA256 -dlib /c/Users/michal/Desktop/trust-x64/Azure.CodeSigning.Dlib.dll -dmdf /c/Users/michal/Desktop/signMetadata.json "${path}"`
 
-
+      try {
+        const out = execSync(command, { stdio: 'inherit' });
+        console.log(out);
+      } catch (error) {
+        console.log('SIGN FAILED: ', error)
+        console.error(error);
+      }
 
       // await signtool.sign(config.path, {
       // subject: 'Paweł Niżnik',
