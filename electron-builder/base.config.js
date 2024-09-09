@@ -1,4 +1,5 @@
 const signtool = require('signtool');
+const { execSync } = require('child_process');
 
 const base = {
   appId: 'me.buffed.app.desktop',
@@ -67,7 +68,7 @@ const base = {
 
       //return;
 
-      const command = `/c/Users/michal/Desktop/signtool-x64/signtool.exe sign -v -debug -fd SHA256 -tr "http://timestamp.acs.microsoft.com" -td SHA256 -dlib /c/Users/michal/Desktop/trust-x64/Azure.CodeSigning.Dlib.dll -dmdf /c/Users/michal/Desktop/signMetadata.json "${path}"`
+      const command = `/c/Users/michal/Desktop/signtool-x64/signtool.exe sign -v -debug -fd SHA256 -tr "http://timestamp.acs.microsoft.com" -td SHA256 -dlib /c/Users/michal/Desktop/trust-x64/Azure.CodeSigning.Dlib.dll -dmdf /c/Users/michal/Desktop/signMetadata.json "${config.path}"`
 
       try {
         const out = execSync(command, { stdio: 'inherit' });
