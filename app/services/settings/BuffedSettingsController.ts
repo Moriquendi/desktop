@@ -1,4 +1,4 @@
-import { CustomizationService, Scene, UserService } from 'app-services';
+import { CustomizationService, Scene, SceneItem, UserService } from 'app-services';
 import { BuffedClient } from 'components-react/pages/onboarding/BuffedClient';
 import { Services } from 'components-react/service-provider';
 import { IObsListInput } from 'components/obs/inputs/ObsInput';
@@ -52,29 +52,36 @@ export class BuffedSettingsController {
   }
 
   getActiveSourceType(): BuffedCaptureSource | null {
-    if (this.getActiveSourceWithType('game')) {
+    if (this.getActiveSceneItemWithSourceType('game')) {
       return 'game';
-    } else if (this.getActiveSourceWithType('display')) {
+    } else if (this.getActiveSceneItemWithSourceType('display')) {
       return 'display';
     } else {
       return null;
     }
   }
 
-  getActiveSourceWithType(type: BuffedCaptureSource): Source | null {
+  getActiveSceneItemWithSourceType(type: BuffedCaptureSource): SceneItem | null {
     const { ScenesService } = Services;
     const scene = ScenesService.views.activeScene;
-    const sources = scene?.getNestedSources();
 
+    if (!scene) {
+      console.log('[****] Scene is null!');
+      return null;
+    }
+
+    const items = scene.getNestedItems();
     let lookForType: string;
     switch (type) {
       case 'display':
         lookForType = 'screen_capture';
+        break;
       case 'game':
         lookForType = 'game_capture';
+        break;
     }
 
-    const match = sources.find(s => s.type === lookForType);
+    const match = items.find(s => s.type === lookForType);
     return match ?? null;
   }
 
@@ -90,48 +97,48 @@ export class BuffedSettingsController {
       case 'game':
         try {
           const isMac = byOS({ [OS.Windows]: false, [OS.Mac]: true });
-          if (isMac) {
-            // Not supported on mac
-            console.log('Game not supported on Mac. Use Display instead');
-            this.addSourceForType('display');
-            return;
-          } else {
-            console.log('Adding GAME');
-            const item = scene.createAndAddSource(
-              'Game Capture',
-              'game_capture',
-              {},
-              {
-                sourceAddOptions: {
-                  propertiesManager: 'default',
-                  propertiesManagerSettings: {},
-                  guestCamStreamId: undefined,
-                  sourceId: undefined,
-                },
-                display: 'horizontal',
-                id: undefined,
+          // if (isMac) {
+          //   // Not supported on mac
+          //   console.log('Game not supported on Mac. Use Display instead');
+          //   this.addSourceForType('display');
+          //   return;
+          // } else {
+          console.log('Adding GAME');
+          const item = scene.createAndAddSource(
+            'Game Capture',
+            'game_capture',
+            {},
+            {
+              sourceAddOptions: {
+                propertiesManager: 'default',
+                propertiesManagerSettings: {},
+                guestCamStreamId: undefined,
+                sourceId: undefined,
               },
+              display: 'horizontal',
+              id: undefined,
+            },
+          );
+
+          const sourceId = item.sourceId;
+          const source = SourcesService.views.getSource(sourceId)!;
+          const sourceProperties = source.getPropertiesFormData();
+
+          console.log(`Source properties:`);
+          console.log(sourceProperties);
+
+          const captureModeProp = sourceProperties.find(v => v.name === 'capture_mode');
+          if (captureModeProp) {
+            captureModeProp.value = 'any_fullscreen';
+            console.log(`Would set this:`);
+            console.log(captureModeProp);
+            EditorCommandsService.actions.executeCommand(
+              'EditSourcePropertiesCommand',
+              source.sourceId,
+              [captureModeProp],
             );
-
-            const sourceId = item.sourceId;
-            const source = SourcesService.views.getSource(sourceId)!;
-            const sourceProperties = source.getPropertiesFormData();
-
-            console.log(`Source properties:`);
-            console.log(sourceProperties);
-
-            const captureModeProp = sourceProperties.find(v => v.name === 'capture_mode');
-            if (captureModeProp) {
-              captureModeProp.value = 'any_fullscreen';
-              console.log(`Would set this:`);
-              console.log(captureModeProp);
-              EditorCommandsService.actions.executeCommand(
-                'EditSourcePropertiesCommand',
-                source.sourceId,
-                [captureModeProp],
-              );
-            }
           }
+          // }
           break;
         } catch (error) {
           console.log('SOMETHING FAILED!', error);
@@ -144,11 +151,16 @@ export class BuffedSettingsController {
     const scene: Scene | null = ScenesService.views.activeScene;
 
     // Remove counter-source
-    const counterSource: BuffedCaptureSource = source === 'display' ? 'game' : 'display';
-    console.log(`Remove counter source if needed: ${counterSource}`);
-    this.getActiveSourceWithType(counterSource)?.remove();
+    const counterSourceType: BuffedCaptureSource = source === 'display' ? 'game' : 'display';
+    console.log(`Remove counter source if needed: ${counterSourceType}`);
 
-    if (this.getActiveSourceWithType(source) === null) {
+    const counterItem = this.getActiveSceneItemWithSourceType(counterSourceType);
+    if (counterItem) {
+      console.log('REMOVING ', counterItem.type);
+      scene.removeItem(counterItem.sceneItemId);
+    }
+
+    if (this.getActiveSceneItemWithSourceType(source) === null) {
       console.log(`Tell to add source ${source}`);
       this.addSourceForType(source);
     } else {

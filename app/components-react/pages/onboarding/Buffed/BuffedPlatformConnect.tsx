@@ -314,17 +314,19 @@ export function BuffedPlatformConnect(props: Props) {
           />
         );
       case 'auth-signup':
-        <BuffedAuthSignUp
-          email={email}
-          setEmail={setEmail}
-          password={password}
-          setPassword={setPassword}
-          onPerformAuth={onPerformAuth}
-          isLoading={isLoading}
-          onBack={() => {
-            setScreen('auth-method-pick');
-          }}
-        />;
+        return (
+          <BuffedAuthSignUp
+            email={email}
+            setEmail={setEmail}
+            password={password}
+            setPassword={setPassword}
+            onPerformAuth={onPerformAuth}
+            isLoading={isLoading}
+            onBack={() => {
+              setScreen('auth-method-pick');
+            }}
+          />
+        );
       case 'intro-screen':
         return (
           <IntroScreen

@@ -12,6 +12,7 @@ import { ERenderingMode } from 'obs-studio-node';
 import { first } from 'lodash';
 import { BuffedCaptureSource } from 'services/settings/BuffedSettingsController';
 import { Services } from 'components-react/service-provider';
+import { byOS, OS } from 'util/operating-systems';
 
 export function BuffedIntroSelectSource({
   onNext,
@@ -72,7 +73,6 @@ export function BuffedIntroSelectSource({
           source={source}
           setSource={async source => {
             setSource(source);
-
             await BuffedService.setBuffedCaptureSource(source);
           }}
         />
