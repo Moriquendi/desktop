@@ -125,6 +125,7 @@ export class BuffedService
   //   : '8bmp6j83z5w4mepq0dn0q1a7g186azi';
 
   init() {
+    this.buffedController.setup();
     // prepopulate data to make chat available after app start
     this.userService.userLogin.subscribe(_ => {
       // if (this.userService.platform?.type === 'twitch') {

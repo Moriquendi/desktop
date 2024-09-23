@@ -9,6 +9,7 @@ import { OS, byOS, getOS } from 'util/operating-systems';
 import { EObsSimpleEncoder } from './output';
 import { Source } from '../sources/source';
 import { OBSSettings } from 'components-react/pages/onboarding/BuffedTypes';
+import Utils from 'services/utils';
 
 function sleep(ms: number) {
   console.log(`Sleep for ${ms}`);
@@ -44,8 +45,16 @@ export class BuffedSettingsController {
   }
 
   setup() {
-    this.sourcesService.sourceUpdated.subscribe(source => {
-      if (source.type === 'game_capture') {
+    this.sourcesService.sourceAdded.subscribe(async source => {
+      console.log('[BUFFED] Source ADDED ', source.type);
+      if (
+        source.type === 'game_capture' ||
+        source.type === 'screen_capture' ||
+        source.type === 'display_capture'
+      ) {
+        await Utils.sleep(5);
+        this.fitScreenContent();
+        await Utils.sleep(100);
         this.fitScreenContent();
       }
     });

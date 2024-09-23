@@ -35,8 +35,6 @@ export function BuffedIntroEnjoy({ onNext, onBack }: { onNext: () => void; onBac
         height: '100%',
         backgroundColor: '#0B0B0B',
         paddingTop: '32px',
-        paddingLeft: '32px',
-        paddingRight: '32px',
       }}
     >
       <VStack
@@ -44,6 +42,8 @@ export function BuffedIntroEnjoy({ onNext, onBack }: { onNext: () => void; onBac
           alignItems: 'center',
           gap: 0,
           paddingTop: '0px',
+          paddingLeft: '32px',
+          paddingRight: '32px',
           width: '100%',
           height: '100%',
         }}

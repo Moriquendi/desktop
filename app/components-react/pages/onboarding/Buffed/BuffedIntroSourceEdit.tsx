@@ -32,8 +32,6 @@ export function BuffedIntroSourceEdit({
         height: '100%',
         backgroundColor: '#0B0B0B',
         paddingTop: '32px',
-        paddingLeft: '32px',
-        paddingRight: '32px',
       }}
     >
       <VStack
@@ -41,6 +39,8 @@ export function BuffedIntroSourceEdit({
           alignItems: 'center',
           gap: 0,
           paddingTop: '0px',
+          paddingLeft: '32px',
+          paddingRight: '32px',
           width: '100%',
           height: '100%',
         }}
