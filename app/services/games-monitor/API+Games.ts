@@ -35,6 +35,8 @@ const gamesListFileURL = `${appDataDirectory}/games_list.json`;
 async function downloadAndSaveGamesList() {
   const url = 'https://discord.com/api/v8/applications/detectable';
 
+  // Removes old cached file
+  fs.unlinkSync(gamesListFileURL);
   await downloadFile(url, gamesListFileURL);
 }
 

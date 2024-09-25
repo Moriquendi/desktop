@@ -110,6 +110,7 @@ class GamesMonitor {
   }
 
   handle(apps: RunningAppInfo[], allowStart: boolean, allowEnd: boolean) {
+    console.log(`Check ${apps.length} running apps.`);
     if (
       this.currentStreamStatus === EStreamingState.Starting ||
       this.currentStreamStatus === EStreamingState.Ending ||
@@ -120,14 +121,17 @@ class GamesMonitor {
     }
 
     if (this.currentStreamStatus === EStreamingState.Live && !allowEnd) {
+      console.log('Auto-End disallowed. Skip.');
       return;
     }
     if (this.currentStreamStatus === EStreamingState.Offline && !allowStart) {
+      console.log('Auto-start disallowed. Skip.');
       return;
     }
 
     if (allowEnd && !this.didAutoStartStreaming) {
       // If we are allowed to end the stream, but we didn't start it, don't end it
+      console.log('Skip because we didnt start stream.');
       return;
     }
 
@@ -144,11 +148,14 @@ class GamesMonitor {
       const thePath = isMac ? first(app.arguments) ?? app.command : app.command;
 
       const fileName = path.basename(thePath).toLocaleLowerCase();
+      console.log(`Check if it is a game ${fileName}`);
       const matchingGames = this.executableNameToGameMap[fileName];
 
       if (!matchingGames) {
         return false;
       }
+
+      console.log(`Matches count: ${matchingGames.length}`);
 
       for (const matchingGame of matchingGames) {
         const strictMatch = matchingGame.executables?.find(executable => {

@@ -44,7 +44,6 @@ export class RunningAppsObserver {
       // me.onRunningAppsChanged(appsList);
 
       const window = await me.getFocusedWindow();
-      console.log('Got window');
       me.onFocusedWindowChanged(window);
     }, 10 * 1000);
   }
