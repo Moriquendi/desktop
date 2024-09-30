@@ -50,11 +50,10 @@ export class BuffedSettingsController {
       if (
         source.type === 'game_capture' ||
         source.type === 'screen_capture' ||
-        source.type === 'display_capture'
+        source.type === 'display_capture' ||
+        source.type === 'monitor_capture'
       ) {
-        await Utils.sleep(5);
-        this.fitScreenContent();
-        await Utils.sleep(100);
+        console.log('[Buffed] Will fit to screen.')
         this.fitScreenContent();
       }
     });
@@ -80,32 +79,34 @@ export class BuffedSettingsController {
     }
 
     const items = scene.getNestedItems();
-    let lookForType: string;
+    let lookForTypes: string[];
     switch (type) {
       case 'display':
-        lookForType = 'screen_capture';
+        lookForTypes = ['screen_capture', 'display_capture', 'monitor_capture'];
         break;
       case 'game':
-        lookForType = 'game_capture';
+        lookForTypes = ['game_capture'];
         break;
     }
 
-    const match = items.find(s => s.type === lookForType);
+    const match = items.find(s => lookForTypes.includes(s.type));
     return match ?? null;
   }
 
-  addSourceForType(type: BuffedCaptureSource): void {
+  async addSourceForType(type: BuffedCaptureSource): Promise<void> {
     console.log(`[Action] AddSourceForType ${type}`);
     const { ScenesService, EditorCommandsService, SourcesService } = Services;
     const scene: Scene | null = ScenesService.views.activeScene;
+    const isMac = byOS({ [OS.Windows]: false, [OS.Mac]: true });
+
     switch (type) {
       case 'display':
         console.log('Adding DISPLAY');
-        const item = scene.createAndAddSource('Screen Capture', 'screen_capture', {}, {});
+        const t = isMac ? 'screen_capture' : 'monitor_capture'
+        const item = scene.createAndAddSource('Screen Capture', t, {}, {});
         break;
       case 'game':
         try {
-          const isMac = byOS({ [OS.Windows]: false, [OS.Mac]: true });
           // if (isMac) {
           //   // Not supported on mac
           //   console.log('Game not supported on Mac. Use Display instead');
@@ -133,8 +134,8 @@ export class BuffedSettingsController {
           const source = SourcesService.views.getSource(sourceId)!;
           const sourceProperties = source.getPropertiesFormData();
 
-          console.log(`Source properties:`);
-          console.log(sourceProperties);
+          // console.log(`Source properties:`);
+          // console.log(sourceProperties);
 
           const captureModeProp = sourceProperties.find(v => v.name === 'capture_mode');
           if (captureModeProp) {
@@ -368,15 +369,35 @@ export class BuffedSettingsController {
     */
   }
 
-  fitScreenContent() {
-    console.log(`>>>>>>>> Fit to screen all selection.`);
-    const { ScenesService } = Services;
-    const actScene = ScenesService.views.activeScene;
-    const sceneSelection = actScene.getSelection();
-    const sceneItems = actScene.getItems();
-    console.log(`Adding ${sceneItems.length} items to selection.`);
-    sceneSelection.add(sceneItems);
-    sceneSelection.fitToScreen();
+  async fitScreenContent() {
+
+    let retry = 0;
+    await Utils.sleep(20)
+
+    while (true) {
+      console.log(`>>>>>>>> Fit to screen all selection.`);
+      const { ScenesService } = Services;
+      const actScene = ScenesService.views.activeScene;
+      const sceneSelection = actScene.getSelection();
+      const sceneItems = actScene.getItems();
+      console.log(`Adding ${sceneItems.length} items to selection.`);
+      sceneSelection.add(sceneItems);
+      sceneSelection.fitToScreen();
+
+      if (retry > 6) { break; }
+      if (sceneItems.length === 0 || sceneItems[0].rectangle.width === 0) {
+        console.log('Fit to screen failed. Will try again after a delay.]', retry)
+        await Utils.sleep(100 + 200 * retry)
+        retry += 1;
+      } else {
+        break;
+      }
+
+      if (sceneItems.length > 0) {
+      console.log('RRR: ', sceneItems[0].rectangle)
+      }
+    }
+    
   }
 
   private ensureValidEncoder() {
