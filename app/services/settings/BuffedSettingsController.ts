@@ -57,6 +57,14 @@ export class BuffedSettingsController {
         this.fitScreenContent();
       }
     });
+
+    this.sourcesService.sourceUpdated.subscribe(async source => {
+      console.log('SOURCE UPDATED:', source)
+
+      if (source.type === 'game_capture') {
+        this.fitScreenContent();
+      }
+    })
   }
 
   getActiveSourceType(): BuffedCaptureSource | null {
@@ -384,7 +392,10 @@ export class BuffedSettingsController {
       sceneSelection.add(sceneItems);
       sceneSelection.fitToScreen();
 
-      if (retry > 6) { break; }
+      if (retry > 6) {
+        console.log('Did reach max retry. Failing.') 
+        break; 
+      }
       if (sceneItems.length === 0 || sceneItems[0].rectangle.width === 0) {
         console.log('Fit to screen failed. Will try again after a delay.]', retry)
         await Utils.sleep(100 + 200 * retry)
