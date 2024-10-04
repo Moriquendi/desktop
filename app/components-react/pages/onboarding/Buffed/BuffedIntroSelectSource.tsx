@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { ToolbarItems } from './ToolbarItems';
 import * as remote from '@electron/remote';
 import { IntroScreenHeader } from './IntroScreenHeader';
-import { HStack } from 'components-react/shared/HStack';
+import { HStack, Spacer } from 'components-react/shared/HStack';
 import { CheckboxInput } from 'components-react/shared/inputs';
 import { $t } from 'services/i18n';
 import { useVuex } from 'components-react/hooks';
@@ -103,53 +103,111 @@ interface SourcesPickerProps {
 
 function SourcesPicker({ source, setSource }: SourcesPickerProps) {
   return (
-    <HStack spacing={60} style={{ width: '100%', height: '100%' }}>
-      <SourceItem
-        title="Game Capture"
-        subtitle="Game Capture should only capture game running in Full Screen or Windowed Full Screen mode."
-        isSelected={source === 'game'}
-        setIsSelected={isSelected => {
-          setSource('game');
-        }}
-      />
-      <SourceItem
-        title="Display Capture"
-        subtitle="Beware that Display Capture will capture everything on your screen."
-        isSelected={source === 'display'}
-        setIsSelected={isSelected => {
-          setSource('display');
-        }}
-      />
-    </HStack>
+    <VStack>
+      <HStack spacing={60} style={{ width: '100%', height: '100%', alignItems: 'flex-start' }}>
+        <SourceItem
+          title="Game Capture"
+          subtitle={
+            <span>
+              Game Capture should only capture game running in Full Screen or Windowed Full Screen
+              mode. <b>Give it 10 to 30 seconds in game for Game Capture to start capturing.</b>
+            </span>
+          }
+          isSelected={source === 'game'}
+          setIsSelected={isSelected => {
+            setSource('game');
+          }}
+        />
+        <SourceItem
+          title="Display Capture"
+          subtitle={
+            <span>Beware that Display Capture will capture everything on your screen.</span>
+          }
+          isSelected={source === 'display'}
+          setIsSelected={isSelected => {
+            setSource('display');
+          }}
+        />
+      </HStack>
+
+      <HStack spacing={60} style={{ width: '100%', height: '100%', alignItems: 'flex-start' }}>
+        <div
+          style={{ position: 'relative', width: 315, display: 'flex', justifyContent: 'center' }}
+        >
+          <CheckboxInput
+            label={$t('Select')}
+            value={source === 'game'}
+            onChange={val => {
+              setSource('game');
+            }}
+          />
+        </div>
+        <div
+          style={{ position: 'relative', width: 315, display: 'flex', justifyContent: 'center' }}
+        >
+          <CheckboxInput
+            label={$t('Select')}
+            value={source === 'display'}
+            onChange={val => {
+              setSource('display');
+            }}
+          />
+        </div>
+      </HStack>
+    </VStack>
   );
 }
 
 interface SourceItemProps {
   title: string;
-  subtitle: string;
+  subtitle: React.ReactNode;
   isSelected: boolean;
   setIsSelected: (isSelected: boolean) => void;
 }
+
 function SourceItem({ title, subtitle, isSelected, setIsSelected }: SourceItemProps) {
   return (
-    <VStack spacing={15} style={{ width: 315 }}>
-      <p style={{ fontSize: '18px', color: '#8E8E93', padding: 0, margin: 0 }}>{title}</p>
+    <div style={{ position: 'relative', width: 315 }}>
+      <VStack spacing={15} style={{ width: '100%' }}>
+        <p style={{ fontSize: '18px', color: '#8E8E93', padding: 0, margin: 0 }}>{title}</p>
 
-      <div style={{ width: '100%', height: 180, backgroundColor: 'black' }}>
-        {isSelected ? <DisplayPreview /> : null}
-      </div>
+        <div style={{ width: '100%', height: 180, backgroundColor: 'black' }}>
+          {isSelected ? <DisplayPreview /> : null}
 
-      <p style={{ fontSize: '14px', color: '#8E8E93', padding: 0, margin: 0 }}>{subtitle}</p>
-      <CheckboxInput
-        label={
-          // <p style={{ fontSize: '20px', color: '#8E8E93', paddingTop: 5, margin: 0 }}>Select</p>
-          $t('Select')
-        }
-        value={isSelected}
-        onChange={val => {
-          setIsSelected(val);
-        }}
-      />
-    </VStack>
+          {/* Overlay when isSelected is false */}
+          {!isSelected && (
+            <div
+              style={{
+                // position: 'absolute',
+                // top: 0,
+                // left: 0,
+                width: '100%',
+                height: '100%',
+                backgroundColor: 'rgba(28, 34, 41, 1)',
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                color: 'rgba(142, 142, 147, 1)',
+                fontSize: '18px',
+                textAlign: 'center',
+              }}
+            >
+              Inactive
+              <br />
+              (Select to preview)
+            </div>
+          )}
+        </div>
+
+        <p style={{ fontSize: '14px', color: '#8E8E93', padding: 0, margin: 0 }}>{subtitle}</p>
+        {/* <CheckboxInput
+          label={$t('Select')}
+          value={isSelected}
+          onChange={val => {
+            setIsSelected(val);
+          }}
+        /> */}
+      </VStack>
+    </div>
   );
 }

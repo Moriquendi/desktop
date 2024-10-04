@@ -119,7 +119,10 @@ export class SceneCollectionsService extends Service implements ISceneCollection
     await this.safeSync();
 
     if (this.activeCollection && this.activeCollection.operatingSystem === getOS()) {
-      await this.load(this.activeCollection.id, true);
+      //await this.load(this.activeCollection.id, true);
+      // Buffed: RECOVERY DISABLED
+      console.log('Buffed. Scene collection recovery disabled.');
+      await this.load(this.activeCollection.id, false);
     } else if (this.loadableCollections.length > 0) {
       let latestId = this.loadableCollections[0].id;
       let latestModified = this.loadableCollections[0].modified;

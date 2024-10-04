@@ -53,18 +53,18 @@ export class BuffedSettingsController {
         source.type === 'display_capture' ||
         source.type === 'monitor_capture'
       ) {
-        console.log('[Buffed] Will fit to screen.')
+        console.log('[Buffed] Will fit to screen.');
         this.fitScreenContent();
       }
     });
 
     this.sourcesService.sourceUpdated.subscribe(async source => {
-      console.log('SOURCE UPDATED:', source)
+      console.log('SOURCE UPDATED:', source);
 
       if (source.type === 'game_capture') {
         this.fitScreenContent();
       }
-    })
+    });
   }
 
   getActiveSourceType(): BuffedCaptureSource | null {
@@ -110,7 +110,7 @@ export class BuffedSettingsController {
     switch (type) {
       case 'display':
         console.log('Adding DISPLAY');
-        const t = isMac ? 'screen_capture' : 'monitor_capture'
+        const t = isMac ? 'screen_capture' : 'monitor_capture';
         const item = scene.createAndAddSource('Screen Capture', t, {}, {});
         break;
       case 'game':
@@ -378,9 +378,8 @@ export class BuffedSettingsController {
   }
 
   async fitScreenContent() {
-
     let retry = 0;
-    await Utils.sleep(20)
+    await Utils.sleep(20);
 
     while (true) {
       console.log(`>>>>>>>> Fit to screen all selection.`);
@@ -389,26 +388,27 @@ export class BuffedSettingsController {
       const sceneSelection = actScene.getSelection();
       const sceneItems = actScene.getItems();
       console.log(`Adding ${sceneItems.length} items to selection.`);
-      sceneSelection.add(sceneItems);
-      sceneSelection.fitToScreen();
+      if (sceneItems.length > 0) {
+        sceneSelection.add(sceneItems);
+        sceneSelection.fitToScreen();
+      }
 
       if (retry > 6) {
-        console.log('Did reach max retry. Failing.') 
-        break; 
+        console.log('Did reach max retry. Failing.');
+        break;
       }
       if (sceneItems.length === 0 || sceneItems[0].rectangle.width === 0) {
-        console.log('Fit to screen failed. Will try again after a delay.]', retry)
-        await Utils.sleep(100 + 200 * retry)
+        console.log('Fit to screen failed. Will try again after a delay.]', retry);
+        await Utils.sleep(100 + 200 * retry);
         retry += 1;
       } else {
         break;
       }
 
       if (sceneItems.length > 0) {
-      console.log('RRR: ', sceneItems[0].rectangle)
+        console.log('RRR: ', sceneItems[0].rectangle);
       }
     }
-    
   }
 
   private ensureValidEncoder() {
