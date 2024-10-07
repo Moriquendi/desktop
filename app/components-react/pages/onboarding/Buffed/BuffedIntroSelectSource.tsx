@@ -25,8 +25,16 @@ export function BuffedIntroSelectSource({
   const { BuffedService, SourcesService } = Services;
 
   useEffect(() => {
-    const activeSource = BuffedService.activeSourceType;
-    setSource(activeSource ?? 'display');
+    const doStuff = async () => {
+      const activeSource = BuffedService.activeSourceType;
+      setSource(activeSource ?? 'display');
+
+      // Re-set again to current value because this will
+      // remove potentially duplicates of other sources
+      await BuffedService.setBuffedCaptureSource(activeSource);
+    }
+    doStuff();
+    
   }, []);
 
   function openDiscord() {

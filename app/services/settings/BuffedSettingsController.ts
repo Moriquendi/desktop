@@ -68,22 +68,22 @@ export class BuffedSettingsController {
   }
 
   getActiveSourceType(): BuffedCaptureSource | null {
-    if (this.getActiveSceneItemWithSourceType('game')) {
+    if (this.getActiveSceneItemsWithSourceType('game').length > 0) {
       return 'game';
-    } else if (this.getActiveSceneItemWithSourceType('display')) {
+    } else if (this.getActiveSceneItemsWithSourceType('display').length > 0) {
       return 'display';
     } else {
       return null;
     }
   }
 
-  getActiveSceneItemWithSourceType(type: BuffedCaptureSource): SceneItem | null {
+  getActiveSceneItemsWithSourceType(type: BuffedCaptureSource): SceneItem[] {
     const { ScenesService } = Services;
     const scene = ScenesService.views.activeScene;
 
     if (!scene) {
       console.log('[****] Scene is null!');
-      return null;
+      return [];
     }
 
     const items = scene.getNestedItems();
@@ -97,8 +97,8 @@ export class BuffedSettingsController {
         break;
     }
 
-    const match = items.find(s => lookForTypes.includes(s.type));
-    return match ?? null;
+    const match = items.filter(s => lookForTypes.includes(s.type));
+    return match ?? [];
   }
 
   async addSourceForType(type: BuffedCaptureSource): Promise<void> {
@@ -172,13 +172,15 @@ export class BuffedSettingsController {
     const counterSourceType: BuffedCaptureSource = source === 'display' ? 'game' : 'display';
     console.log(`Remove counter source if needed: ${counterSourceType}`);
 
-    const counterItem = this.getActiveSceneItemWithSourceType(counterSourceType);
-    if (counterItem) {
-      console.log('REMOVING ', counterItem.type);
-      scene.removeItem(counterItem.sceneItemId);
+    const counterItems = this.getActiveSceneItemsWithSourceType(counterSourceType);
+    if (counterItems.length > 0) {
+      console.log('REMOVING ', counterItems[0].type);
+      for (const counterItem of counterItems) {
+         scene.removeItem(counterItem.sceneItemId);
+      }
     }
 
-    if (this.getActiveSceneItemWithSourceType(source) === null) {
+    if (this.getActiveSceneItemsWithSourceType(source).length === 0) {
       console.log(`Tell to add source ${source}`);
       this.addSourceForType(source);
     } else {
