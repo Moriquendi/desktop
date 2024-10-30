@@ -48,7 +48,7 @@ const base = {
     // url: 'https://buffed-cdn.buffed.me',
   },
   win: {
-    target: 'msi',
+    //target: 'msi',
     executableName: 'Buffed OBS',
     extraFiles: ['LICENSE', 'AGREEMENT', 'shared-resources/**/*', '!shared-resources/README'],
     rfc3161TimeStampServer: 'http://timestamp.acs.microsoft.com',
