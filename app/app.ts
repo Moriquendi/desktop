@@ -132,6 +132,8 @@ if (isProduction || process.env.SLOBS_REPORT_TO_SENTRY) {
   const bundles = ['renderer.js', 'vendors~renderer.js'];
   const bundleNames = electron.ipcRenderer.sendSync('getBundleNames', bundles);
 
+  // idk why it's not already set when I'm testing it
+  const SLD_SENTRY_FRONTEND_DSN = process.env.SLD_SENTRY_FRONTEND_DSN;
   console.log(
     `app: init Sentry with ${SLD_SENTRY_FRONTEND_DSN}, release: ${slobsVersion}-${SLOBS_BUNDLE_ID}`,
   );
@@ -280,7 +282,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     silentTranslationWarn: false,
     missing: (language: string, key: string) => {
       if (isProduction) return;
-      console.error(`Missing translation found for ${language} -- "${key}"`);
+
+      // Buffed: Disabled for now
+      // console.error(`Missing translation found for ${language} -- "${key}"`);
     },
   });
   I18nService.setVuei18nInstance(i18n);

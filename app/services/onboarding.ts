@@ -13,6 +13,7 @@ import Utils from './utils';
 import { RecordingModeService } from './recording-mode';
 import * as remote from '@electron/remote';
 import { Subject } from 'rxjs';
+import { BuffedService, CustomizationService } from 'app-services';
 
 enum EOnboardingSteps {
   MacPermissions = 'MacPermissions',
@@ -198,7 +199,7 @@ class OnboardingViews extends ViewHandler<IOnboardingServiceState> {
     // if (this.state.importedFromObs && isOBSinstalled) {
     //   steps.push(ONBOARDING_STEPS()[EOnboardingSteps.ObsImport]);
     // } else {
-    steps.push(ONBOARDING_STEPS()[EOnboardingSteps.HardwareSetup]);
+    // steps.push(ONBOARDING_STEPS()[EOnboardingSteps.HardwareSetup]);
     // }
 
     // if (
@@ -245,6 +246,8 @@ export class OnboardingService extends StatefulService<IOnboardingServiceState> 
   @Inject() userService: UserService;
   @Inject() sceneCollectionsService: SceneCollectionsService;
   @Inject() outputSettingsService: OutputSettingsService;
+  @Inject() buffedService: BuffedService;
+  @Inject() customizationService: CustomizationService;
 
   @mutation()
   SET_OPTIONS(options: Partial<IOnboardingOptions>) {
@@ -322,6 +325,8 @@ export class OnboardingService extends StatefulService<IOnboardingServiceState> 
 
   // Ends the onboarding process
   finish() {
+    console.log('[ONBOARDING] Finish.');
+
     localStorage.setItem(this.localStorageKey, 'true');
     remote.session.defaultSession.flushStorageData();
     console.log('Set onboarding key successful.');
@@ -336,6 +341,12 @@ export class OnboardingService extends StatefulService<IOnboardingServiceState> 
         streaming: { outputResolution },
       });
     }
+
+    // Turn auto-stream
+    console.log('Set auto stream = true.');
+    this.customizationService.actions.setAutoStreamEnabled(true);
+    // but also trigger refresh to buffed default settings
+    this.buffedService.buffedController.setBuffedDetaultSettings();
 
     this.navigationService.navigate('Studio');
     this.onboardingCompleted.next();
@@ -357,7 +368,13 @@ export class OnboardingService extends StatefulService<IOnboardingServiceState> 
     }
 
     if (!this.userService.isLoggedIn) {
-      console.log('require onboarding because auth not authorized')
+      console.log('require onboarding because auth not authorized');
+      this.start();
+      return true;
+    }
+
+    if (this.buffedService.views.profile.platform !== 'pc') {
+      console.log('require onboarding because wrong platform');
       this.start();
       return true;
     }

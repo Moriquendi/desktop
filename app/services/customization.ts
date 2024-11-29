@@ -158,7 +158,7 @@ export class CustomizationService extends PersistentStatefulService<ICustomizati
     enableAnnouncements: true,
 
     autoLaunchEnabled: true,
-    autoStreamEnabled: true,
+    autoStreamEnabled: false,
   };
 
   settingsChanged = new Subject<Partial<ICustomizationServiceState>>();

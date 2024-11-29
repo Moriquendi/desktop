@@ -75,6 +75,10 @@ export class IncrementalRolloutService extends StatefulService<IIncrementalRollo
 
   fetchAvailableFeatures() {
     if (this.userService.isLoggedIn) {
+      // Buffed: Disabled
+      this.featuresReadyResolve();
+      return;
+
       const host = this.hostsService.streamlabs;
       const url = `https://${host}/api/v5/slobs/available-features`;
       const headers = authorizedHeaders(this.userService.apiToken);

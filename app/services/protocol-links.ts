@@ -15,6 +15,7 @@ import { CustomizationService } from './customization';
 import Utils from './utils';
 import { Subject } from 'rxjs';
 import { StreamSettingsService } from './settings/streaming';
+import { BuffedService } from 'app-services';
 
 function protocolHandler(base: string) {
   return (target: any, methodName: string, descriptor: PropertyDescriptor) => {
@@ -49,6 +50,7 @@ export class ProtocolLinksService extends Service {
   @Inject() streamingService: StreamingService;
   @Inject() streamSettingsService: StreamSettingsService;
   @Inject() customizationService: CustomizationService;
+  @Inject() buffedService: BuffedService;
 
   // Maps base URL components to handler function names
   private handlers: Dictionary<string>;
@@ -209,7 +211,14 @@ export class ProtocolLinksService extends Service {
         return;
       }
 
-      console.log(`STREAMING GO`);
+      if (this.buffedService.views.profile.platform !== 'pc') {
+        console.warn(
+          `User platform is not PC. Cant stream. Ignore. ${this.buffedService.views.profile.platform}`,
+        );
+        return;
+      }
+
+      console.log(`STREAMING GO - ${buffedKey}`);
       this.streamingService.toggleStreaming();
     } else if (!isOffline && !shouldStart) {
       console.log('Turning off streaming.');

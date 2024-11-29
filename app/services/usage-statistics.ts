@@ -139,6 +139,8 @@ export class UsageStatisticsService extends Service {
    * @param metadata arbitrary data to store with the event (must be serializable)
    */
   recordEvent(event: TUsageEvent, metadata: object = {}) {
+    // Buffed: Disabled
+    return;
     if (!this.isProduction) return;
 
     let headers = new Headers();

@@ -190,6 +190,9 @@ export class AnnouncementsService extends PersistentStatefulService<IAnnouncemen
   }
 
   private async fetchBanner() {
+    // Buffed: Disabled
+    return null;
+
     const recentlyInstalled = await this.recentlyInstalled();
 
     if (recentlyInstalled || !this.customizationService.state.enableAnnouncements) {
