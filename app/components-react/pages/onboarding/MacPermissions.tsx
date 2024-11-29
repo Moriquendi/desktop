@@ -27,7 +27,7 @@ export function MacPermissions() {
       <h1 className={commonStyles.titleContainer}>{$t('Grant Permissions')}</h1>
       <div>
         {$t(
-          'Streamlabs needs additional permissions. Grant permissions in the pop-up dialogs to continue.',
+          'Buffed needs additional permissions. Grant permissions in the pop-up dialogs to continue.',
         )}
       </div>
       <div style={{ fontSize: '16px', marginTop: '16px' }}>

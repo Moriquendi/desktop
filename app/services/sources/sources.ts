@@ -118,6 +118,10 @@ export const macSources: TSourceType[] = [
   'syphon-input',
   'decklink-input',
   'mediasoupconnector',
+
+  // added by me, not sure if its really supported
+  'screen_capture',
+  'game_capture',
 ];
 
 class SourcesViews extends ViewHandler<ISourcesState> {
@@ -296,6 +300,10 @@ export class SourcesService extends StatefulService<ISourcesState> {
     settings: Dictionary<any> = {},
     options: ISourceAddOptions = {},
   ): Source {
+    console.log(`y: creating source: `);
+    console.log(`y: settings: ${JSON.stringify(settings)}`);
+    console.log(`y: options: ${JSON.stringify(options)}`);
+
     const id: string = options.sourceId || `${type}_${uuid()}`;
     const obsInputSettings = this.getObsSourceCreateSettings(type, settings);
 
@@ -334,6 +342,11 @@ export class SourcesService extends StatefulService<ISourcesState> {
   }
 
   addSource(obsInput: obs.IInput, name: string, options: ISourceAddOptions = {}) {
+    console.log('y: add source');
+    console.log(`y: obsInput: ${JSON.stringify(obsInput)}`);
+    console.log(`y: name: ${name}`);
+    console.log(`y: options: ${JSON.stringify(options)}`);
+
     if (options.channel !== void 0) {
       obs.Global.setOutputSource(options.channel, obsInput);
     }
@@ -456,6 +469,8 @@ export class SourcesService extends StatefulService<ISourcesState> {
   }
 
   addFile(path: string): Source | null {
+    console.log('z: addFile');
+
     const realpath = fs.realpathSync(path);
     const SUPPORTED_EXT = {
       image_source: ['png', 'jpg', 'jpeg', 'tga', 'bmp'],
@@ -527,7 +542,7 @@ export class SourcesService extends StatefulService<ISourcesState> {
     if (type === 'browser_source') {
       if (resolvedSettings.shutdown === void 0) resolvedSettings.shutdown = true;
       if (resolvedSettings.url === void 0) {
-        resolvedSettings.url = 'https://streamlabs.com/browser-source';
+        resolvedSettings.url = 'https://buffed.me/browser-source';
       }
     }
 
@@ -656,6 +671,8 @@ export class SourcesService extends StatefulService<ISourcesState> {
   }
 
   showSourceProperties(sourceId: string) {
+    console.log('showSourceProperties');
+
     const source = this.views.getSource(sourceId);
     if (!source) return;
 
@@ -722,6 +739,8 @@ export class SourcesService extends StatefulService<ISourcesState> {
   }
 
   showWidgetProperties(source: Source) {
+    console.log('showWidgetProperties');
+
     if (!this.userService.isLoggedIn) return;
     const platform = this.userService.views.platform;
     assertIsDefined(platform);
@@ -785,6 +804,8 @@ export class SourcesService extends StatefulService<ISourcesState> {
   }
 
   showPlatformAppPage(source: Source) {
+    console.log('showPlatformAppPage');
+
     const settings = source.getPropertiesManagerSettings();
     const app = this.platformAppsService.views.getApp(settings.appId);
 
@@ -833,6 +854,10 @@ export class SourcesService extends StatefulService<ISourcesState> {
 
   showScreenCaptureProperties(source: Source) {
     const propertiesName = SourceDisplayData()[source.type].name;
+
+    console.log(`Show screen capture: ${source.type}`);
+    console.log(`Properties: ${propertiesName}`);
+
     this.windowsService.showWindow({
       componentName: 'ScreenCaptureProperties',
       title: $t('Settings for %{sourceName}', { sourceName: propertiesName }),
@@ -845,6 +870,7 @@ export class SourcesService extends StatefulService<ISourcesState> {
   }
 
   showGuestCamProperties(source?: Source) {
+    console.log('showGuestCamProperties');
     this.windowsService.showWindow({
       componentName: 'GuestCamProperties',
       title: $t('Collab Cam Properties', { sourceName: $t('Collab Cam') }),

@@ -128,6 +128,9 @@ export class AnnouncementsService extends PersistentStatefulService<IAnnouncemen
   }
 
   private async fetchLatestNews() {
+    console.log('[Buffed] Fetch news disabled.');
+    return;
+
     const recentlyInstalled = await this.recentlyInstalled();
 
     if (recentlyInstalled || !this.customizationService.state.enableAnnouncements) {
@@ -157,6 +160,9 @@ export class AnnouncementsService extends PersistentStatefulService<IAnnouncemen
   }
 
   private async fetchNews() {
+    console.log('[Buffed] Fetch news disabled.');
+    return;
+
     const endpoint = `api/v5/slobs/announcements/get?clientId=${this.userService.getLocalUserId()}&locale=${
       this.i18nService.state.locale
     }`;

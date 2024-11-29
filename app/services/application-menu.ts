@@ -35,7 +35,7 @@ export class ApplicationMenuService extends Service {
     // TODO: i18n
     return remote.Menu.buildFromTemplate([
       {
-        label: 'Streamlabs Desktop',
+        label: 'Buffed Desktop',
         submenu: [
           { role: 'about' },
           {
@@ -198,9 +198,9 @@ export class ApplicationMenuService extends Service {
         role: 'help',
         submenu: [
           {
-            label: 'Streamlabs Desktop Support',
+            label: 'Buffed Desktop Support',
             click: () => {
-              remote.shell.openExternal('https://support.streamlabs.com');
+              remote.shell.openExternal('https://support.buffed.me');
             },
           },
         ],

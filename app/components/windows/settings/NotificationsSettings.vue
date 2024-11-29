@@ -13,14 +13,14 @@
         <GenericForm v-model="settingsFormData" @input="saveNotificationsSettings" />
       </div>
     </div>
-    <div class="section">
+    <!-- <div class="section">
       <div class="section-content">
         <h2>
           {{ $t('Troubleshooter Notifications') }}
         </h2>
         <GenericForm v-model="troubleshooterFormData"  @input="saveTroubleshooterSettings"/>
       </div>
-    </div>
+    </div> -->
   </div>
 </template>
 

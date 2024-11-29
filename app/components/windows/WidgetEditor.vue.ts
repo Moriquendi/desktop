@@ -205,10 +205,13 @@ export default class WidgetEditor extends TsxComponent<WidgetEditorProps> {
   }
 
   updateCodeTab(value: string) {
+    
+    console.log(`x: update code tab to ${value}`)
     this.currentCodeTab = value;
   }
 
   updateCurrentSetting(value: string) {
+    console.log(`x: update settings to ${value}`)
     this.currentSetting = value;
   }
 

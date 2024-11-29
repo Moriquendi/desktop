@@ -183,7 +183,7 @@ class OnboardingViews extends ViewHandler<IOnboardingServiceState> {
       steps.push(ONBOARDING_STEPS()[EOnboardingSteps.MacPermissions]);
     }
 
-    steps.push(ONBOARDING_STEPS()[EOnboardingSteps.SteamingOrRecording]);
+    //steps.push(ONBOARDING_STEPS()[EOnboardingSteps.SteamingOrRecording]);
 
     steps.push(ONBOARDING_STEPS()[EOnboardingSteps.Connect]);
 
@@ -191,35 +191,35 @@ class OnboardingViews extends ViewHandler<IOnboardingServiceState> {
       steps.push(ONBOARDING_STEPS()[EOnboardingSteps.PrimaryPlatformSelect]);
     }
 
-    if (isOBSinstalled && !recordingModeEnabled) {
-      steps.push(ONBOARDING_STEPS()[EOnboardingSteps.FreshOrImport]);
-    }
+    // if (isOBSinstalled && !recordingModeEnabled) {
+    //   steps.push(ONBOARDING_STEPS()[EOnboardingSteps.FreshOrImport]);
+    // }
 
-    if (this.state.importedFromObs && isOBSinstalled) {
-      steps.push(ONBOARDING_STEPS()[EOnboardingSteps.ObsImport]);
-    } else {
-      steps.push(ONBOARDING_STEPS()[EOnboardingSteps.HardwareSetup]);
-    }
+    // if (this.state.importedFromObs && isOBSinstalled) {
+    //   steps.push(ONBOARDING_STEPS()[EOnboardingSteps.ObsImport]);
+    // } else {
+    steps.push(ONBOARDING_STEPS()[EOnboardingSteps.HardwareSetup]);
+    // }
 
-    if (
-      !this.state.existingSceneCollections &&
-      !this.state.importedFromObs &&
-      !recordingModeEnabled &&
-      ((userViews.isLoggedIn &&
-        getPlatformService(userViews.platform.type).hasCapability('themes')) ||
-        !userViews.isLoggedIn)
-    ) {
-      steps.push(ONBOARDING_STEPS()[EOnboardingSteps.ThemeSelector]);
-    }
+    // if (
+    //   !this.state.existingSceneCollections &&
+    //   !this.state.importedFromObs &&
+    //   !recordingModeEnabled &&
+    //   ((userViews.isLoggedIn &&
+    //     getPlatformService(userViews.platform.type).hasCapability('themes')) ||
+    //     !userViews.isLoggedIn)
+    // ) {
+    //   steps.push(ONBOARDING_STEPS()[EOnboardingSteps.ThemeSelector]);
+    // }
 
     // temporarily disable auto config until migrate to new api
     // if (userViews.isTwitchAuthed || userViews.isYoutubeAuthed || recordingModeEnabled) {
     //   steps.push(ONBOARDING_STEPS()[EOnboardingSteps.Optimize]);
     // }
 
-    if (!userViews.isPrime) {
-      steps.push(ONBOARDING_STEPS()[EOnboardingSteps.Prime]);
-    }
+    // if (!userViews.isPrime) {
+    //   steps.push(ONBOARDING_STEPS()[EOnboardingSteps.Prime]);
+    // }
 
     return steps;
   }
@@ -352,6 +352,12 @@ export class OnboardingService extends StatefulService<IOnboardingServiceState> 
   startOnboardingIfRequired() {
     // Useful for testing in dev env
     if (Utils.env.SLD_FORCE_ONBOARDING_STEP) {
+      this.start();
+      return true;
+    }
+
+    if (!this.userService.isLoggedIn) {
+      console.log('require onboarding because auth not authorized')
       this.start();
       return true;
     }

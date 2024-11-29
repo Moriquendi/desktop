@@ -43,6 +43,9 @@ import { SettingsService } from '../settings';
 import { DualOutputService } from 'services/dual-output';
 import { OS, getOS } from 'util/operating-systems';
 import * as remote from '@electron/remote';
+import { BuffedSettingsController } from 'services/settings/BuffedSettingsController';
+import { CustomizationService, ICustomizationServiceState } from 'services/customization';
+import { BuffedService, StreamingService } from 'app-services';
 
 interface IAppState {
   loading: boolean;
@@ -75,6 +78,7 @@ export class AppService extends StatefulService<IAppState> {
   @Inject() sourcesService: SourcesService;
   @Inject() scenesService: ScenesService;
   @Inject() videoService: VideoService;
+  @Inject() streamingService: StreamingService;
   @Inject() streamlabelsService: StreamlabelsService;
   @Inject() private ipcServerService: IpcServerService;
   @Inject() private tcpServerService: TcpServerService;
@@ -93,7 +97,9 @@ export class AppService extends StatefulService<IAppState> {
   @Inject() private settingsService: SettingsService;
   @Inject() private usageStatisticsService: UsageStatisticsService;
   @Inject() private videoSettingsService: VideoSettingsService;
+  @Inject() private customizationService: CustomizationService;
   @Inject() private dualOutputService: DualOutputService;
+  @Inject() private buffedService: BuffedService;
 
   static initialState: IAppState = {
     loading: true,
@@ -153,6 +159,11 @@ export class AppService extends StatefulService<IAppState> {
       this.shutdownHandler();
     });
 
+    this.streamingService.streamingStatusChange.subscribe(async status => {
+      console.log(`ON CHANGE STATE, ${status}`);
+      electron.ipcRenderer.send('STREAMING_STATE_CHANGED', status);
+    });
+
     this.performanceService.startMonitoringPerformance();
 
     this.ipcServerService.listen();
@@ -162,13 +173,45 @@ export class AppService extends StatefulService<IAppState> {
 
     this.crashReporterService.endStartup();
 
-    this.protocolLinksService.start(this.state.argv);
-
     // Initialize some mac-only services
     if (getOS() === OS.Mac) {
       this.touchBarService;
       this.applicationMenuService;
     }
+
+    ////////////////////////////////////////////////
+    console.log(`start`);
+    const buffedController = this.buffedService.buffedController;
+    buffedController.setup();
+
+    await buffedController.setBuffedDetaultSettings();
+    this.userService.userLoginFinished.subscribe(async () => {
+      console.log(`[Buffed settings] User logged in. Refresh buffed settings.`);
+      await buffedController.setBuffedDetaultSettings();
+    });
+
+    const setupAutoLogin = (enabled: boolean) => {
+      remote.app.setLoginItemSettings({
+        openAtLogin: enabled,
+        args: ['--was-launched-at-login'],
+      });
+    };
+
+    this.customizationService.settingsChanged.subscribe(
+      async (changed: Partial<ICustomizationServiceState>) => {
+        if (changed.autoLaunchEnabled === undefined) {
+          return;
+        }
+
+        console.log(`[Buffed settings] Auto launch changed to ${changed.autoLaunchEnabled}`);
+        setupAutoLogin(changed.autoLaunchEnabled);
+      },
+    );
+    console.log('Auto launch set to', this.customizationService.state.autoLaunchEnabled);
+    setupAutoLogin(this.customizationService.state.autoLaunchEnabled);
+    ////////////////////////////////////////////
+
+    this.protocolLinksService.start(this.state.argv);
 
     ipcRenderer.send('AppInitFinished');
     this.metricsService.recordMetric('sceneCollectionLoadingTime');
@@ -277,11 +320,14 @@ export class AppService extends StatefulService<IAppState> {
   }
 
   private async downloadAutoGameCaptureConfig() {
+    ///////////////// Disabled for buffed
+    return;
+    /////////////////
     // download game-list for auto game capture
-    await downloadFile(
-      'https://slobs-cdn.streamlabs.com/configs/game_capture_list.json',
-      `${this.appDataDirectory}/game_capture_list.json`,
-    );
+    // await downloadFile(
+    //   'https://buffed-cdn.buffed.me/configs/game_capture_list.json',
+    //   `${this.appDataDirectory}/game_capture_list.json`,
+    // );
   }
 
   @mutation()

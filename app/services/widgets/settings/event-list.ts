@@ -130,6 +130,11 @@ export class EventListService extends WidgetSettingsService<IEventListData> {
         { key: 'show_sub_gifts', title: $t('Show Gift Subs') },
         { key: 'show_sub_tiers', title: $t('Show Sub Tiers') },
       ],
+      buffed: [
+        // { key: 'show_subscribers', title: $t('Subscriptions') },
+        // { key: 'show_sponsors', title: $t('Members') },
+        // { key: 'show_fanfundings', title: $t('Super Chats') },
+      ],
     }[platform];
   }
 

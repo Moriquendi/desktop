@@ -27,25 +27,25 @@ export function Ultra() {
       title: 'Streamlabs Web Suite Ultra',
       description: $t('Develop your brand, monetize, and more'),
       image: 'web.png',
-      link: 'https://streamlabs.com/login?refl=slobs-settings',
+      link: 'https://buffed.me/login?refl=slobs-settings',
     },
     {
       title: 'Streamlabs Mobile Ultra',
       description: $t('Live stream on-the-go or mobile games from iOS & Android'),
       image: 'mobile.png',
-      link: 'https://streamlabs.com/mobile-app?refl=slobs-settings',
+      link: 'https://buffed.me/mobile-app?refl=slobs-settings',
     },
     {
       title: 'Streamlabs Console',
       description: $t('Stream from your console to Twitch without a desktop'),
       image: 'console.png',
-      link: 'https://streamlabs.com/console?refl=slobs-settings',
+      link: 'https://buffed.me/console?refl=slobs-settings',
     },
     {
       title: 'Talk Studio Pro',
       description: $t('Stream and record with guests from your browser'),
       image: 'talk-studio.png',
-      link: 'https://streamlabs.com/talk-studio?refl=slobs-settings',
+      link: 'https://buffed.me/talk-studio?refl=slobs-settings',
     },
     {
       title: 'Video Editor Pro',
@@ -73,7 +73,7 @@ export function Ultra() {
     tableProps = {
       tableHeaders: [
         { text: $t('Themes and Overlays'), icon: 'icon-themes' },
-        { text: $t('Streamlabs Desktop'), icon: 'icon-desktop' },
+        { text: $t('Buffed Desktop'), icon: 'icon-desktop' },
         { text: $t('Highlighter'), icon: 'icon-slice' },
         { text: $t('Collab Cam'), icon: 'icon-team-2' },
         { text: $t('Tipping'), icon: 'icon-donation-settings' },

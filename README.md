@@ -4,7 +4,7 @@
 
 Simple, powerful, and efficient live streaming software built on Electron and OBS.
 
-![Streamlabs Desktop](https://slobs-cdn.streamlabs.com/media/streamlabs-desktop_1920x1050.png)
+![Streamlabs Desktop](https://buffed-cdn.buffed.me/media/streamlabs-desktop_1920x1050.png)
 
 This application currently only supports OSX 10.14+ and 64-bit Windows.
 

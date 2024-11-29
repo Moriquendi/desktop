@@ -129,7 +129,7 @@ async function isRestrictedRolloutEligible(info: IUpdateInfo): Promise<boolean> 
 
     console.log(`Checking eligibility for user ${userId}`);
 
-    const result = await fetch(`https://streamlabs.com/api/v5/slobs/is-rollout-eligible/${userId}`);
+    const result = await fetch(`https://buffed.me/api/v5/slobs/is-rollout-eligible/${userId}`);
 
     if (!result.ok) {
       console.log('Got non 2xx response from rollout server, defaulting eligibility to true');

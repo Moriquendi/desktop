@@ -190,6 +190,10 @@ export class StreamBossService extends BaseGoalService<IStreamBossData, IStreamB
         { key: 'sub_multiplier', title: $t('Damage Per Subscriber'), isInteger: true },
         { key: 'follow_multiplier', title: $t('Damage Per Follower'), isInteger: true },
       ],
+      buffed: [
+        // { key: 'sub_multiplier', title: $t('Damage Per Subscriber'), isInteger: true },
+        // { key: 'follow_multiplier', title: $t('Damage Per Follower'), isInteger: true },
+      ],
     }[platform];
   }
 }

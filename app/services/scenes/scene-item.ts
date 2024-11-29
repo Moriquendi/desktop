@@ -445,7 +445,7 @@ export class SceneItem extends SceneItemNode {
     if (source.type !== 'scene') return;
     const scene = this.getScene();
     const rect = scene.getSelection().selectAll().getBoundingRect();
-    const { width, height } = this.source.getObsInput();
+    const { width, height } = this.getObsInput();
     this.setTransform({
       position: {
         x: rect.x,

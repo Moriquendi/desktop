@@ -61,14 +61,14 @@ export class SponsorBannerService extends WidgetSettingsService<ISponsorBannerDa
     data.settings.placement_1_images = data.settings.image_1_href.map((href: string, i: number) => {
       const subbedHref =
         href === '/imgs/streamlabs.png'
-          ? 'https://cdn.streamlabs.com/static/imgs/logos/logo.png'
+          ? 'https://cdn.buffed.me/static/imgs/logos/logo.png'
           : href;
       return { href: subbedHref, duration: data.settings.placement1_durations[i] };
     });
     data.settings.placement_2_images = data.settings.image_2_href.map((href: string, i: number) => {
       const subbedHref =
         href === '/imgs/streamlabs.png'
-          ? 'https://cdn.streamlabs.com/static/imgs/logos/logo.png'
+          ? 'https://cdn.buffed.me/static/imgs/logos/logo.png'
           : href;
       return { href: subbedHref, duration: data.settings.placement2_durations[i] };
     });

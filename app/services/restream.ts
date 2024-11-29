@@ -93,6 +93,9 @@ export class RestreamService extends StatefulService<IRestreamState> {
   }
 
   async loadUserSettings() {
+    console.log('[Buffed] Restream fetching settings disabled.');
+    return;
+
     this.settings = await this.fetchUserSettings();
     this.SET_GRANDFATHERED(this.settings.grandfathered);
     this.SET_ENABLED(this.settings.enabled && this.views.canEnableRestream);

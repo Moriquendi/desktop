@@ -87,7 +87,7 @@ export default function PlatformAppPageView(p: {
 
   function goToUninstall() {
     remote.shell.openExternal(
-      'https://streamlabs.com/content-hub/post/how-to-uninstall-apps-from-streamlabs-desktop',
+      'https://buffed.me/content-hub/post/how-to-uninstall-apps-from-streamlabs-desktop',
     );
   }
 

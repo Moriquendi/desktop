@@ -280,6 +280,8 @@ class VideoSettingsModule {
   }
 
   setResolution(key: string, value: string) {
+    console.log(`SET RES: ${key} ${value}`);
+
     const display = this.state.display;
     if (key === 'outputRes') {
       this.state.setCustomOutputResValue(value);
@@ -296,6 +298,8 @@ class VideoSettingsModule {
   }
 
   selectResolution(key: string, value: string) {
+    console.log(`SELECT RES: ${key} ${value}`);
+
     if (value === 'custom') {
       this.setCustomResolution(key, true);
       this.setResolution(key, '');
@@ -306,6 +310,8 @@ class VideoSettingsModule {
   }
 
   setCustomResolution(key: string, value: boolean) {
+    console.log(`SET CUSTOM RES: ${key} ${value}`);
+
     if (key === 'baseRes') {
       this.state.setCustomBaseRes(value);
     } else {
@@ -478,8 +484,8 @@ export function VideoSettings() {
     <>
       <div className={styles.videoSettingsHeader}>
         <h2>{$t('Video')}</h2>
-        <div className={styles.doToggle}>
-          {/* THIS CHECKBOX TOGGLES DUAL OUTPUT MODE FOR THE ENTIRE APP */}
+        {/* <div className={styles.doToggle}>
+          THIS CHECKBOX TOGGLES DUAL OUTPUT MODE FOR THE ENTIRE APP
           <CheckboxInput
             id="dual-output-checkbox"
             name="dual-output-checkbox"
@@ -500,7 +506,7 @@ export function VideoSettings() {
           >
             <i className="icon-information" />
           </Tooltip>
-        </div>
+        </div> */}
         {/* )} */}
       </div>
       {showDualOutputSettings && <Tabs onChange={setDisplay} />}

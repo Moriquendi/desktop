@@ -100,9 +100,15 @@ export default function StudioFooterComponent() {
   }
 
   return (
-    <div className={cx('footer', styles.footer)}>
-      <div className={cx('flex flex--center flex--grow flex--justify-start', styles.footerLeft)}>
-        <Tooltip placement="left" title={$t('Open Performance Window')}>
+    <div
+      className={cx('footer', styles.footer)}
+      style={{
+        height: '200px',
+        // border: '1px solid green'
+      }}
+    >
+      <div className={cx('flex flex--center flex--justify-start', styles.footerLeft)}>
+        {/* <Tooltip placement="left" title={$t('Open Performance Window')}>
           <i
             className={cx(
               'icon-leaderboard-4',
@@ -112,19 +118,20 @@ export default function StudioFooterComponent() {
             )}
             onClick={openMetricsWindow}
           />
-        </Tooltip>
-        <PerformanceMetrics mode="limited" className="performance-metrics" />
-        <NotificationsArea />
+        </Tooltip> */}
+        {/* <PerformanceMetrics mode="limited" className="performance-metrics" /> */}
+        {/* <NotificationsArea /> */}
       </div>
 
-      <div className={styles.navRight}>
-        <div className={styles.navItem}>{isLoggedIn && <TestWidgets />}</div>
+      <div>
+        {/* <div className={styles.navItem}>{isLoggedIn && <TestWidgets />}</div> */}
+
         {recordingModeEnabled && (
           <button className="button button--trans" onClick={showRecordingModeDisableModal}>
             {$t('Looking to stream?')}
           </button>
         )}
-        {!recordingModeEnabled && <RecordingButton />}
+        {/* {!recordingModeEnabled && <RecordingButton />} */}
         {replayBufferEnabled && replayBufferOffline && (
           <div className={styles.navItem}>
             <Tooltip placement="left" title={$t('Start Replay Buffer')}>
@@ -169,12 +176,23 @@ export default function StudioFooterComponent() {
           </div>
         )}
         {!recordingModeEnabled && (
-          <div className={styles.navItem}>
+          <div
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              textAlign: 'center',
+              gap: '10px',
+            }}
+          >
             <StartStreamingButton />
+            <p>You can browse clips from captured games in the Buffed mobile app</p>
           </div>
         )}
         {recordingModeEnabled && <RecordingButton />}
       </div>
+
+      <div className={styles.navRight}></div>
     </div>
   );
 }
@@ -279,6 +297,7 @@ class FooterModule {
   }
 
   get recordingModeEnabled() {
+    return false;
     return Services.RecordingModeService.views.isRecordingModeEnabled;
   }
 }

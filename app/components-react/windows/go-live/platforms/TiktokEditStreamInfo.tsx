@@ -39,6 +39,6 @@ function openStreamPage() {
 
 function openInfoPage() {
   remote.shell.openExternal(
-    'https://streamlabs.com/content-hub/post/how-to-livestream-from-your-tiktok-account-using-streamlabs-from-web',
+    'https://buffed.me/content-hub/post/how-to-livestream-from-your-tiktok-account-using-streamlabs-from-web',
   );
 }

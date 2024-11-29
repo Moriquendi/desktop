@@ -10,7 +10,11 @@ import { SettingsService } from './settings';
 import { byOS, OS } from 'util/operating-systems';
 import { GuestCamService } from './guest-cam';
 import { SideNavService, ESideNavKey, ProtocolLinkKeyMap } from './side-nav';
+import { EStreamingState, StreamingService } from './streaming';
+import { CustomizationService } from './customization';
+import Utils from './utils';
 import { Subject } from 'rxjs';
+import { StreamSettingsService } from './settings/streaming';
 
 function protocolHandler(base: string) {
   return (target: any, methodName: string, descriptor: PropertyDescriptor) => {
@@ -42,6 +46,9 @@ export class ProtocolLinksService extends Service {
   @Inject() settingsService: SettingsService;
   @Inject() guestCamService: GuestCamService;
   @Inject() sideNavService: SideNavService;
+  @Inject() streamingService: StreamingService;
+  @Inject() streamSettingsService: StreamSettingsService;
+  @Inject() customizationService: CustomizationService;
 
   // Maps base URL components to handler function names
   private handlers: Dictionary<string>;
@@ -51,15 +58,22 @@ export class ProtocolLinksService extends Service {
   start(argv: string[]) {
     // Other instances started with a protocol link will receive this message
     electron.ipcRenderer.on('protocolLink', (event: Electron.Event, link: string) => {
+      console.log(`Protocol: handle link: ${link}`);
       this.handleLink(link);
     });
 
     // Check if this instance was started with a protocol link
     byOS({
       [OS.Windows]: () => {
+        console.log('By windows....');
         argv.forEach(arg => {
-          if (arg.match(/^slobs:\/\//)) this.handleLink(arg);
+          console.log(`ARG: ${arg}`);
+          if (arg.match(/^me\.buffed\.app\.desktop:\/\//)) {
+            console.log(`HANDLE LINK: ${arg}`);
+            this.handleLink(arg);
+          }
         });
+        electron.ipcRenderer.send('protocolLinkReady');
       },
       [OS.Mac]: () => {
         electron.ipcRenderer.send('protocolLinkReady');
@@ -68,6 +82,7 @@ export class ProtocolLinksService extends Service {
   }
 
   private handleLink(link: string) {
+    console.log(`HANDLE LINK: ${link}`);
     const parsed = new url.URL(link);
     const info: IProtocolLinkInfo = {
       url: link,
@@ -118,8 +133,19 @@ export class ProtocolLinksService extends Service {
     this.platformAppStoreService.paypalAuthSuccess();
   }
 
+  @protocolHandler('auth')
+  private handleAuthDeeplink(info: IProtocolLinkInfo) {
+    const token = info.query.get('token');
+    const userId = info.query.get('user_id');
+
+    console.log('handleAuthDeeplink', info);
+    this.userService.continueSocialAuth(token, userId);
+  }
+
   @protocolHandler('app')
   private navigateApp(info: IProtocolLinkInfo) {
+    console.log(`Protocol: app`);
+
     if (!this.userService.isLoggedIn) return;
 
     const match = info.path.match(/(\w+)\/?/);
@@ -143,6 +169,8 @@ export class ProtocolLinksService extends Service {
 
   @protocolHandler('settings')
   private openSettings(info: IProtocolLinkInfo) {
+    console.log(`Protocol: settings`);
+
     const category = info.path.replace('/', '');
 
     this.settingsService.showSettings(category);
@@ -153,5 +181,48 @@ export class ProtocolLinksService extends Service {
     const hash = info.path.replace('/', '');
 
     this.guestCamService.joinAsGuest(hash);
+  }
+
+  @protocolHandler('autostream')
+  private async autoStream(info: IProtocolLinkInfo) {
+    console.log('Handle autostream link');
+
+    if (!this.customizationService.state.autoStreamEnabled) {
+      console.log('Auto stream disabled. Ignore deeplink.');
+      return;
+    }
+
+    const shouldStart = info.query.get('start') === 'true';
+    const streamingModel = this.streamingService.getModel();
+    const isOffline = streamingModel.streamingStatus === EStreamingState.Offline;
+
+    if (isOffline && shouldStart) {
+      console.log('Will turn on streaming.');
+      console.log(`Make sure app is shown...`);
+      await electron.ipcRenderer.invoke('SHOW_APP', { focus: false });
+      console.log(`Wait for app to finish init...`);
+      await this.awaitForAllSetupDone();
+
+      const buffedKey = this.userService.views.auth?.platforms['buffed']?.token ?? '';
+      if (buffedKey.length <= 0) {
+        console.warn('Streaming key not set. Cannot start streaming.', buffedKey);
+        return;
+      }
+
+      console.log(`STREAMING GO`);
+      this.streamingService.toggleStreaming();
+    } else if (!isOffline && !shouldStart) {
+      console.log('Turning off streaming.');
+      this.streamingService.toggleStreaming();
+    } else {
+      console.warn('No action.');
+    }
+  }
+
+  private async awaitForAllSetupDone() {
+    // Todo: make it smarter.
+    // Now, when we toggleStreaming right away, it is stuck in 'starting' state.
+    await Utils.sleep(1500);
+    return;
   }
 }

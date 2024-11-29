@@ -69,6 +69,7 @@ export { TwitchTagsService } from 'services/platforms/twitch/index';
 export { FacebookService } from 'services/platforms/facebook';
 export { TiktokService } from 'services/platforms/tiktok';
 export { TrovoService } from 'services/platforms/trovo';
+export { BuffedService } from 'services/platforms/buffed';
 export { RestreamService } from 'services/restream';
 export { TwitterService } from 'services/integrations/twitter';
 export { TwitterPlatformService } from 'services/platforms/twitter';
@@ -193,6 +194,7 @@ import { SettingsManagerService } from 'services/settings-manager';
 import { DualOutputService } from 'services/dual-output';
 import { MarkersService } from 'services/markers';
 import { SharedStorageService } from 'services/integrations/shared-storage';
+import { BuffedService } from 'services/platforms/buffed';
 import { InstagramService } from 'services/platforms/instagram';
 
 export const AppServices = {
@@ -268,4 +270,5 @@ export const AppServices = {
   DualOutputService,
   MarkersService,
   SharedStorageService,
+  BuffedService,
 };

@@ -43,6 +43,12 @@ export function ExtraPlatformConnect() {
       helpUrl: 'https://article.nimo.tv/p/1033/streamlabsprotocol.html',
       icon: 'nimo-logo.png',
     },
+    buffed: {
+      name: 'Buffed',
+      ingestUrl: '',
+      helpUrl: '',
+      icon: 'buffed-logo.png',
+    },
   }[selectedExtraPlatform];
 
   return (

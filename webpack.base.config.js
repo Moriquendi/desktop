@@ -57,6 +57,7 @@ module.exports = {
     renderer: './app/app.ts',
     updater: './updater/mac/ui.js',
     'guest-api': './guest-api',
+    gamesMonitor: './app/services/games-monitor/GamesMonitor.ts',
   },
 
   output: {
@@ -78,6 +79,9 @@ module.exports = {
     'font-manager': 'require("font-manager")',
     'color-picker': 'require("color-picker")',
     '@electron/remote': 'require("@electron/remote")',
+
+    '@paymoapp/active-window': 'require("@paymoapp/active-window")',
+    
 
     // Not actually a native addons, but for one reason or another
     // we don't want them compiled in our webpack bundle.

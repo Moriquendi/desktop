@@ -62,7 +62,7 @@ export class GlobalSelection extends Selection {
 
     remote.dialog
       .showMessageBox(Utils.getMainWindow(), {
-        title: 'Streamlabs Desktop',
+        title: 'Buffed Desktop',
         message,
         type: 'warning',
         buttons: [$t('Cancel'), $t('OK')],

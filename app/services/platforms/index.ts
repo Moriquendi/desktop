@@ -10,6 +10,7 @@ import { WidgetType } from '../widgets';
 import { ITrovoStartStreamOptions, TrovoService } from './trovo';
 import { TDisplayType } from 'services/settings-v2';
 import { $t } from 'services/i18n';
+import { BuffedService, IBuffedStartStreamOptions } from './buffed';
 
 export type Tag = string;
 export interface IGame {
@@ -141,6 +142,7 @@ export type TStartStreamOptions =
   | Partial<IFacebookStartStreamOptions>
   | Partial<ITiktokStartStreamOptions>
   | Partial<ITrovoStartStreamOptions>
+  | Partial<IBuffedStartStreamOptions>
   | Partial<IInstagramStartStreamOptions>;
 
 // state applicable for all platforms
@@ -224,6 +226,8 @@ export interface IUserInfo {
   username?: string;
 }
 
+export type SocialPlatform = 'discord' | 'google' | 'apple';
+
 export enum EPlatform {
   Twitch = 'twitch',
   YouTube = 'youtube',
@@ -232,6 +236,7 @@ export enum EPlatform {
   Trovo = 'trovo',
   Twitter = 'twitter',
   Instagram = 'instagram',
+  Buffed = 'buffed',
 }
 
 export type TPlatform =
@@ -241,7 +246,8 @@ export type TPlatform =
   | 'tiktok'
   | 'trovo'
   | 'twitter'
-  | 'instagram';
+  | 'instagram'
+  | 'buffed';
 
 export const platformList = [
   EPlatform.Facebook,
@@ -251,6 +257,7 @@ export const platformList = [
   EPlatform.YouTube,
   EPlatform.Twitter,
   EPlatform.Instagram,
+  EPlatform.Buffed,
 ];
 
 export const platformLabels = (platform: TPlatform | string) =>
@@ -272,6 +279,7 @@ export function getPlatformService(platform: TPlatform): IPlatformService {
     facebook: FacebookService.instance,
     tiktok: TiktokService.instance,
     trovo: TrovoService.instance,
+    buffed: BuffedService.instance,
     twitter: TwitterPlatformService.instance,
     instagram: InstagramService.instance,
   }[platform];

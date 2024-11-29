@@ -467,6 +467,9 @@ export class RecentEventsService extends StatefulService<IRecentEventsState> {
   }
 
   fetchRecentEvents() {
+    console.log('[Buffed] Fetch disabled.');
+    return;
+
     const typeString = this.getEventTypesString();
     // eslint-disable-next-line
     const url = `https://${this.hostsService.streamlabs}/api/v5/slobs/recentevents/${this.userService.widgetToken}?types=${typeString}`;
@@ -478,6 +481,9 @@ export class RecentEventsService extends StatefulService<IRecentEventsState> {
   }
 
   async fetchConfig() {
+    console.log('[Buffed] Fetch disabled.');
+    return;
+
     // eslint-disable-next-line
     const url = `https://${this.hostsService.streamlabs}/api/v5/slobs/widget/config?widget=recent_events`;
     const headers = authorizedHeaders(this.userService.apiToken);
@@ -487,6 +493,9 @@ export class RecentEventsService extends StatefulService<IRecentEventsState> {
   }
 
   fetchMediaShareState() {
+    console.log('[Buffed] Fetch disabled.');
+    return;
+
     // eslint-disable-next-line
     const url = `https://${this.hostsService.streamlabs}/api/v5/slobs/widget/config?widget=media-sharing`;
     const headers = authorizedHeaders(this.userService.apiToken);
@@ -579,6 +588,9 @@ export class RecentEventsService extends StatefulService<IRecentEventsState> {
   }
 
   async fetchReadReceipts(hashValues: string): Promise<{ data: Dictionary<boolean> }> {
+    console.log('[Buffed] Fetch disabled.');
+    return;
+
     const url = `https://${this.hostsService.streamlabs}/api/v5/slobs/readreceipts`;
     const headers = authorizedHeaders(
       this.userService.apiToken,
@@ -592,6 +604,9 @@ export class RecentEventsService extends StatefulService<IRecentEventsState> {
   }
 
   async repeatAlert(event: IRecentEvent) {
+    console.log('[Buffed] Fetch disabled.');
+    return;
+
     const headers = authorizedHeaders(
       this.userService.apiToken,
       new Headers({ 'Content-Type': 'application/json' }),
@@ -957,6 +972,9 @@ export class RecentEventsService extends StatefulService<IRecentEventsState> {
   }
 
   async fetchSafeModeStatus() {
+    console.log('[Buffed] Fetch disabled.');
+    return;
+
     const url = `https://${this.hostsService.streamlabs}/api/v5/slobs/safemode`;
     const headers = authorizedHeaders(this.userService.apiToken);
     return jfetch<{
@@ -1007,6 +1025,9 @@ export class RecentEventsService extends StatefulService<IRecentEventsState> {
   }
 
   activateSafeMode() {
+    console.log('[Buffed] Fetch disabled.');
+    return;
+
     if (this.state.safeMode.enabled) return;
 
     const headers = authorizedHeaders(
@@ -1036,6 +1057,9 @@ export class RecentEventsService extends StatefulService<IRecentEventsState> {
   }
 
   disableSafeMode() {
+    console.log('[Buffed] Fetch disabled.');
+    return;
+
     if (!this.state.safeMode.enabled) return;
 
     const headers = authorizedHeaders(this.userService.apiToken);
