@@ -299,7 +299,8 @@ export class BuffedSettingsController {
     // const source = SourcesService.createSource('Screen Capture', 'screen_capture', {}, {});
     // SourcesService.addSource('Screen Capture', {}, {})
 
-    this.addSourceForType('game');
+    this.addSourceForType('display');
+    // this.addSourceForType('game');
 
     ////////////////////////////////////////
     // FIT TO SCREN'
