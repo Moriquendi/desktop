@@ -29,7 +29,7 @@ export function UltraComparison(p: IUltraComparisonProps) {
   const tableHeaders = p.tableHeaders || [
     { text: $t('Themes and Overlays'), icon: 'icon-themes' },
     { text: $t('Alerts and Widgets'), icon: 'icon-alert-box' },
-    { text: $t('Streamlabs Desktop'), icon: 'icon-desktop' },
+    { text: $t('Buffed Desktop'), icon: 'icon-desktop' },
     { text: $t('Multistream'), icon: 'icon-multistream' },
     { text: $t('Collab Cam'), icon: 'icon-team-2' },
     { text: $t('Desktop App Store'), icon: 'icon-store' },

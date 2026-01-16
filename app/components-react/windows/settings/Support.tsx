@@ -15,9 +15,9 @@ export function Support() {
   return (
     <div>
       <SupportLinks />
-      <DiagnosticReport />
-      <CacheSettings />
-      {getOS() === OS.Windows && <CrashReporting />}
+      {/* <DiagnosticReport /> */}
+      {/* <CacheSettings /> */}
+      {/* {getOS() === OS.Windows && <CrashReporting />} */}
     </div>
   );
 }
@@ -32,12 +32,12 @@ function SupportLinks() {
   return (
     <ObsSettingsSection title={$t('Support Links')}>
       <div className="input-container">
-        <a className="link" onClick={() => openLink('https://howto.streamlabs.com/')}>
-          <i className="icon-question" /> <span>{$t('Streamlabs Support')}</span>
+        <a className="link" onClick={() => openLink('https://discord.gg/ysrAn9unC3')}>
+          <i className="icon-question" /> <span>{$t('Buffed Support')}</span>
         </a>
       </div>
       <div className="input-container">
-        <a className="link" onClick={() => openLink('https://discord.gg/stream')}>
+        <a className="link" onClick={() => openLink('https://discord.gg/ysrAn9unC3')}>
           <i className="icon-discord" /> <span>{$t('Community Discord')}</span>
         </a>
       </div>

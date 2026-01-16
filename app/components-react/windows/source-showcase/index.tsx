@@ -52,7 +52,7 @@ function SourcesShowcaseModal() {
           >
             <Menu.Item key="all">{$t('All')}</Menu.Item>
             <Menu.Item key="general">{$t('General')}</Menu.Item>
-            <Menu.Item key="widgets">{$t('Widgets')}</Menu.Item>
+            {/* <Menu.Item key="widgets">{$t('Widgets')}</Menu.Item> */}
             {availableAppSources.length > 0 && <Menu.Item key="apps">{$t('Apps')}</Menu.Item>}
           </Menu>
           <SourceGrid activeTab={activeTab} />

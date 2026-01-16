@@ -137,12 +137,12 @@ class FacebookEditStreamInfoModule {
       {
         value: 'page' as TDestinationType,
         label: $t('Share to a Page You Manage'),
-        image: 'https://slobs-cdn.streamlabs.com/media/fb-page.png',
+        image: 'https://buffed-cdn.buffed.me/media/fb-page.png',
       },
       {
         value: 'group' as TDestinationType,
         label: $t('Share in a Group'),
-        image: 'https://slobs-cdn.streamlabs.com/media/fb-group.png',
+        image: 'https://buffed-cdn.buffed.me/media/fb-group.png',
       },
     ].filter(opt => {
       if (opt.value === 'me' && !this.canStreamToTimeline) return false;
@@ -157,17 +157,17 @@ class FacebookEditStreamInfoModule {
       {
         value: 'EVERYONE',
         label: $t('Public'),
-        image: 'https://slobs-cdn.streamlabs.com/media/fb_privacy_public.png',
+        image: 'https://buffed-cdn.buffed.me/media/fb_privacy_public.png',
       },
       {
         value: 'ALL_FRIENDS',
         label: $t('Friends'),
-        image: 'https://slobs-cdn.streamlabs.com/media/fb_privacy_friends.png',
+        image: 'https://buffed-cdn.buffed.me/media/fb_privacy_friends.png',
       },
       {
         value: 'SELF',
         label: $t('Only Me'),
-        image: 'https://slobs-cdn.streamlabs.com/media/fb_privacy_noone.png',
+        image: 'https://buffed-cdn.buffed.me/media/fb_privacy_noone.png',
       },
     ];
 

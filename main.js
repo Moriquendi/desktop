@@ -7,11 +7,14 @@ let lastEventTime = 0;
 const pjson = require('./package.json');
 if (pjson.env === 'production') {
   process.env.NODE_ENV = 'production';
+} else {
+  require('dotenv').config();
 }
-if (pjson.name === 'slobs-client-preview') {
+
+if (pjson.name === 'buffed-client-preview') {
   process.env.SLOBS_PREVIEW = true;
 }
-if (pjson.name === 'slobs-client-ipc') {
+if (pjson.name === 'buffed-client-ipc') {
   process.env.SLOBS_IPC = true;
 }
 process.env.SLOBS_VERSION = pjson.version;
@@ -43,7 +46,7 @@ if (process.env.SLOBS_CACHE_DIR) {
   app.setPath('appData', process.env.SLOBS_CACHE_DIR);
 }
 
-app.setPath('userData', path.join(app.getPath('appData'), 'slobs-client'));
+app.setPath('userData', path.join(app.getPath('appData'), 'buffed-client')); // TODO:
 
 if (process.argv.includes('--clearCacheDir')) {
   try {
@@ -60,7 +63,6 @@ if (process.argv.includes('--clearCacheDir')) {
 
 // This ensures that only one copy of our app can run at once.
 const gotTheLock = app.requestSingleInstanceLock();
-
 if (!gotTheLock) {
   app.quit();
   return;
@@ -96,10 +98,13 @@ const releaseChannel = (() => {
 // Main Program
 ////////////////////////////////////////////////////////////////////////////////
 
+let shouldFocusWindowOnNextShow = true;
+
 // Windows
 let workerWindow;
 let mainWindow;
 let childWindow;
+let monitorProcess;
 
 const util = require('util');
 const logFile = path.join(app.getPath('userData'), 'app.log');
@@ -194,7 +199,7 @@ function humanFileSize(bytes, si) {
 }
 
 console.log('=================================');
-console.log('Streamlabs Desktop');
+console.log('Buffed Desktop');
 console.log(`Version: ${process.env.SLOBS_VERSION}`);
 console.log(`OS: ${os.platform()} ${os.release()}`);
 console.log(`Arch: ${process.arch}`);
@@ -203,6 +208,14 @@ console.log(`Cores: ${cpus.length}`);
 console.log(`Memory: ${humanFileSize(os.totalmem(), false)}`);
 console.log(`Free: ${humanFileSize(os.freemem(), false)}`);
 console.log('=================================');
+
+app.on('activate', () => {
+  console.log(`APP ACTIVATED`);
+  if (!mainWindow) {
+    return;
+  }
+  showApp();
+});
 
 app.on('ready', () => {
   // Detect when running from an unwritable location like a DMG image (will break updater)
@@ -213,9 +226,11 @@ app.on('ready', () => {
       // This error code indicates a read only file system
       if (e.code === 'EROFS') {
         dialog.showErrorBox(
-          'Streamlabs Desktop',
-          'Please run Streamlabs Desktop from your Applications folder. Streamlabs Desktop cannot run directly from this disk image.',
+          'Buffed Desktop',
+          'Please run Buffed Desktop from your Applications folder. Buffed Desktop cannot run directly from this disk image.',
         );
+
+        console.log(`App exit 1.`);
         app.exit();
       }
     }
@@ -248,12 +263,15 @@ let allowMainWindowClose = false;
 let shutdownStarted = false;
 let appShutdownTimeout;
 
+console.log(`Main: indexurl will set to: file://${__dirname}/index.html`);
 global.indexUrl = `file://${__dirname}/index.html`;
 
 function openDevTools() {
+  console.log(`Main: openDevTools`);
   childWindow.webContents.openDevTools({ mode: 'detach' });
   mainWindow.webContents.openDevTools({ mode: 'detach' });
   workerWindow.webContents.openDevTools({ mode: 'detach' });
+  monitorProcess?.webContents.openDevTools({ mode: 'detach' }); // TODO: make sure monitorProcess exists by the time it's called
 }
 
 // TODO: Clean this up
@@ -262,6 +280,8 @@ const waitingVuexStores = [];
 let workerInitFinished = false;
 
 async function startApp() {
+  console.log(`Main: startApp inside func.`);
+
   const crashHandler = require('crash-handler');
   const isDevMode = process.env.NODE_ENV !== 'production' && process.env.NODE_ENV !== 'test';
   const crashHandlerLogPath = app.getPath('userData');
@@ -270,16 +290,18 @@ async function startApp() {
     overlay = require('game_overlay');
   }
 
+  console.log(`Main: Start bundle updater`);
   await bundleUpdater(__dirname);
 
-  crashHandler.startCrashHandler(
-    app.getAppPath(),
-    process.env.SLOBS_VERSION,
-    isDevMode.toString(),
-    crashHandlerLogPath,
-    process.env.IPC_UUID,
-  );
-  crashHandler.registerProcess(pid, false);
+  console.log(`Main: Start crash handler`);
+  // crashHandler.startCrashHandler(
+  //   app.getAppPath(),
+  //   process.env.SLOBS_VERSION,
+  //   isDevMode.toString(),
+  //   crashHandlerLogPath,
+  //   process.env.IPC_UUID,
+  // );
+  // crashHandler.registerProcess(pid, false);
 
   ipcMain.on('register-in-crash-handler', (event, arg) => {
     crashHandler.registerProcess(arg.pid, arg.critical);
@@ -289,6 +311,7 @@ async function startApp() {
     crashHandler.unregisterProcess(arg.pid);
   });
 
+  console.log(`Main: Start remote`);
   remote.initialize();
 
   const Raven = require('raven');
@@ -296,57 +319,50 @@ async function startApp() {
   function handleFinishedReport() {
     dialog.showErrorBox(
       'Something Went Wrong',
-      'An unexpected error occured and Streamlabs Desktop must be shut down.\n' +
+      'An unexpected error occured and Buffed Desktop must be shut down.\n' +
         'Please restart the application.',
     );
 
+    console.log(`App exit 2.`);
     app.exit();
   }
 
   if (pjson.env === 'production') {
-    Raven.config(pjson.sentryFrontendDSN, {
-      release: process.env.SLOBS_VERSION,
-    }).install((err, initialErr, eventId) => {
-      handleFinishedReport();
-    });
+    console.log(`Main: Start sentry`);
+    // Raven.config(pjson.sentryFrontendDSN, {
+    //   release: process.env.SLOBS_VERSION,
+    // }).install((err, initialErr, eventId) => {
+    //   handleFinishedReport();
+    // });
 
-    const submitURL = process.env.SLOBS_PREVIEW
-      ? pjson.sentryBackendClientPreviewURL
-      : pjson.sentryBackendClientURL;
+    // const submitURL = process.env.SLOBS_PREVIEW
+    //   ? pjson.sentryBackendClientPreviewURL
+    //   : pjson.sentryBackendClientURL;
 
-    if (submitURL) {
-      crashReporter.start({
-        productName: 'streamlabs-obs',
-        companyName: 'streamlabs',
-        ignoreSystemCrashHandler: true,
-        submitURL,
-        extra: {
-          processType: 'main',
-        },
-        globalExtra: {
-          'sentry[release]': pjson.version,
-          'sentry[user][ip_address]': '{{auto}}',
-        },
-      });
-    }
+    // if (submitURL) {
+    // crashReporter.start({
+    //   productName: 'streamlabs-obs',
+    //   companyName: 'streamlabs',
+    //   ignoreSystemCrashHandler: true,
+    //   submitURL,
+    //   extra: {
+    //     processType: 'main',
+    //   },
+    //   globalExtra: {
+    //     'sentry[release]': pjson.version,
+    //     'sentry[user][ip_address]': '{{auto}}',
+    //   },
+    // });
+    // }
   }
 
-  workerWindow = new BrowserWindow({
-    show: false,
-    webPreferences: { nodeIntegration: true, contextIsolation: false },
-  });
+  console.log(`Main: Start worker window`);
 
-  remote.enable(workerWindow.webContents);
-
-  // setTimeout(() => {
-  workerWindow.loadURL(`${global.indexUrl}?windowId=worker`);
-  // }, 10 * 1000);
-
-  if (process.env.SLOBS_PRODUCTION_DEBUG) {
-    workerWindow.webContents.once('dom-ready', () => {
-      workerWindow.webContents.openDevTools({ mode: 'detach' });
-    });
-  }
+  // if (process.env.SLOBS_PRODUCTION_DEBUG) {
+  //   workerWindow.webContents.once('dom-ready', () => {
+  //     workerWindow.webContents.openDevTools({ mode: 'detach' });
+  //   });
+  // }
 
   // All renderers should use ipcRenderer.sendTo to send to communicate with
   // the worker.  This still gets proxied via the main process, but eventually
@@ -356,132 +372,52 @@ async function startApp() {
     event.returnValue = workerWindow.webContents.id;
   });
 
-  const mainWindowState = windowStateKeeper({
-    defaultWidth: 1600,
-    defaultHeight: 1000,
-  });
-
-  mainWindow = new BrowserWindow({
-    minWidth: 800,
-    minHeight: 600,
-    width: mainWindowState.width,
-    height: mainWindowState.height,
-    x: mainWindowState.isMaximized ? mainWindowState.displayBounds.x : mainWindowState.x,
-    y: mainWindowState.isMaximized ? mainWindowState.displayBounds.y : mainWindowState.y,
+  workerWindow = new BrowserWindow({
     show: false,
-    frame: false,
-    titleBarStyle: 'hidden',
-    title: 'Streamlabs Desktop',
-    backgroundColor: '#17242D',
-    webPreferences: {
-      nodeIntegration: true,
-      webviewTag: true,
-      contextIsolation: false,
-    },
+    webPreferences: { nodeIntegration: true, contextIsolation: false },
   });
 
-  remote.enable(mainWindow.webContents);
+  const settings = app.getLoginItemSettings();
+  const isLaunchedAutoAtLogin =
+    process.argv.includes('--was-launched-at-login') || settings.wasOpenedAtLogin;
 
-  // setTimeout(() => {
-  mainWindow.loadURL(`${global.indexUrl}?windowId=main`);
-  // }, 5 * 1000)
-
-  if (process.env.SLOBS_PRODUCTION_DEBUG) {
-    mainWindow.webContents.once('dom-ready', () => {
-      mainWindow.webContents.openDevTools({ mode: 'detach' });
-    });
+  if (!isLaunchedAutoAtLogin) {
+    recreateAndShowMainWindow();
+  } else {
+    console.log(`App launched on login. Don't show windows.`);
   }
-
-  mainWindowState.manage(mainWindow);
-
-  mainWindow.removeMenu();
-
-  mainWindow.on('close', e => {
-    if (!shutdownStarted) {
-      shutdownStarted = true;
-      workerWindow.send('shutdown');
-
-      // We give the worker window 10 seconds to acknowledge a request
-      // to shut down.  Otherwise, we just close it.
-      appShutdownTimeout = setTimeout(() => {
-        allowMainWindowClose = true;
-        if (!mainWindow.isDestroyed()) mainWindow.close();
-        if (!workerWindow.isDestroyed()) workerWindow.close();
-      }, 10 * 1000);
-    }
-
-    if (!allowMainWindowClose) e.preventDefault();
-  });
-
-  // prevent worker window to be closed before other windows
-  // we need it to properly handle App.stop() in tests
-  // since it tries to close all windows
-  workerWindow.on('close', e => {
-    if (!shutdownStarted) {
-      e.preventDefault();
-      mainWindow.close();
-    }
-  });
 
   // This needs to be explicitly handled on Mac
   app.on('before-quit', e => {
+    console.log(`Main: app.on('before-quit')`);
+
     if (!shutdownStarted) {
+      beginShutdown();
       e.preventDefault();
-      mainWindow.close();
+      // if (mainWindow) {
+      //   console.log(`Call close on main window.`)
+      //   e.preventDefault();
+      //   mainWindow.close();
+      // }
     }
   });
 
   ipcMain.on('acknowledgeShutdown', () => {
+    console.log(`Main: acknowledgeShutdown`);
     if (appShutdownTimeout) clearTimeout(appShutdownTimeout);
   });
 
   ipcMain.on('shutdownComplete', () => {
+    console.log(`Main: shutdownComplete`);
     allowMainWindowClose = true;
     mainWindow.close();
     workerWindow.close();
+    monitorProcess.close();
   });
 
-  workerWindow.on('closed', () => {
-    session.defaultSession.flushStorageData();
-    session.defaultSession.cookies.flushStore().then(() => app.quit());
-  });
-
-  // Pre-initialize the child window
-  childWindow = new BrowserWindow({
-    show: false,
-    frame: false,
-    fullscreenable: false,
-    titleBarStyle: 'hidden',
-    backgroundColor: '#17242D',
-    webPreferences: {
-      nodeIntegration: true,
-      backgroundThrottling: false,
-      contextIsolation: false,
-    },
-  });
-
-  remote.enable(childWindow.webContents);
-
-  childWindow.removeMenu();
-
-  childWindow.loadURL(`${global.indexUrl}?windowId=child`);
-
-  if (process.env.SLOBS_PRODUCTION_DEBUG) {
-    childWindow.webContents.once('dom-ready', () => {
-      childWindow.webContents.openDevTools({ mode: 'detach' });
-    });
-  }
-
-  // The child window is never closed, it just hides in the
-  // background until it is needed.
-  childWindow.on('close', e => {
-    if (!shutdownStarted) {
-      childWindow.send('closeWindow');
-
-      // Prevent the window from actually closing
-      e.preventDefault();
-    }
-  });
+  console.log(`Main: Show dev tools: ${process.env.SLOBS_PRODUCTION_DEBUG}`);
+  //if (process.env.SLOBS_PRODUCTION_DEBUG) openDevTools();
+  //openDevTools();
 
   // simple messaging system for services between windows
   // WARNING! renderer windows use synchronous requests and will be frozen
@@ -489,6 +425,7 @@ async function startApp() {
   const requests = {};
 
   function sendRequest(request, event = null, async = false) {
+    console.log(`Main: sendRequest ${JSON.stringify(request)}`);
     if (workerWindow.isDestroyed()) {
       console.log('Tried to send request but worker window was missing...');
       return;
@@ -511,6 +448,7 @@ async function startApp() {
   }
 
   ipcMain.on('AppInitFinished', () => {
+    console.log(`Main: AppInitFinished`);
     workerInitFinished = true;
 
     waitingVuexStores.forEach(winId => {
@@ -520,17 +458,22 @@ async function startApp() {
     waitingVuexStores.forEach(windowId => {
       workerWindow.webContents.send('vuex-sendState', windowId);
     });
+
+    monitorProcess.webContents.send('AppInitFinished');
   });
 
   ipcMain.on('services-request', (event, payload) => {
+    console.log(`Main: services-request`);
     sendRequest(payload, event);
   });
 
   ipcMain.on('services-request-async', (event, payload) => {
+    console.log(`Main: services-request-async`);
     sendRequest(payload, event, true);
   });
 
   ipcMain.on('services-response', (event, response) => {
+    console.log(`Main: services-response`);
     if (!requests[response.id]) return;
 
     if (requests[response.id].async) {
@@ -542,6 +485,7 @@ async function startApp() {
   });
 
   ipcMain.on('services-message', (event, payload) => {
+    console.log(`Main: services-message`);
     const windows = BrowserWindow.getAllWindows();
     windows.forEach(window => {
       if (window.id === workerWindow.id || window.isDestroyed()) return;
@@ -559,17 +503,213 @@ async function startApp() {
     //   openDevTools();
     // }, 10 * 1000);
   }
+  // setTimeout(() => {
+  //   openDevTools();
+  // }, 4 * 1000);
+
+  //////////////////////////////////////////////////
+  // Games Monitor Setup
+  //////////////////////////////////////////////////
+  console.log('Setup Games Monitor');
+  monitorProcess = new BrowserWindow({
+    title: 'Games Monitor',
+    show: false,
+    webPreferences: {
+      nodeIntegration: true,
+      contextIsolation: false,
+    },
+  });
+  remote.enable(monitorProcess.webContents);
+  let ghtml = `file://${__dirname}/monitor-helper/index.html`;
+  monitorProcess.loadURL(ghtml);
+
+  // monitorProcess?.webContents.openDevTools({ mode: 'undocked' });
+
+  console.log(`Main: End startApp`);
+}
+
+function beginShutdown() {
+  if (!shutdownStarted) {
+    console.log('Begin shutdown.');
+    console.log(workerWindow.isEnabled());
+    shutdownStarted = true;
+
+    const forceClose = () => {
+      allowMainWindowClose = true;
+      if (mainWindow && !mainWindow.isDestroyed()) mainWindow.close();
+      if (workerWindow && !workerWindow.isDestroyed()) workerWindow.close();
+      if (monitorProcess && !monitorProcess.isDestroyed()) monitorProcess.close();
+      if (childWindow && !childWindow.isDestroyed()) childWindow.close();
+
+      setTimeout(() => {
+        console.log('Windows:');
+        console.log(`Main: ${mainWindow.isDestroyed()}`);
+        console.log(`Worker: ${workerWindow.isDestroyed()}`);
+        console.log(`Monitor: ${monitorProcess.isDestroyed()}`);
+        console.log(`Child: ${childWindow.isDestroyed()}`);
+      }, 1 * 1000);
+    };
+
+    if (workerInitFinished) {
+      workerWindow.send('shutdown');
+
+      // We give the worker window 10 seconds to acknowledge a request
+      // to shut down.  Otherwise, we just close it.
+      appShutdownTimeout = setTimeout(() => {
+        console.log('Timeout out. Forcing.');
+        forceClose();
+      }, 10 * 1000);
+    } else {
+      forceClose();
+    }
+  } else {
+    console.log('Shutdown already started. Ignore.');
+  }
+}
+
+function recreateAndShowMainWindow() {
+  console.log(`Recreating. Child window destroyed?: ${childWindow?.isDestroyed()}`);
+  ///////////////////////////////////////
+  // Worker Window
+  ///////////////////////////////////////
+  remote.enable(workerWindow.webContents);
+  // setTimeout(() => {
+  workerWindow.loadURL(`${global.indexUrl}?windowId=worker`);
+  // }, 10 * 1000);
+
+  ///////////////////////////////////////
+  // Main Window
+  ///////////////////////////////////////
+  const mainWindowState = windowStateKeeper({
+    defaultWidth: 900,
+    defaultHeight: 600,
+  });
+  mainWindow = new BrowserWindow({
+    minWidth: 800,
+    minHeight: 600,
+    width: mainWindowState.width,
+    height: mainWindowState.height,
+    x: mainWindowState.isMaximized ? mainWindowState.displayBounds.x : mainWindowState.x,
+    y: mainWindowState.isMaximized ? mainWindowState.displayBounds.y : mainWindowState.y,
+    show: false,
+    frame: false,
+    titleBarStyle: 'hidden',
+    title: 'Buffed Desktop',
+    backgroundColor: '#17242D',
+    webPreferences: {
+      nodeIntegration: true,
+      webviewTag: true,
+      contextIsolation: false,
+    },
+  });
+  remote.enable(mainWindow.webContents);
+  // setTimeout(() => {
+  mainWindow.loadURL(
+    `${global.indexUrl}?windowId=main&show=${shouldFocusWindowOnNextShow ? 'true' : 'false'}`,
+  );
+  // }, 5 * 1000)
+  mainWindowState.manage(mainWindow);
+  mainWindow.removeMenu();
+
+  ///////////////////////////////////////
+  // Child Window
+  ///////////////////////////////////////
+  childWindow = new BrowserWindow({
+    show: false,
+    frame: false,
+    fullscreenable: false,
+    titleBarStyle: 'hidden',
+    backgroundColor: '#17242D',
+    webPreferences: {
+      nodeIntegration: true,
+      backgroundThrottling: false,
+      contextIsolation: false,
+    },
+  });
+  remote.enable(childWindow.webContents);
+  childWindow.removeMenu();
+  childWindow.loadURL(`${global.indexUrl}?windowId=child`);
+
+  ///////////////////////////////////////
+  // Event Handlers
+  ///////////////////////////////////////
+
+  // The child window is never closed, it just hides in the
+  // background until it is needed.
+  childWindow.on('close', e => {
+    console.log(`On child window close.`);
+
+    if (!shutdownStarted) {
+      childWindow.send('closeWindow');
+      // Prevent the window from actually closing
+      e.preventDefault();
+    }
+  });
+
+  mainWindow.on('show', e => {
+    if (process.platform === 'darwin') {
+      app.dock.show();
+    }
+  });
+
+  mainWindow.on('close', e => {
+    console.log(`Main: mainWindow.on('close')`);
+    mainWindow.hide();
+
+    // Hide the app icon from the Dock
+    if (process.platform === 'darwin') {
+      app.dock.hide();
+    }
+
+    if (!allowMainWindowClose) {
+      console.log('Closing main window prevented.');
+      e.preventDefault();
+    }
+  });
+
+  // prevent worker window to be closed before other windows
+  // we need it to properly handle App.stop() in tests
+  // since it tries to close all windows
+  workerWindow.on('close', e => {
+    console.log(`Main: workerWindow.on('close')`);
+    if (!shutdownStarted) {
+      console.log(`Main: workerWindow.on('close') - !shutdownStarted`);
+      e.preventDefault();
+      mainWindow.close();
+    }
+  });
+
+  workerWindow.on('closed', () => {
+    console.log(`Main: workerWindow.on('closed')`);
+    session.defaultSession.flushStorageData();
+    // session.defaultSession.cookies.flushStore().then(() => app.quit());
+    session.defaultSession.cookies.flushStore().then(() => {
+      // ...
+    });
+  });
+
+  // if (process.env.SLOBS_PRODUCTION_DEBUG) openDevTools();
+  //openDevTools();
 }
 
 const haDisableFile = path.join(app.getPath('userData'), 'HADisable');
 if (fs.existsSync(haDisableFile)) app.disableHardwareAcceleration();
 
-app.setAsDefaultProtocolClient('slobs');
+//app.setAsDefaultProtocolClient('buffed');
+console.log('Setting as default protocol client: me.buffed.app.desktop');
+const ok = app.setAsDefaultProtocolClient('me.buffed.app.desktop');
+console.log(`Set as default protocol client: ${ok}`);
 
 app.on('second-instance', (event, argv, cwd) => {
   // Check for protocol links in the argv of the other process
+
+  console.log('ON SECOND INSTANCE EVENT.');
+
   argv.forEach(arg => {
-    if (arg.match(/^slobs:\/\//)) {
+    console.log(`Args: ${arg}`);
+
+    if (arg.match(/^me\.buffed\.app\.desktop:\/\//)) {
+      console.log('Match. Send to protocol link.');
       workerWindow.send('protocolLink', arg);
     }
   });
@@ -583,6 +723,8 @@ app.on('second-instance', (event, argv, cwd) => {
     mainWindow.focus();
   } else if (!shutdownStarted) {
     // This instance is a zombie and we should shut down.
+
+    console.log(`App exit 3.`);
     app.exit();
   }
 });
@@ -590,46 +732,83 @@ app.on('second-instance', (event, argv, cwd) => {
 let protocolLinkReady = false;
 let pendingLink;
 
-// For mac os, this event will fire when a protocol link is triggered
-app.on('open-url', (e, url) => {
+function handleDeeplink(url) {
+  console.log('Handle deeplink.', url);
+
+  if (url.includes('/autostream')) {
+    shouldFocusWindowOnNextShow = false;
+  }
+
   if (protocolLinkReady) {
     workerWindow.send('protocolLink', url);
   } else {
     pendingLink = url;
   }
+
+  showApp();
+}
+
+// For mac os, this event will fire when a protocol link is triggered
+app.on('open-url', (e, url) => {
+  console.log(`open-url: ${url}`);
+  handleDeeplink(url);
 });
 
 ipcMain.on('protocolLinkReady', () => {
   protocolLinkReady = true;
+  console.log(`Pendinglink: ${pendingLink}`);
   if (pendingLink) workerWindow.send('protocolLink', pendingLink);
 });
 
+console.log(`Main: app.on('ready')`);
+
 app.on('ready', () => {
+  console.log(`On app ready`);
+
+  // RELEASE CONFIG
+  // STEAM / WINDOWS Store = True
+  // Manual distribution = False
+  const SKIP_UPDATE = false;
+
   if (
+    !SKIP_UPDATE &&
     !process.argv.includes('--skip-update') &&
     (process.env.NODE_ENV === 'production' || process.env.SLOBS_FORCE_AUTO_UPDATE)
   ) {
-    // Windows uses our custom update, Mac uses electron-updater
-    if (process.platform === 'win32') {
-      const updateInfo = {
-        baseUrl: 'https://slobs-cdn.streamlabs.com',
-        version: pjson.version,
-        exec: process.argv,
-        cwd: process.cwd(),
-        waitPids: [process.pid],
-        appDir: path.dirname(app.getPath('exe')),
-        tempDir: path.join(app.getPath('temp'), 'slobs-updater'),
-        cacheDir: app.getPath('userData'),
-        versionFileName: `${releaseChannel}.json`,
-      };
-
-      bootstrap(updateInfo, startApp, app.exit);
-    } else {
-      new Updater(startApp, releaseChannel).run();
-    }
+    console.log(`Main: updater`);
+    new Updater(startApp, releaseChannel).run();
   } else {
+    console.log(`Main: startApp`);
     startApp();
   }
+  // if (
+  //   !process.argv.includes('--skip-update') &&
+  //   (process.env.NODE_ENV === 'production' || process.env.SLOBS_FORCE_AUTO_UPDATE)
+  // ) {
+  //   // Windows uses our custom update, Mac uses electron-updater
+  //   if (process.platform === 'win32') {
+  //     const updateInfo = {
+  //       baseUrl: 'https://buffed-cdn.buffed.me',
+  //       version: pjson.version,
+  //       exec: process.argv,
+  //       cwd: process.cwd(),
+  //       waitPids: [process.pid],
+  //       appDir: path.dirname(app.getPath('exe')),
+  //       tempDir: path.join(app.getPath('temp'), 'slobs-updater'),
+  //       cacheDir: app.getPath('userData'),
+  //       versionFileName: `${releaseChannel}.json`,
+  //     };
+
+  //     console.log(`Main: bootstrap`);
+  //     bootstrap(updateInfo, startApp, app.exit);
+  //   } else {
+  // console.log(`Main: updater`);
+  // new Updater(startApp, releaseChannel).run();
+  //   }
+  // } else {
+  //   console.log(`Main: startApp`);
+  //   startApp();
+  // }
 });
 
 ipcMain.on('openDevTools', () => {
@@ -824,3 +1003,49 @@ function measure(msg, time) {
 }
 
 ipcMain.handle('DESKTOP_CAPTURER_GET_SOURCES', (event, opts) => desktopCapturer.getSources(opts));
+
+ipcMain.handle('SHOW_APP', (event, opts) => {
+  if (opts?.focus !== undefined && opts == false) {
+    shouldFocusWindowOnNextShow = false;
+  }
+  showApp();
+});
+
+ipcMain.handle('DEEPLINK', (event, opts) => {
+  console.log(`DEEPLINK: ${opts}`);
+  handleDeeplink(opts);
+});
+
+ipcMain.on('STREAMING_STATE_CHANGED', (event, streamingState) => {
+  monitorProcess?.webContents.send('STREAMING_STATE_CHANGED', streamingState);
+});
+
+ipcMain.on('SET_AUTO_STREAMING_STATE', (event, v) => {
+  monitorProcess?.webContents.send('SET_AUTO_STREAMING_STATE', v);
+});
+
+function showApp() {
+  if (!mainWindow) {
+    recreateAndShowMainWindow();
+  } else {
+    if (shouldFocusWindowOnNextShow) {
+      mainWindow.show();
+    } else {
+      mainWindow.showInactive();
+    }
+    shouldFocusWindowOnNextShow = true;
+  }
+}
+
+console.log(`REGISTER for BEGIN SHUTDOWN`);
+ipcMain.handle('BEGIN_SHUTDOWN', (event, opts) => {
+  console.log('Received shutdown.');
+  beginShutdown();
+});
+
+// TODO: Not working properly yet
+ipcMain.handle('check-update', (event, opts) => {
+  new Updater(startApp, 'latest').run();
+});
+
+console.log(`Main: End file`);

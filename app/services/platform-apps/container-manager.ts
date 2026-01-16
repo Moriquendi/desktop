@@ -316,8 +316,8 @@ export class PlatformContainerManager {
 
         if (details.resourceType === 'script') {
           const scriptAllowlist = [
-            'https://cdn.streamlabs.com/slobs-platform/lib/streamlabs-platform.js',
-            'https://cdn.streamlabs.com/slobs-platform/lib/streamlabs-platform.min.js',
+            'https://cdn.buffed.me/slobs-platform/lib/streamlabs-platform.js',
+            'https://cdn.buffed.me/slobs-platform/lib/streamlabs-platform.min.js',
           ];
 
           const scriptDomainAllowlist = [

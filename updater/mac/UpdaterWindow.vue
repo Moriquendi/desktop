@@ -59,7 +59,7 @@ export default {
   },
   methods: {
     download() {
-      remote.shell.openExternal('https://streamlabs.com/streamlabs-obs');
+      remote.shell.openExternal('https://buffed.me/streamlabs-obs');
       remote.app.quit();
     },
   },

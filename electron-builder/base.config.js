@@ -1,8 +1,9 @@
 const signtool = require('signtool');
+const { execSync } = require('child_process');
 
 const base = {
-  appId: 'com.streamlabs.slobs',
-  productName: 'Streamlabs Desktop',
+  appId: 'me.buffed.app.desktop',
+  productName: 'Buffed Desktop',
   icon: 'media/images/icon.ico',
   files: [
     'bundles',
@@ -15,6 +16,7 @@ const base = {
     'updater/build/bundle-updater.js',
     'updater/index.html',
     'index.html',
+    'monitor-helper/index.html',
     'main.js',
     'obs-api',
     'updater/mac/index.html',
@@ -29,17 +31,28 @@ const base = {
     perMachine: true,
     allowToChangeInstallationDirectory: true,
     include: 'installer.nsh',
+    deleteAppDataOnUninstall: true,
+
   },
-  asarUnpack : ["**/node-libuiohook/**", "**/node-fontinfo/**", "**/font-manager/**", "**/game_overlay/**","**/color-picker/**"],
+  asarUnpack: [
+    '**/node-libuiohook/**',
+    '**/node-fontinfo/**',
+    '**/font-manager/**',
+    '**/game_overlay/**',
+    '**/color-picker/**',
+  ],
   publish: {
-    provider: 'generic',
-    url: 'https://slobs-cdn.streamlabs.com',
+    provider: 'github',
+    owner: 'Moriquendi',
+    repo: 'desktop',
+    // url: 'https://buffed-cdn.buffed.me',
   },
   win: {
-    executableName: 'Streamlabs OBS',
+    //target: 'msi',
+    executableName: 'Buffed OBS',
     extraFiles: ['LICENSE', 'AGREEMENT', 'shared-resources/**/*', '!shared-resources/README'],
-    rfc3161TimeStampServer: 'http://timestamp.digicert.com',
-    timeStampServer: 'http://timestamp.digicert.com',
+    rfc3161TimeStampServer: 'http://timestamp.acs.microsoft.com',
+    timeStampServer: 'http://timestamp.acs.microsoft.com',
     signDlls: true,
     async sign(config) {
       if (process.env.SLOBS_NO_SIGN) return;
@@ -51,15 +64,28 @@ const base = {
         return;
       }
 
-      console.log(`Signing ${config.hash} ${config.path}`);
-      await signtool.sign(config.path, {
-        subject: 'Streamlabs (General Workings, Inc.)',
-        rfcTimestamp: 'http://timestamp.digicert.com',
-        algorithm: config.hash,
-        append: config.isNest,
-        description: config.name,
-        url: config.site,
-      });
+      console.log(`Signing [${config.hash} ${config.path}]`);
+
+      //return;
+
+      const command = `"C:\\Users\\michal\\Desktop\\signtool-x64\\signtool.exe" sign -v -debug -fd SHA256 -tr "http://timestamp.acs.microsoft.com" -td SHA256 -dlib "C:\\Users\\michal\\Desktop\\trust-x64\\Azure.CodeSigning.Dlib.dll" -dmdf "C:\\Users\\michal\\Desktop\\signMetadata.json" "${config.path}"`;
+      try {
+        const out = execSync(command, { stdio: 'inherit' });
+        console.log(out);
+      } catch (error) {
+        console.log('SIGN FAILED: ', error)
+        console.error(error);
+      }
+
+      // await signtool.sign(config.path, {
+      // subject: 'Paweł Niżnik',
+      //   rfcTimestamp: 'http://ts.ssl.com',
+      //   algorithm: 'sha256',
+      //   timestampAlgo: 'sha256',
+      //   append: config.isNest,
+      //   description: config.name,
+      //   url: config.site,
+      // });
     },
   },
   mac: {
@@ -84,8 +110,8 @@ const base = {
     extendInfo: {
       CFBundleURLTypes: [
         {
-          CFBundleURLName: 'Streamlabs OBS Link',
-          CFBundleURLSchemes: ['slobs'],
+          CFBundleURLName: 'Buffed OBS Link',
+          CFBundleURLSchemes: ['me.buffed.app.desktop'],
         },
       ],
     },

@@ -24,6 +24,12 @@ export class EditSourcePropertiesCommand extends CombinableCommand {
     const source = this.sourcesService.views.getSource(this.sourceId);
 
     this.beforeFormData = source.getPropertiesFormData();
+
+    console.log(`>>>. EXECUTE:`)
+    console.log(this.afterFormData)
+    console.log(this.formData)
+    console.log('--------')
+
     source.setPropertiesFormData(this.afterFormData || this.formData);
     this.afterFormData = source.getPropertiesFormData();
   }

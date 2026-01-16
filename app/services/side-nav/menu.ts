@@ -97,7 +97,7 @@ export class SideNavService extends PersistentStatefulService<ISideNavServiceSta
   @Inject() platformAppsService: PlatformAppsService;
 
   static defaultState: ISideNavServiceState = {
-    isOpen: false,
+    isOpen: true,
     showCustomEditor: true,
     hasLegacyMenu: true,
     currentMenuItem: EMenuItemKey.Editor,
@@ -109,6 +109,10 @@ export class SideNavService extends PersistentStatefulService<ISideNavServiceSta
 
   init() {
     super.init();
+
+    // Reset state to default
+    this.state = SideNavService.defaultState;
+
     this.userService.userLoginFinished.subscribe(() => this.handleUserLogin());
 
     this.handleDismissables();
@@ -133,7 +137,7 @@ export class SideNavService extends PersistentStatefulService<ISideNavServiceSta
 
       // add the recording history to the array of menu items
       const menuItems = [...this.state[ENavName.TopNav].menuItems];
-      menuItems.splice(index, 0, SideNavMenuItems()[EMenuItemKey.RecordingHistory]);
+      // menuItems.splice(index, 0, SideNavMenuItems()[EMenuItemKey.RecordingHistory]);
 
       // update the menu items
       this.UPDATE_MENU_ITEMS(ENavName.TopNav, menuItems);
@@ -269,19 +273,19 @@ export class SideNavService extends PersistentStatefulService<ISideNavServiceSta
       hasLegacyMenu: false,
       compactView: true,
       showCustomEditor: false,
-      [ENavName.TopNav]: {
-        ...this.state[ENavName.TopNav],
-        menuItems: [
-          { ...SideNavMenuItems()[EMenuItemKey.Editor], isActive: true },
-          { ...SideNavMenuItems()[EMenuItemKey.LayoutEditor], isActive: false },
-          { ...SideNavMenuItems()[EMenuItemKey.StudioMode], isActive: false },
-          { ...SideNavMenuItems()[EMenuItemKey.Themes], isActive: true },
-          { ...SideNavMenuItems()[EMenuItemKey.AppStore], isActive: true },
-          { ...SideNavMenuItems()[EMenuItemKey.Highlighter], isActive: true },
-          { ...SideNavMenuItems()[EMenuItemKey.RecordingHistory], isActive: true },
-          { ...SideNavMenuItems()[EMenuItemKey.ThemeAudit], isActive: true },
-        ],
-      },
+      // [ENavName.TopNav]: {
+      //   ...this.state[ENavName.TopNav],
+      //   menuItems: [
+      //     { ...SideNavMenuItems()[EMenuItemKey.Editor], isActive: true },
+      //     { ...SideNavMenuItems()[EMenuItemKey.LayoutEditor], isActive: false },
+      //     { ...SideNavMenuItems()[EMenuItemKey.StudioMode], isActive: false },
+      //     { ...SideNavMenuItems()[EMenuItemKey.Themes], isActive: true },
+      //     { ...SideNavMenuItems()[EMenuItemKey.AppStore], isActive: true },
+      //     { ...SideNavMenuItems()[EMenuItemKey.Highlighter], isActive: true },
+      //     { ...SideNavMenuItems()[EMenuItemKey.RecordingHistory], isActive: true },
+      //     { ...SideNavMenuItems()[EMenuItemKey.ThemeAudit], isActive: true },
+      //   ],
+      // },
       [ENavName.BottomNav]: {
         ...this.state[ENavName.BottomNav],
         menuItems: this.state[ENavName.BottomNav].menuItems.map((menuItem: IMenuItem) => {

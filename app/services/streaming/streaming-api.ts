@@ -7,6 +7,7 @@ import { IStreamError } from './stream-error';
 import { ICustomStreamDestination } from '../settings/streaming';
 import { ITiktokStartStreamOptions } from '../platforms/tiktok';
 import { ITrovoStartStreamOptions } from '../platforms/trovo';
+import { IBuffedStartStreamOptions } from 'services/platforms/buffed';
 import { IVideo } from 'obs-studio-node';
 import { ITwitterStartStreamOptions } from 'services/platforms/twitter';
 import { IInstagramStartStreamOptions } from 'services/platforms/instagram';
@@ -51,6 +52,7 @@ export interface IStreamInfo {
     facebook: TGoLiveChecklistItemState;
     tiktok: TGoLiveChecklistItemState;
     trovo: TGoLiveChecklistItemState;
+    buffed: TGoLiveChecklistItemState;
     twitter: TGoLiveChecklistItemState;
     instagram: TGoLiveChecklistItemState;
     setupMultistream: TGoLiveChecklistItemState;
@@ -68,6 +70,7 @@ export interface IStreamSettings {
     facebook?: IPlatformFlags & IFacebookStartStreamOptions;
     tiktok?: IPlatformFlags & ITiktokStartStreamOptions;
     trovo?: IPlatformFlags & ITrovoStartStreamOptions;
+    buffed?: IPlatformFlags & IBuffedStartStreamOptions;
     twitter?: IPlatformFlags & ITwitterStartStreamOptions;
     instagram?: IPlatformFlags & IInstagramStartStreamOptions;
   };

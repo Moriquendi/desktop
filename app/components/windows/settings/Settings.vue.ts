@@ -182,12 +182,20 @@ export default class Settings extends Vue {
   get categoryNames() {
     // dual output mode returns additional categories for each context
     // so hide these from the settings list
-    return this.settingsService
-      .getCategories()
-      .filter(category => !category.toLowerCase().startsWith('stream') || category === 'Stream');
+    return (
+      this.settingsService
+        .getCategories()
+        // buffed: hide 'stream' section
+        .filter(category => !(category.toLowerCase().startsWith('stream') || category === 'Stream'))
+    );
   }
 
   save(settingsData: ISettingsSubCategory[]) {
+    settingsData.forEach(setting => {
+      console.log(`\n\nSaving: ${setting.nameSubCategory}`);
+      console.log(`Data:`, JSON.stringify(setting.parameters));
+    });
+
     this.settingsService.setSettings(this.categoryName, settingsData);
   }
 

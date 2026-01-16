@@ -1,11 +1,11 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import styles from './Connect.m.less';
 import commonStyles from './Common.m.less';
 import { $t } from 'services/i18n';
 import { Services } from 'components-react/service-provider';
 import { injectState, useModule, mutation } from 'slap';
 import { ExtraPlatformConnect } from './ExtraPlatformConnect';
-import { EPlatformCallResult, TPlatform } from 'services/platforms';
+import { EPlatformCallResult, SocialPlatform, TPlatform } from 'services/platforms';
 import cx from 'classnames';
 import * as remote from '@electron/remote';
 import { OnboardingModule } from './Onboarding';
@@ -13,6 +13,7 @@ import PlatformLogo from 'components-react/shared/PlatformLogo';
 import { EAuthProcessState } from 'services/user';
 import { ListInput } from 'components-react/shared/inputs';
 import Form from 'components-react/shared/inputs/Form';
+import { BuffedPlatformConnect } from './Buffed/BuffedPlatformConnect';
 
 export function Connect() {
   const {
@@ -21,10 +22,27 @@ export function Connect() {
     loading,
     authInProgress,
     authPlatform,
+    authSocialPlatform,
     setExtraPlatform,
+    authBuffed,
+    authBuffedRegister,
   } = useModule(LoginModule);
   const { next } = useModule(OnboardingModule);
   const { UsageStatisticsService, OnboardingService, RecordingModeService } = Services;
+
+  return (
+    <BuffedPlatformConnect
+      onAuth={(email: string, password: string) => {
+        return authBuffed(email, password, afterLogin);
+      }}
+      onRegister={(email: string, password: string) => {
+        return authBuffedRegister(email, password, afterLogin);
+      }}
+      authPlatform={socialPlatform => {
+        return authSocialPlatform(socialPlatform, afterLogin);
+      }}
+    />
+  );
 
   if (selectedExtraPlatform) {
     return <ExtraPlatformConnect />;
@@ -47,7 +65,7 @@ export function Connect() {
 
   function afterLogin() {
     OnboardingService.actions.setExistingCollections();
-    next();
+    //next();
   }
 
   const platforms = RecordingModeService.views.isRecordingModeEnabled
@@ -57,17 +75,11 @@ export function Connect() {
   return (
     <div className={styles.pageContainer}>
       <div className={styles.container}>
-        <h1 className={commonStyles.titleContainer}>{$t('Connect')}</h1>
-        {!isRelog && (
-          <p style={{ marginBottom: 80 }}>
-            {$t('Sign in with your content platform to get started with Streamlabs')}
-          </p>
-        )}
+        <h1 className={commonStyles.titleContainer}>{$t('Sign in to Buffed')}</h1>
+        {/* {!isRelog && <p style={{ marginBottom: 80 }}>{$t('Sign in to Buffed')}</p>} */}
         {isRelog && (
           <h3 style={{ marginBottom: '16px' }}>
-            {$t(
-              'Your login has expired. Please reauthenticate to continue using Streamlabs Desktop.',
-            )}
+            {$t('Your login has expired. Please reauthenticate to continue using Buffed.')}
           </h3>
         )}
         <div className={styles.signupButtons}>
@@ -158,6 +170,21 @@ export class LoginModule {
 
   get isPartialSLAuth() {
     return this.UserService.views.isPartialSLAuth;
+  }
+
+  async authBuffed(email: string, password: string, onSuccess: () => void) {
+    await this.UserService.buffedAuth(email, password);
+    onSuccess();
+  }
+
+  async authBuffedRegister(email: string, password: string, onSuccess: () => void) {
+    await this.UserService.buffedAuthRegister(email, password);
+    onSuccess();
+  }
+
+  async authSocialPlatform(platform: SocialPlatform, onSuccess: () => void, merge = false) {
+    await this.UserService.startSocialAuth(platform);
+    onSuccess();
   }
 
   async authPlatform(platform: TPlatform | 'streamlabs', onSuccess: () => void, merge = false) {

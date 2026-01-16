@@ -127,6 +127,7 @@ export class StreamingService
         facebook: 'not-started',
         tiktok: 'not-started',
         trovo: 'not-started',
+        buffed: 'not-started',
         twitter: 'not-started',
         instagram: 'not-started',
         setupMultistream: 'not-started',
@@ -1412,9 +1413,13 @@ export class StreamingService
     const hoursStreamed = Math.floor(duration / 60 / 60);
     this.growService.incrementGoal('stream_hours_per_month', hoursStreamed);
     this.growService.incrementGoal('stream_times_per_week', 1);
-    if (this.restreamService.settings.enabled) {
-      this.growService.incrementGoal('multistream_per_week', 1);
-    }
+
+    // BUFFED
+    // this.restreamService.settings is undefined, why?
+    // Disabled it for now because otherwise it crashes.
+    // if (this.restreamService.settings.enabled) {
+    //   this.growService.incrementGoal('multistream_per_week', 1);
+    // }
   }
 
   /**

@@ -65,7 +65,7 @@ export default function BrowseOverlays(p: {
     mergePlatform = false,
   ) {
     const host = new urlLib.URL(url).hostname;
-    const trustedHosts = ['cdn.streamlabs.com'];
+    const trustedHosts = ['cdn.buffed.me'];
 
     if (!trustedHosts.includes(host)) {
       console.error(`Ignoring overlay install from untrusted host: ${host}`);
@@ -109,7 +109,7 @@ export default function BrowseOverlays(p: {
   async function installWidgets(urls: string[]) {
     for (const url of urls) {
       const host = new urlLib.URL(url).hostname;
-      const trustedHosts = ['cdn.streamlabs.com'];
+      const trustedHosts = ['cdn.buffed.me'];
 
       if (!trustedHosts.includes(host)) {
         console.error(`Ignoring widget install from untrusted host: ${host}`);

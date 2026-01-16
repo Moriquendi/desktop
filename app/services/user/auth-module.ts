@@ -7,10 +7,13 @@ import URI from 'urijs';
 import http from 'http';
 import Utils from 'services/utils';
 import * as remote from '@electron/remote';
+import { BuffedService } from 'app-services';
 import crypto from 'crypto';
 import { Inject } from 'services/core';
 import { HostsService } from 'app-services';
 import { jfetch } from 'util/requests';
+import parseISO from 'date-fns/parseISO';
+import differenceInSeconds from 'date-fns/differenceInSeconds';
 
 interface IPkceAuthResponse {
   data: {
@@ -21,6 +24,11 @@ interface IPkceAuthResponse {
     platform_username: string;
     token: string;
   };
+}
+
+interface BuffedDeeplinkAuthData {
+  token: string;
+  userId: string;
 }
 
 /**
@@ -107,7 +115,58 @@ export class AuthModule {
   }
 
   private authServer: http.Server;
+  private activeAuthResolver: ((value: BuffedDeeplinkAuthData) => void) | undefined;
 
+  continueExternalAuth(token: string, userId: string) {
+    console.log(`Auth module continue: ${token} ${userId}`);
+
+    this.activeAuthResolver({
+      token,
+      userId,
+    });
+  }
+
+  async startExternalAuthV2(authUrl: string, onWindowShow: () => void, merge = false) {
+    electron.shell.openExternal(authUrl);
+    onWindowShow();
+
+    console.log('Waiting for response deeplink');
+    const buffedAuthData = await new Promise<BuffedDeeplinkAuthData>(resolve => {
+      this.activeAuthResolver = resolve;
+    });
+
+    console.log('Continue auth...');
+    const buffedService = BuffedService.instance as BuffedService;
+    const userAuthInfo = await buffedService.continueAuth(buffedAuthData.token);
+
+    if (!userAuthInfo.profile.platform) {
+      const createdAt = parseISO(userAuthInfo.profile.created_at);
+      const diff = differenceInSeconds(new Date(), createdAt);
+      if (diff < 60) {
+        console.log('Auto-set user platform to PC. Diff:', diff);
+        await buffedService.setUserPlatformAndSignUpSourceToPC(buffedAuthData.token);
+      }
+    }
+
+    console.log('Authed!');
+    const authData: IUserAuth = {
+      widgetToken: userAuthInfo.token,
+      apiToken: userAuthInfo.token,
+
+      primaryPlatform: 'buffed' as any,
+
+      platforms: {
+        buffed: {
+          type: 'buffed',
+          username: '',
+          token: userAuthInfo.streamKey,
+          id: '',
+        },
+      },
+      hasRelogged: true,
+    };
+    return authData;
+  }
   private async externalLogin(
     authUrl: string,
     codeChallenge: string,
@@ -125,7 +184,7 @@ export class AuthModule {
 
         if (query['success']) {
           response.writeHead(302, {
-            Location: 'https://streamlabs.com/streamlabs-obs/login-success',
+            Location: 'https://buffed.me/buffed-obs/login-success',
           });
           response.end();
 

@@ -205,6 +205,9 @@ export class PlatformAppsService extends StatefulService<IPlatformAppServiceStat
 
   init() {
     this.userService.userLogin.subscribe(async () => {
+      console.log('[Buffed] Fetching config, apps, and dev mode, etc disabled.');
+      return;
+
       this.unloadAllApps();
       this.loadProductionApps();
       this.SET_APP_STORE_VISIBILITY(await this.fetchAppStoreVisibility());

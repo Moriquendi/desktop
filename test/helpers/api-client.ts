@@ -7,7 +7,7 @@ const net = require('net');
 const { spawnSync } = require('child_process');
 const snp = require('node-win32-np');
 
-const PIPE_NAME = 'slobs';
+const PIPE_NAME = 'buffed';
 const PIPE_PATH = `\\\\.\\pipe\\${PIPE_NAME}`;
 const PROMISE_TIMEOUT = 20000;
 

@@ -21,8 +21,8 @@ useWebdriver({
   beforeAppStartCb: async t => {
     const dataDir = path.resolve(__dirname, '..', '..', '..', '..', '..', 'test', 'data');
 
-    fs.mkdirSync(path.join(t.context.cacheDir, 'slobs-client'));
-    const sceneCollectionsPath = path.join(t.context.cacheDir, 'slobs-client', 'SceneCollections');
+    fs.mkdirSync(path.join(t.context.cacheDir, 'buffed-client'));
+    const sceneCollectionsPath = path.join(t.context.cacheDir, 'buffed-client', 'SceneCollections');
     fs.mkdirSync(sceneCollectionsPath);
 
     await copyFile(

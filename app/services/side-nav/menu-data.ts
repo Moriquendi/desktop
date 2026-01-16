@@ -25,6 +25,7 @@ export enum EMenuItemKey {
   GetHelp = 'get-help',
   Settings = 'settings',
   Login = 'login',
+  AutoStreamStatus = 'auto-status',
 }
 
 /**
@@ -116,7 +117,7 @@ export const loggedOutMenuItems: ISideNavItem[] = [
     key: EMenuItemKey.Editor,
     target: 'Studio',
   },
-  { key: EMenuItemKey.RecordingHistory, target: 'RecordingHistory' },
+  // { key: EMenuItemKey.RecordingHistory, target: 'RecordingHistory' },
 ];
 
 export const compactMenuItemKeys: EMenuItemKey[] = [
@@ -124,7 +125,7 @@ export const compactMenuItemKeys: EMenuItemKey[] = [
   EMenuItemKey.Themes,
   EMenuItemKey.AppStore,
   EMenuItemKey.Highlighter,
-  EMenuItemKey.RecordingHistory,
+  // EMenuItemKey.RecordingHistory,
 ];
 
 /**
@@ -148,6 +149,7 @@ export const menuTitles = (item: EMenuItemKey | ESubMenuItemKey | string) => {
     [EMenuItemKey.GetHelp]: $t('Get Help'),
     [EMenuItemKey.Settings]: $t('Settings'),
     [EMenuItemKey.Login]: $t('Login'),
+    [EMenuItemKey.AutoStreamStatus]: $t('Auto Stream'),
     [ESubMenuItemKey.Scene]: $t('Scene'),
     [ESubMenuItemKey.AlertBoxLibrary]: $t('Alert Box Library'),
     [ESubMenuItemKey.Widget]: $t('Widget'),
@@ -169,14 +171,18 @@ export const menuTitles = (item: EMenuItemKey | ESubMenuItemKey | string) => {
 export const SideBarTopNavData = (): IMenu => ({
   name: ENavName.TopNav,
   menuItems: [
-    SideNavMenuItems()[EMenuItemKey.Editor],
-    SideNavMenuItems()[EMenuItemKey.LayoutEditor],
-    SideNavMenuItems()[EMenuItemKey.StudioMode],
-    SideNavMenuItems()[EMenuItemKey.Themes],
-    SideNavMenuItems()[EMenuItemKey.AppStore],
-    SideNavMenuItems()[EMenuItemKey.Highlighter],
-    SideNavMenuItems()[EMenuItemKey.RecordingHistory],
-    SideNavMenuItems()[EMenuItemKey.ThemeAudit],
+    SideNavMenuItems()[EMenuItemKey.GetHelp],
+    SideNavMenuItems()[EMenuItemKey.Settings],
+    SideNavMenuItems()[EMenuItemKey.AutoStreamStatus],
+
+    // SideNavMenuItems()[EMenuItemKey.Editor],
+    // SideNavMenuItems()[EMenuItemKey.LayoutEditor],
+    // SideNavMenuItems()[EMenuItemKey.StudioMode],
+    // SideNavMenuItems()[EMenuItemKey.Themes],
+    // SideNavMenuItems()[EMenuItemKey.AppStore],
+    // SideNavMenuItems()[EMenuItemKey.Highlighter],
+    // SideNavMenuItems()[EMenuItemKey.RecordingHistory],
+    // SideNavMenuItems()[EMenuItemKey.ThemeAudit],
   ],
 });
 
@@ -186,11 +192,9 @@ export const SideBarTopNavData = (): IMenu => ({
 export const SideBarBottomNavData = (): IMenu => ({
   name: ENavName.BottomNav,
   menuItems: [
-    SideNavMenuItems()[EMenuItemKey.DevTools],
-    SideNavMenuItems()[EMenuItemKey.GetPrime],
-    SideNavMenuItems()[EMenuItemKey.Dashboard],
-    SideNavMenuItems()[EMenuItemKey.GetHelp],
-    SideNavMenuItems()[EMenuItemKey.Settings],
+    // SideNavMenuItems()[EMenuItemKey.DevTools],
+    // SideNavMenuItems()[EMenuItemKey.GetPrime],
+    // SideNavMenuItems()[EMenuItemKey.Dashboard],
     SideNavMenuItems()[EMenuItemKey.Login],
   ],
 });
@@ -315,6 +319,12 @@ export const SideNavMenuItems = (): TMenuItems => ({
   },
   [EMenuItemKey.Login]: {
     key: EMenuItemKey.Login,
+    icon: 'icon-user',
+    isActive: true,
+    isExpanded: false,
+  },
+  [EMenuItemKey.AutoStreamStatus]: {
+    key: EMenuItemKey.AutoStreamStatus,
     icon: 'icon-user',
     isActive: true,
     isExpanded: false,

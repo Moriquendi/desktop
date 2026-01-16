@@ -57,6 +57,10 @@ export const DualOutputPlatformSettings: TDualOutputPlatformSettings = {
     platform: EPlatform.Instagram,
     display: EOutputDisplayType.Vertical,
   },
+  [EPlatform.Buffed]: {
+    platform: EPlatform.Buffed,
+    display: EOutputDisplayType.Horizontal,
+  },
 };
 
 export const displayLabels = (display: EOutputDisplayType | string) =>

@@ -182,8 +182,8 @@ export default function BlankSlate(p: { close: () => void }) {
                 outline: 'none',
               }}
               controls
-              src="https://slobs-cdn.streamlabs.com/media/highlighter+promo+2.mp4"
-              poster="https://slobs-cdn.streamlabs.com/media/highlighter-video-thumbnail.png"
+              src="https://buffed-cdn.buffed.me/media/highlighter+promo+2.mp4"
+              poster="https://buffed-cdn.buffed.me/media/highlighter-video-thumbnail.png"
             />
           </div>
         </div>

@@ -12,6 +12,7 @@ export default function StartStreamingButton(p: { disabled?: boolean }) {
     StreamingService,
     StreamSettingsService,
     UserService,
+    BuffedService,
     CustomizationService,
     MediaBackupService,
     SourcesService,
@@ -45,7 +46,21 @@ export default function StartStreamingButton(p: { disabled?: boolean }) {
   }, [delaySecondsRemaining, streamingStatus, delayEnabled]);
 
   async function toggleStreaming() {
+    console.log('CTA CLICK');
+
+    if (!UserService.isLoggedIn) {
+      UserService.actions.showLogin();
+      return;
+    }
+
+    const profilePlatform = BuffedService.state.profile?.platform;
+    if (profilePlatform !== 'pc') {
+      BuffedService.actions.showPlatformSetup();
+      return;
+    }
+
     if (StreamingService.isStreaming) {
+      console.log(`Is streaming. Ending...`);
       StreamingService.toggleStreaming();
     } else {
       if (MediaBackupService.views.globalSyncStatus === EGlobalSyncStatus.Syncing) {
@@ -69,6 +84,16 @@ export default function StartStreamingButton(p: { disabled?: boolean }) {
           .length === 0;
 
       if (needToShowNoSourcesWarning) {
+        ////////////////////////////////////////////////////////////
+        console.log(`Showing warning because:`);
+        console.log(
+          `StreamSettingsService.settings.warnNoVideoSources: ${StreamSettingsService.settings.warnNoVideoSources}`,
+        );
+        console.log(`getSources: `);
+        console.log(SourcesService.views.getSources().map(source => source.type));
+        console.log(SourcesService.views.getSources().map(source => source.video));
+        ////////////////////////////////////////////////////////////
+
         const goLive = await remote.dialog
           .showMessageBox(remote.getCurrentWindow(), {
             title: $t('No Sources'),
@@ -108,39 +133,47 @@ export default function StartStreamingButton(p: { disabled?: boolean }) {
     (streamingStatus === EStreamingState.Ending && delaySecondsRemaining === 0);
 
   function shouldShowGoLiveWindow() {
-    if (!UserService.isLoggedIn) return false;
-    const primaryPlatform = UserService.state.auth?.primaryPlatform;
-    const updateStreamInfoOnLive = CustomizationService.state.updateStreamInfoOnLive;
+    // Buffed - just go live without any extra steps.
 
-    if (!primaryPlatform) return false;
+    return false;
 
     if (StreamingService.views.isDualOutputMode) {
       return true;
     }
 
-    if (
-      !!UserService.state.auth?.platforms &&
-      StreamingService.views.isMultiplatformMode &&
-      Object.keys(UserService.state.auth?.platforms).length > 1
-    ) {
-      return true;
-    }
+    // if (
+    //   !!UserService.state.auth?.platforms &&
+    //   StreamingService.views.isMultiplatformMode &&
+    //   Object.keys(UserService.state.auth?.platforms).length > 1
+    // ) {
+    //   return true;
+    // }
 
-    if (primaryPlatform === 'twitch') {
-      // For Twitch, we can show the Go Live window even with protected mode off
-      // This is mainly for legacy reasons.
-      return StreamingService.views.isMultiplatformMode || updateStreamInfoOnLive;
-    } else {
-      return (
-        StreamSettingsService.state.protectedModeEnabled &&
-        StreamSettingsService.isSafeToModifyStreamKey()
-      );
-    }
+    // if (!primaryPlatform) return false;
+
+    // if (
+    //   !!UserService.state.auth?.platforms &&
+    //   StreamingService.views.isMultiplatformMode &&
+    //   Object.keys(UserService.state.auth?.platforms).length > 1
+    // ) {
+    //   return true;
+    // }
+
+    // if (primaryPlatform === 'twitch') {
+    //   // For Twitch, we can show the Go Live window even with protected mode off
+    //   // This is mainly for legacy reasons.
+    //   return StreamingService.views.isMultiplatformMode || updateStreamInfoOnLive;
+    // } else {
+    //   return (
+    //     StreamSettingsService.state.protectedModeEnabled &&
+    //     StreamSettingsService.isSafeToModifyStreamKey()
+    //   );
+    // }
   }
 
   return (
     <button
-      style={{ minWidth: '130px' }}
+      style={{ minWidth: '250px' }}
       className={cx('button button--action', { 'button--soft-warning': getIsRedButton })}
       disabled={isDisabled}
       onClick={toggleStreaming}
@@ -160,7 +193,7 @@ function StreamButtonLabel(p: {
   delayEnabled: boolean;
 }) {
   if (p.streamingStatus === EStreamingState.Live) {
-    return <>{$t('End Stream')}</>;
+    return <>{$t('End')}</>;
   }
 
   if (p.streamingStatus === EStreamingState.Starting) {
@@ -183,5 +216,5 @@ function StreamButtonLabel(p: {
     return <>{$t('Reconnecting')}</>;
   }
 
-  return <>{$t('Go Live')}</>;
+  return <>{$t('Start Game Capture')}</>;
 }

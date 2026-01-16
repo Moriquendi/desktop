@@ -687,7 +687,7 @@ export class FacebookService
         this.state.settings.pageId,
       );
       if (!token) return '';
-      return `https://streamlabs.com/embed/chat?oauth_token=${this.userService.apiToken}&fbVideoId=${this.state.settings.liveVideoId}&fbToken=${token}`;
+      return `https://buffed.me/embed/chat?oauth_token=${this.userService.apiToken}&fbVideoId=${this.state.settings.liveVideoId}&fbToken=${token}`;
     }
   }
 

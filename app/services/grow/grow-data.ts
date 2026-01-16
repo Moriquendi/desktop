@@ -30,7 +30,7 @@ export const GROWTH_TIPS = () => [
   {
     title: 'Use the Streamlabs Controller App',
     icon: 'icon-phone-case',
-    link: 'https://streamlabs.com/content-hub/post/streamlabs-deck-app-remote-control-your-stream',
+    link: 'https://buffed.me/content-hub/post/streamlabs-deck-app-remote-control-your-stream',
     cta: 'Download Streamlabs Controller App',
     description:
       'Control your scenes, sources, and more from your mobile device for free with the Streamlabs Controller App',
@@ -54,7 +54,7 @@ export const GROWTH_TIPS = () => [
   {
     title: 'Stream on the Go',
     icon: 'icon-phone-case',
-    link: 'https://streamlabs.com/mobile-app',
+    link: 'https://buffed.me/mobile-app',
     cta: 'Download Streamlabs Mobile',
     description:
       'Diversify your content and reach new audiences while streaming untethered from your computer',
@@ -106,37 +106,37 @@ export const GROWTH_TIPS = () => [
 export const GOAL_OPTIONS = () => [
   {
     title: 'Stream 28 hours in 1 month',
-    image: 'https://slobs-cdn.streamlabs.com/media/grow/goal_stream_time.png',
+    image: 'https://buffed-cdn.buffed.me/media/grow/goal_stream_time.png',
     total: 28,
     type: 'stream_hours_per_month',
   },
   {
     title: 'Multistream 3 times in 1 week',
-    image: 'https://slobs-cdn.streamlabs.com/media/grow/goal_multistream.png',
+    image: 'https://buffed-cdn.buffed.me/media/grow/goal_multistream.png',
     total: 5,
     type: 'multistream_per_week',
   },
   {
     title: 'Add 3 panels',
-    image: 'https://slobs-cdn.streamlabs.com/media/grow/goal_panels.png',
+    image: 'https://buffed-cdn.buffed.me/media/grow/goal_panels.png',
     total: 3,
     type: 'panels',
   },
   {
     title: 'Stream 4 times in 1 week',
-    image: 'https://slobs-cdn.streamlabs.com/media/grow/goal_stream_days.png',
+    image: 'https://buffed-cdn.buffed.me/media/grow/goal_stream_days.png',
     total: 4,
     type: 'stream_times_per_week',
   },
   {
     title: 'Stream on mobile 3 times',
-    image: 'https://slobs-cdn.streamlabs.com/media/grow/goal_stream_days.png',
+    image: 'https://buffed-cdn.buffed.me/media/grow/goal_stream_days.png',
     total: 3,
     type: 'stream_mobile_per_week',
   },
   {
     title: 'Try streaming 5 different categories',
-    image: 'https://slobs-cdn.streamlabs.com/media/grow/goal_stream_days.png',
+    image: 'https://buffed-cdn.buffed.me/media/grow/goal_stream_days.png',
     total: 5,
     type: 'streaming_categories',
   },

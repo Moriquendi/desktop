@@ -85,16 +85,16 @@ export default function SideNav() {
         <Scrollable className={cx(styles.sidenavScroll)}>
           {/* top navigation menu */}
           <FeaturesNav />
-
+          <div style={{ flexGrow: 1 }} />
           {/* bottom navigation menu */}
           <NavTools />
         </Scrollable>
 
-        <LoginHelpTip />
+        {/* <LoginHelpTip /> */}
       </Sider>
 
       {/* this button toggles the menu open and close */}
-      <Button
+      {/* <Button
         type="primary"
         className={cx(
           styles.sidenavButton,
@@ -109,7 +109,16 @@ export default function SideNav() {
         }}
       >
         <i className="icon-back" />
-      </Button>
+      </Button> */}
+      <div className={cx(styles.separator)} />
+
+      {/* if it's a legacy menu, show new badge */}
+      {/* <NewBadge
+        dismissableKey={EDismissable.NewSideNav}
+        size="small"
+        absolute
+        style={{ left: 'calc(100% / 20px)', top: 'calc(100% / 2)' }}
+      /> */}
     </Layout>
   );
 }
@@ -119,9 +128,9 @@ function LoginHelpTip() {
     <HelpTip
       title={$t('Login')}
       dismissableKey={EDismissable.LoginPrompt}
-      position={{ top: 'calc(100vh - 175px)', left: '80px' }}
+      position={{ top: 'calc(85px)', left: '100px' }}
       arrowPosition="bottom"
-      style={{ position: 'absolute' }}
+      style={{ position: 'absolute', zIndex: 999999 }}
     >
       <div>
         {$t(

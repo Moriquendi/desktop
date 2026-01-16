@@ -9,42 +9,42 @@ import { ViewHandler } from './core';
 export class HostsService extends Service {
   get streamlabs() {
     if (Util.shouldUseLocalHost()) {
-      return 'streamlabs.site';
+      return 'buffed.site';
     } else if (Util.shouldUseBeta()) {
-      return 'beta.streamlabs.com';
+      return 'beta.buffed.me';
     }
 
-    return 'streamlabs.com';
+    return 'buffed.me';
   }
 
   get overlays() {
-    return 'overlays.streamlabs.com';
+    return 'overlays.buffed.me';
   }
 
   get media() {
-    return 'media.streamlabs.com';
+    return 'media.buffed.me';
   }
 
   get io() {
     if (Util.shouldUseLocalHost()) {
-      return 'http://io.streamlabs.site:4567';
+      return 'http://io.buffed.site:4567';
     } else if (Util.shouldUseBeta()) {
-      return 'https://beta.streamlabs.com';
+      return 'https://beta.buffed.me';
     }
 
-    return 'https://aws-io.streamlabs.com';
+    return 'https://aws-io.buffed.me';
   }
 
   get cdn() {
-    return 'cdn.streamlabs.com';
+    return 'cdn.buffed.me';
   }
 
   get platform() {
-    return 'platform.streamlabs.com';
+    return 'platform.buffed.me';
   }
 
   get analitycs() {
-    return 'r2d2.streamlabs.com';
+    return 'r2d2.buffed.me';
   }
 }
 

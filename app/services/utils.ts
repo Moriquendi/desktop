@@ -57,6 +57,10 @@ export default class Utils {
     return this.getUrlParams(window.location.href);
   }
 
+  static getShouldShow(): boolean {
+    return this.getCurrentUrlParams().show === 'true';
+  }
+
   static getWindowId(): string {
     return this.getCurrentUrlParams().windowId;
   }
@@ -295,6 +299,6 @@ export function $i(mediaPath: string) {
 
     return localMediaPath;
   } catch (e: unknown) {
-    return `https://slobs-cdn.streamlabs.com/media/${mediaPath}`;
+    return `https://buffed-cdn.buffed.me/media/${mediaPath}`;
   }
 }

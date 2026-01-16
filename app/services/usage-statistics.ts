@@ -139,6 +139,8 @@ export class UsageStatisticsService extends Service {
    * @param metadata arbitrary data to store with the event (must be serializable)
    */
   recordEvent(event: TUsageEvent, metadata: object = {}) {
+    // Buffed: Disabled
+    return;
     if (!this.isProduction) return;
 
     let headers = new Headers();
@@ -184,7 +186,7 @@ export class UsageStatisticsService extends Service {
     const analyticsEvent: IAnalyticsEvent = {
       event,
       value,
-      product: 'SLOBS',
+      product: 'BUFFED',
       version: this.version,
       count: 1,
       uuid: this.userService.getLocalUserId(),

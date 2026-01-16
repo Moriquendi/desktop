@@ -209,6 +209,11 @@ export class Scene {
     settings?: Dictionary<any>,
     options: ISceneNodeAddOptions = {},
   ): SceneItem {
+    console.log('xxx create add source name: ' + sourceName);
+    console.log(`xxx type: ${type}`);
+    console.log(`xxx settings: `, settings);
+    console.log(`xxx options: `, options);
+
     const sourceAddOptions = options.sourceAddOptions || {};
     const source = this.sourcesService.createSource(sourceName, type, settings, sourceAddOptions);
     return this.addSource(source.sourceId, options);

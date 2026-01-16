@@ -224,7 +224,7 @@ export const newVariation = (type: string): IAlertBoxVariation => ({
     image: {
       href:
         type === 'merch'
-          ? 'https://cdn.streamlabs.com/merch/Mug_mockup.png'
+          ? 'https://cdn.buffed.me/merch/Mug_mockup.png'
           : 'http://uploads.twitchalerts.com/image-defaults/1n9bK4w.gif',
     },
     layout: 'above',

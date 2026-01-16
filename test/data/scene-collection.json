@@ -15,7 +15,7 @@
           "color_range": 0,
           "hw_decode": true,
           "is_local_file": true,
-          "local_file": "C:\\Users\\acree\\AppData\\Roaming\\slobs-client\\Overlays\\00ce2015-bf9c-4605-80fd-b90c48d33278\\44.webm",
+          "local_file": "C:\\Users\\acree\\AppData\\Roaming\\buffed-client\\Overlays\\00ce2015-bf9c-4605-80fd-b90c48d33278\\44.webm",
           "looping": true,
           "restart_on_activate": true,
           "speed_percent": 100
@@ -35,7 +35,7 @@
           "mediaBackup": {
             "localId": "a88883c3-6c93-4f4c-ae5a-f787a7a5baed",
             "serverId": 3653,
-            "originalPath": "C:\\Users\\acree\\AppData\\Roaming\\slobs-client\\Overlays\\00ce2015-bf9c-4605-80fd-b90c48d33278\\44.webm"
+            "originalPath": "C:\\Users\\acree\\AppData\\Roaming\\buffed-client\\Overlays\\00ce2015-bf9c-4605-80fd-b90c48d33278\\44.webm"
           }
         },
         "forceMono": false,
@@ -51,7 +51,7 @@
         "name": "Background (Delete me)",
         "type": "image_source",
         "settings": {
-          "file": "C:\\Users\\acree\\AppData\\Roaming\\slobs-client\\Overlays\\00ce2015-bf9c-4605-80fd-b90c48d33278\\45.png",
+          "file": "C:\\Users\\acree\\AppData\\Roaming\\buffed-client\\Overlays\\00ce2015-bf9c-4605-80fd-b90c48d33278\\45.png",
           "unload": false
         },
         "volume": 1,
@@ -69,7 +69,7 @@
           "mediaBackup": {
             "localId": "9e1fc029-1488-4e0e-afcf-c6a7f85d92b4",
             "serverId": 3651,
-            "originalPath": "C:\\Users\\acree\\AppData\\Roaming\\slobs-client\\Overlays\\00ce2015-bf9c-4605-80fd-b90c48d33278\\45.png"
+            "originalPath": "C:\\Users\\acree\\AppData\\Roaming\\buffed-client\\Overlays\\00ce2015-bf9c-4605-80fd-b90c48d33278\\45.png"
           }
         }
       },
@@ -124,7 +124,7 @@
           "color_range": 0,
           "hw_decode": true,
           "is_local_file": true,
-          "local_file": "C:\\Users\\acree\\AppData\\Roaming\\slobs-client\\Overlays\\00ce2015-bf9c-4605-80fd-b90c48d33278\\46.webm",
+          "local_file": "C:\\Users\\acree\\AppData\\Roaming\\buffed-client\\Overlays\\00ce2015-bf9c-4605-80fd-b90c48d33278\\46.webm",
           "looping": true,
           "restart_on_activate": true,
           "speed_percent": 100
@@ -144,7 +144,7 @@
           "mediaBackup": {
             "localId": "2a9d9f72-ccba-42b2-8877-7085515ad7da",
             "serverId": 3649,
-            "originalPath": "C:\\Users\\acree\\AppData\\Roaming\\slobs-client\\Overlays\\00ce2015-bf9c-4605-80fd-b90c48d33278\\46.webm"
+            "originalPath": "C:\\Users\\acree\\AppData\\Roaming\\buffed-client\\Overlays\\00ce2015-bf9c-4605-80fd-b90c48d33278\\46.webm"
           }
         },
         "forceMono": false,
@@ -165,7 +165,7 @@
           "color_range": 0,
           "hw_decode": true,
           "is_local_file": true,
-          "local_file": "C:\\Users\\acree\\AppData\\Roaming\\slobs-client\\Overlays\\00ce2015-bf9c-4605-80fd-b90c48d33278\\47.webm",
+          "local_file": "C:\\Users\\acree\\AppData\\Roaming\\buffed-client\\Overlays\\00ce2015-bf9c-4605-80fd-b90c48d33278\\47.webm",
           "looping": true,
           "restart_on_activate": true,
           "speed_percent": 100
@@ -185,7 +185,7 @@
           "mediaBackup": {
             "localId": "3017264f-e621-4b88-a1f2-e34c31968ab1",
             "serverId": 3650,
-            "originalPath": "C:\\Users\\acree\\AppData\\Roaming\\slobs-client\\Overlays\\00ce2015-bf9c-4605-80fd-b90c48d33278\\47.webm"
+            "originalPath": "C:\\Users\\acree\\AppData\\Roaming\\buffed-client\\Overlays\\00ce2015-bf9c-4605-80fd-b90c48d33278\\47.webm"
           }
         },
         "forceMono": false,
@@ -344,11 +344,11 @@
           "bk_opacity": 0,
           "chatlog_lines": 6,
           "color": 16777215,
-          "custom_font": "C:\\Users\\acree\\AppData\\Roaming\\slobs-client\\Fonts\\Roboto-Medium.ttf",
+          "custom_font": "C:\\Users\\acree\\AppData\\Roaming\\buffed-client\\Fonts\\Roboto-Medium.ttf",
           "extents_cx": 100,
           "extents_cy": 100,
           "extents_wrap": true,
-          "file": "C:\\Users\\acree\\AppData\\Roaming\\slobs-client\\Streamlabels\\e3d81673-d246-4a1a-9635-6dd0cdc97253.txt",
+          "file": "C:\\Users\\acree\\AppData\\Roaming\\buffed-client\\Streamlabels\\e3d81673-d246-4a1a-9635-6dd0cdc97253.txt",
           "font": {
             "face": "Roboto Medium",
             "flags": 0,
@@ -391,12 +391,12 @@
           "bk_opacity": 0,
           "chatlog_lines": 6,
           "color": 16777215,
-          "custom_font": "C:\\Users\\acree\\AppData\\Roaming\\slobs-client\\Fonts\\Roboto-Medium.ttf",
+          "custom_font": "C:\\Users\\acree\\AppData\\Roaming\\buffed-client\\Fonts\\Roboto-Medium.ttf",
           "extents": true,
           "extents_cx": 800,
           "extents_cy": 100,
           "extents_wrap": true,
-          "file": "C:\\Users\\acree\\AppData\\Roaming\\slobs-client\\Streamlabels\\96c087e2-75e3-470d-8abb-9b154216c94a.txt",
+          "file": "C:\\Users\\acree\\AppData\\Roaming\\buffed-client\\Streamlabels\\96c087e2-75e3-470d-8abb-9b154216c94a.txt",
           "font": {
             "face": "Roboto Medium",
             "flags": 0,
@@ -440,12 +440,12 @@
           "chatlog": false,
           "chatlog_lines": 6,
           "color": 16777215,
-          "custom_font": "C:\\Users\\acree\\AppData\\Roaming\\slobs-client\\Fonts\\Roboto-Medium.ttf",
+          "custom_font": "C:\\Users\\acree\\AppData\\Roaming\\buffed-client\\Fonts\\Roboto-Medium.ttf",
           "extents": true,
           "extents_cx": 1000,
           "extents_cy": 170,
           "extents_wrap": true,
-          "file": "C:\\Users\\acree\\AppData\\Roaming\\slobs-client\\Streamlabels\\bfd6e210-4600-4051-970c-4e7902a8672a.txt",
+          "file": "C:\\Users\\acree\\AppData\\Roaming\\buffed-client\\Streamlabels\\bfd6e210-4600-4051-970c-4e7902a8672a.txt",
           "font": {
             "face": "Roboto Medium",
             "flags": 0,
@@ -489,7 +489,7 @@
           "color_range": 0,
           "hw_decode": true,
           "is_local_file": true,
-          "local_file": "C:\\Users\\acree\\AppData\\Roaming\\slobs-client\\Overlays\\00ce2015-bf9c-4605-80fd-b90c48d33278\\48.webm",
+          "local_file": "C:\\Users\\acree\\AppData\\Roaming\\buffed-client\\Overlays\\00ce2015-bf9c-4605-80fd-b90c48d33278\\48.webm",
           "looping": true,
           "restart_on_activate": true,
           "speed_percent": 100
@@ -509,7 +509,7 @@
           "mediaBackup": {
             "localId": "af3671dc-2f30-4cb4-b302-f1d3ee5f56d2",
             "serverId": 3655,
-            "originalPath": "C:\\Users\\acree\\AppData\\Roaming\\slobs-client\\Overlays\\00ce2015-bf9c-4605-80fd-b90c48d33278\\48.webm"
+            "originalPath": "C:\\Users\\acree\\AppData\\Roaming\\buffed-client\\Overlays\\00ce2015-bf9c-4605-80fd-b90c48d33278\\48.webm"
           }
         },
         "forceMono": false,
@@ -525,7 +525,7 @@
         "name": "YouTube",
         "type": "image_source",
         "settings": {
-          "file": "C:\\Users\\acree\\AppData\\Roaming\\slobs-client\\Overlays\\00ce2015-bf9c-4605-80fd-b90c48d33278\\49.png",
+          "file": "C:\\Users\\acree\\AppData\\Roaming\\buffed-client\\Overlays\\00ce2015-bf9c-4605-80fd-b90c48d33278\\49.png",
           "unload": false
         },
         "volume": 1,
@@ -543,7 +543,7 @@
           "mediaBackup": {
             "localId": "5ab61095-9ac5-406e-8148-e58975e3444e",
             "serverId": 3647,
-            "originalPath": "C:\\Users\\acree\\AppData\\Roaming\\slobs-client\\Overlays\\00ce2015-bf9c-4605-80fd-b90c48d33278\\49.png"
+            "originalPath": "C:\\Users\\acree\\AppData\\Roaming\\buffed-client\\Overlays\\00ce2015-bf9c-4605-80fd-b90c48d33278\\49.png"
           }
         }
       },
@@ -552,7 +552,7 @@
         "name": "Twitter",
         "type": "image_source",
         "settings": {
-          "file": "C:\\Users\\acree\\AppData\\Roaming\\slobs-client\\Overlays\\00ce2015-bf9c-4605-80fd-b90c48d33278\\50.png",
+          "file": "C:\\Users\\acree\\AppData\\Roaming\\buffed-client\\Overlays\\00ce2015-bf9c-4605-80fd-b90c48d33278\\50.png",
           "unload": false
         },
         "volume": 1,
@@ -570,7 +570,7 @@
           "mediaBackup": {
             "localId": "dcf9a0b1-dbdf-40e1-b6d6-e99ab3a03697",
             "serverId": 3645,
-            "originalPath": "C:\\Users\\acree\\AppData\\Roaming\\slobs-client\\Overlays\\00ce2015-bf9c-4605-80fd-b90c48d33278\\50.png"
+            "originalPath": "C:\\Users\\acree\\AppData\\Roaming\\buffed-client\\Overlays\\00ce2015-bf9c-4605-80fd-b90c48d33278\\50.png"
           }
         }
       },
@@ -579,7 +579,7 @@
         "name": "Instagram",
         "type": "image_source",
         "settings": {
-          "file": "C:\\Users\\acree\\AppData\\Roaming\\slobs-client\\Overlays\\00ce2015-bf9c-4605-80fd-b90c48d33278\\51.png",
+          "file": "C:\\Users\\acree\\AppData\\Roaming\\buffed-client\\Overlays\\00ce2015-bf9c-4605-80fd-b90c48d33278\\51.png",
           "unload": false
         },
         "volume": 1,
@@ -597,7 +597,7 @@
           "mediaBackup": {
             "localId": "a9f27929-e180-4f52-bdda-4023e43f0054",
             "serverId": 3648,
-            "originalPath": "C:\\Users\\acree\\AppData\\Roaming\\slobs-client\\Overlays\\00ce2015-bf9c-4605-80fd-b90c48d33278\\51.png"
+            "originalPath": "C:\\Users\\acree\\AppData\\Roaming\\buffed-client\\Overlays\\00ce2015-bf9c-4605-80fd-b90c48d33278\\51.png"
           }
         }
       },
@@ -606,7 +606,7 @@
         "name": "Facebook",
         "type": "image_source",
         "settings": {
-          "file": "C:\\Users\\acree\\AppData\\Roaming\\slobs-client\\Overlays\\00ce2015-bf9c-4605-80fd-b90c48d33278\\52.png",
+          "file": "C:\\Users\\acree\\AppData\\Roaming\\buffed-client\\Overlays\\00ce2015-bf9c-4605-80fd-b90c48d33278\\52.png",
           "unload": false
         },
         "volume": 1,
@@ -624,7 +624,7 @@
           "mediaBackup": {
             "localId": "d937530d-bfc1-4f10-8fdf-7c277477b60d",
             "serverId": 3646,
-            "originalPath": "C:\\Users\\acree\\AppData\\Roaming\\slobs-client\\Overlays\\00ce2015-bf9c-4605-80fd-b90c48d33278\\52.png"
+            "originalPath": "C:\\Users\\acree\\AppData\\Roaming\\buffed-client\\Overlays\\00ce2015-bf9c-4605-80fd-b90c48d33278\\52.png"
           }
         }
       },
@@ -822,7 +822,7 @@
           "color_range": 0,
           "hw_decode": true,
           "is_local_file": true,
-          "local_file": "C:\\Users\\acree\\AppData\\Roaming\\slobs-client\\Overlays\\00ce2015-bf9c-4605-80fd-b90c48d33278\\53.webm",
+          "local_file": "C:\\Users\\acree\\AppData\\Roaming\\buffed-client\\Overlays\\00ce2015-bf9c-4605-80fd-b90c48d33278\\53.webm",
           "looping": true,
           "restart_on_activate": true,
           "speed_percent": 100
@@ -842,7 +842,7 @@
           "mediaBackup": {
             "localId": "1cbfbf07-4e44-404d-a6d6-1cd041d60fc9",
             "serverId": 3652,
-            "originalPath": "C:\\Users\\acree\\AppData\\Roaming\\slobs-client\\Overlays\\00ce2015-bf9c-4605-80fd-b90c48d33278\\53.webm"
+            "originalPath": "C:\\Users\\acree\\AppData\\Roaming\\buffed-client\\Overlays\\00ce2015-bf9c-4605-80fd-b90c48d33278\\53.webm"
           }
         },
         "forceMono": false,
@@ -863,7 +863,7 @@
           "color_range": 0,
           "hw_decode": true,
           "is_local_file": true,
-          "local_file": "C:\\Users\\acree\\AppData\\Roaming\\slobs-client\\Overlays\\00ce2015-bf9c-4605-80fd-b90c48d33278\\54.webm",
+          "local_file": "C:\\Users\\acree\\AppData\\Roaming\\buffed-client\\Overlays\\00ce2015-bf9c-4605-80fd-b90c48d33278\\54.webm",
           "looping": true,
           "restart_on_activate": true,
           "speed_percent": 100
@@ -883,7 +883,7 @@
           "mediaBackup": {
             "localId": "64ecebe3-7ba7-4be4-834d-585343b8db86",
             "serverId": 3654,
-            "originalPath": "C:\\Users\\acree\\AppData\\Roaming\\slobs-client\\Overlays\\00ce2015-bf9c-4605-80fd-b90c48d33278\\54.webm"
+            "originalPath": "C:\\Users\\acree\\AppData\\Roaming\\buffed-client\\Overlays\\00ce2015-bf9c-4605-80fd-b90c48d33278\\54.webm"
           }
         },
         "forceMono": false,

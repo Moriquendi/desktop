@@ -57,7 +57,7 @@ export class TcpServerService
     token: '',
     namedPipe: {
       enabled: true,
-      pipeName: 'slobs',
+      pipeName: 'buffed',
     },
     websockets: {
       enabled: false,

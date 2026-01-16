@@ -13,6 +13,7 @@ import Utils from './utils';
 import { RecordingModeService } from './recording-mode';
 import * as remote from '@electron/remote';
 import { Subject } from 'rxjs';
+import { BuffedService, CustomizationService } from 'app-services';
 
 enum EOnboardingSteps {
   MacPermissions = 'MacPermissions',
@@ -183,7 +184,7 @@ class OnboardingViews extends ViewHandler<IOnboardingServiceState> {
       steps.push(ONBOARDING_STEPS()[EOnboardingSteps.MacPermissions]);
     }
 
-    steps.push(ONBOARDING_STEPS()[EOnboardingSteps.SteamingOrRecording]);
+    //steps.push(ONBOARDING_STEPS()[EOnboardingSteps.SteamingOrRecording]);
 
     steps.push(ONBOARDING_STEPS()[EOnboardingSteps.Connect]);
 
@@ -191,35 +192,35 @@ class OnboardingViews extends ViewHandler<IOnboardingServiceState> {
       steps.push(ONBOARDING_STEPS()[EOnboardingSteps.PrimaryPlatformSelect]);
     }
 
-    if (isOBSinstalled && !recordingModeEnabled) {
-      steps.push(ONBOARDING_STEPS()[EOnboardingSteps.FreshOrImport]);
-    }
+    // if (isOBSinstalled && !recordingModeEnabled) {
+    //   steps.push(ONBOARDING_STEPS()[EOnboardingSteps.FreshOrImport]);
+    // }
 
-    if (this.state.importedFromObs && isOBSinstalled) {
-      steps.push(ONBOARDING_STEPS()[EOnboardingSteps.ObsImport]);
-    } else {
-      steps.push(ONBOARDING_STEPS()[EOnboardingSteps.HardwareSetup]);
-    }
+    // if (this.state.importedFromObs && isOBSinstalled) {
+    //   steps.push(ONBOARDING_STEPS()[EOnboardingSteps.ObsImport]);
+    // } else {
+    // steps.push(ONBOARDING_STEPS()[EOnboardingSteps.HardwareSetup]);
+    // }
 
-    if (
-      !this.state.existingSceneCollections &&
-      !this.state.importedFromObs &&
-      !recordingModeEnabled &&
-      ((userViews.isLoggedIn &&
-        getPlatformService(userViews.platform.type).hasCapability('themes')) ||
-        !userViews.isLoggedIn)
-    ) {
-      steps.push(ONBOARDING_STEPS()[EOnboardingSteps.ThemeSelector]);
-    }
+    // if (
+    //   !this.state.existingSceneCollections &&
+    //   !this.state.importedFromObs &&
+    //   !recordingModeEnabled &&
+    //   ((userViews.isLoggedIn &&
+    //     getPlatformService(userViews.platform.type).hasCapability('themes')) ||
+    //     !userViews.isLoggedIn)
+    // ) {
+    //   steps.push(ONBOARDING_STEPS()[EOnboardingSteps.ThemeSelector]);
+    // }
 
     // temporarily disable auto config until migrate to new api
     // if (userViews.isTwitchAuthed || userViews.isYoutubeAuthed || recordingModeEnabled) {
     //   steps.push(ONBOARDING_STEPS()[EOnboardingSteps.Optimize]);
     // }
 
-    if (!userViews.isPrime) {
-      steps.push(ONBOARDING_STEPS()[EOnboardingSteps.Prime]);
-    }
+    // if (!userViews.isPrime) {
+    //   steps.push(ONBOARDING_STEPS()[EOnboardingSteps.Prime]);
+    // }
 
     return steps;
   }
@@ -245,6 +246,8 @@ export class OnboardingService extends StatefulService<IOnboardingServiceState> 
   @Inject() userService: UserService;
   @Inject() sceneCollectionsService: SceneCollectionsService;
   @Inject() outputSettingsService: OutputSettingsService;
+  @Inject() buffedService: BuffedService;
+  @Inject() customizationService: CustomizationService;
 
   @mutation()
   SET_OPTIONS(options: Partial<IOnboardingOptions>) {
@@ -322,6 +325,8 @@ export class OnboardingService extends StatefulService<IOnboardingServiceState> 
 
   // Ends the onboarding process
   finish() {
+    console.log('[ONBOARDING] Finish.');
+
     localStorage.setItem(this.localStorageKey, 'true');
     remote.session.defaultSession.flushStorageData();
     console.log('Set onboarding key successful.');
@@ -336,6 +341,12 @@ export class OnboardingService extends StatefulService<IOnboardingServiceState> 
         streaming: { outputResolution },
       });
     }
+
+    // Turn auto-stream
+    console.log('Set auto stream = true.');
+    this.customizationService.actions.setAutoStreamEnabled(true);
+    // but also trigger refresh to buffed default settings
+    this.buffedService.buffedController.setBuffedDetaultSettings();
 
     this.navigationService.navigate('Studio');
     this.onboardingCompleted.next();
@@ -352,6 +363,18 @@ export class OnboardingService extends StatefulService<IOnboardingServiceState> 
   startOnboardingIfRequired() {
     // Useful for testing in dev env
     if (Utils.env.SLD_FORCE_ONBOARDING_STEP) {
+      this.start();
+      return true;
+    }
+
+    if (!this.userService.isLoggedIn) {
+      console.log('require onboarding because auth not authorized');
+      this.start();
+      return true;
+    }
+
+    if (this.buffedService.views.profile.platform !== 'pc') {
+      console.log('require onboarding because wrong platform');
       this.start();
       return true;
     }

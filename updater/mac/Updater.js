@@ -23,23 +23,34 @@ class Updater {
 
   run() {
     const osVersion = require('os').release();
-    if (osVersion && Number(osVersion.substring(0, 2)) < 19) {
-      dialog.showMessageBoxSync({
-        message:
-          'You are on a very old version of macOS. Please update macOS to continue using Streamlabs Desktop. Your current version is outdated and is no longer compatible with Streamlabs services.',
-        type: 'error',
-      });
-      app.exit();
-      return;
-    }
+    // if (osVersion && Number(osVersion.substring(0, 2)) < 19) {
+    //   dialog.showMessageBoxSync({
+    //     message:
+    //       'You are on a very old version of macOS. Please update macOS to continue using Buffed Desktop. Your current version is outdated and is no longer compatible with Buffed services.',
+    //     type: 'error',
+    //   });
+    //   app.exit();
+    //   return;
+    // }
 
     this.updateState = {};
 
     this.bindListeners();
 
-    // Redirect to new channel for Streamlabs Desktop
-    autoUpdater.channel = `desktop-${this.channel}`;
+    /////////////////////////////////////////////////////////////////
+    // autoUpdater.forceDevUpdateConfig = true;
+    // autoUpdater.setFeedURL({
+    //   provider: 'github',
+    //   owner: 'Moriquendi',
+    //   repo: 'desktop',
+    // });
+    /////////////////////////////////////////////////////////////////
 
+    // Redirect to new channel for Streamlabs Desktop
+    // autoUpdater.channel = `desktop-${this.channel}`;
+    // autoUpdater.channel = 'alpha';
+
+    console.log(`Calling check for updates`);
     autoUpdater.checkForUpdates().catch(() => {
       // This usually means there is no internet connection.
       // In this case, we shouldn't prevent starting the app.

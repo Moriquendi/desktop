@@ -73,7 +73,7 @@ export const YoutubeEditStreamInfo = InputComponent((p: IPlatformComponentParams
 
   function openThumbnailsEditor() {
     remote.shell.openExternal(
-      'https://streamlabs.com/dashboard#/prime/thumbnails?refl=slobs-thumbnail-editor',
+      'https://buffed.me/dashboard#/prime/thumbnails?refl=slobs-thumbnail-editor',
     );
   }
 

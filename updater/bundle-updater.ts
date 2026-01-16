@@ -22,17 +22,26 @@ type TExecutor = () => [Promise<unknown>, () => void];
 const BUNDLE_NAMES = ['renderer.js', 'vendors~renderer.js'] as const;
 
 module.exports = async (basePath: string) => {
-  const cdnBase = `https://slobs-cdn.streamlabs.com/${process.env.SLOBS_VERSION}${
+  const cdnBase = `https://buffed-cdn.buffed.me/${process.env.SLOBS_VERSION}${
     process.platform === 'darwin' ? '-mac' : ''
   }/bundles/`;
   const localBase = path.join(basePath, 'bundles');
   const bundlesBaseDirectory = path.join(electron.app.getPath('userData'), 'bundles');
   const bundleDirectory = path.join(bundlesBaseDirectory, process.env.SLOBS_VERSION!);
 
+  console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>');
+  console.log('Bundle directory:', bundleDirectory);
+  console.log(`cdnBase: ${cdnBase}`);
+  console.log(`localBase: ${localBase}`);
+  console.log(`Bundles base directory: ${bundlesBaseDirectory}`);
+  console.log(`Bundle directory: ${bundleDirectory}`);
+  console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>');
+
   let updaterWindow: electron.BrowserWindow;
   let updaterWindowSuccessfulClose = false;
 
   function spawnUpdaterWindow() {
+    console.log('Spawning updater window');
     updaterWindow = new electron.BrowserWindow({
       width: 400,
       height: 180,
@@ -99,6 +108,7 @@ module.exports = async (basePath: string) => {
   }
 
   function downloadFile(srcUrl: string, dstPath: string): [Promise<void>, () => void] {
+    console.log(`Downloading file...... ${srcUrl} => ${dstPath}`);
     const abortController = new AbortController();
     const tmpPath = `${dstPath}.tmp`;
 
@@ -137,6 +147,7 @@ module.exports = async (basePath: string) => {
   }
 
   function getChecksum(filePath: string) {
+    console.log(`Getting checksum for ${filePath}`);
     return new Promise<string>((resolve, reject) => {
       const file = fs.createReadStream(filePath);
       const hash = crypto.createHash('md5');
@@ -164,6 +175,7 @@ module.exports = async (basePath: string) => {
     filePath: string,
     manifest: IManifest,
   ): Promise<boolean> {
+    console.log(`Validating file ${filePath}`);
     if (!manifest.checksums || !manifest.checksums[bundle]) {
       console.log(`Checksums not found in manifest, assuming ${bundle} is valid`);
       return true;
@@ -270,6 +282,7 @@ module.exports = async (basePath: string) => {
   }
 
   async function getBundleFilePath(bundle: string, manifest: IManifest): Promise<string> {
+    console.log(`Attempting to get bundle ${bundle}`);
     const localOrCached = await getLocalOrCachedBundleFilePath(bundle, manifest).catch(
       () => undefined,
     );
@@ -278,6 +291,7 @@ module.exports = async (basePath: string) => {
     // Check the server
     const serverPath = `${cdnBase}${bundle}`;
     const downloadPath = path.join(bundleDirectory, bundle);
+
     console.log(`Attempting to download bundle ${bundle}`);
     ensureBundlesDirectory();
     await retryWithTimeout(() => downloadFile(serverPath, downloadPath));
@@ -299,18 +313,23 @@ module.exports = async (basePath: string) => {
     useLocalBundles = true;
   }
 
-  const localManifest: IManifest = require(path.join(`${basePath}/bundles/manifest.json`));
+  /////////////////////
+  console.log('[Buffed] Force using local bundles.');
+  useLocalBundles = true;
+  /////////////////////
 
-  console.log('Local bundle info:', localManifest);
+  const localManifest: IManifest = require(path.join(`${basePath}/bundles/manifest.json`));
 
   // Check if bundle updates are available
   let serverManifest: IManifest | undefined;
 
   if (!useLocalBundles) {
+    console.log('Checking for bundle updates...');
     try {
       const remoteManifestName = process.argv.includes('--bundle-qa')
         ? 'manifest-qa.json'
         : 'manifest.json';
+
       const response = await fetch(`${cdnBase}${remoteManifestName}`);
 
       if (response.status / 100 >= 4) {
@@ -354,10 +373,8 @@ module.exports = async (basePath: string) => {
       }, 10 * 1000);
 
       await Promise.all(promises);
-
       // Everything was successful, so cache the manifest for next time
       cacheManifest(serverManifest);
-
       clearTimeout(timeout);
       closeUpdaterWindow();
     } catch (e: unknown) {
@@ -405,6 +422,7 @@ module.exports = async (basePath: string) => {
     e.returnValue = bundleNames;
   });
 
+  console.log(`Register slbundle protocol`);
   electron.session.defaultSession?.protocol.registerFileProtocol('slbundle', (request, cb) => {
     const url = new URL(request.url);
     const bundleName = url.pathname.replace('/', '') as TBundleName;
@@ -414,14 +432,23 @@ module.exports = async (basePath: string) => {
       return;
     }
 
-    console.log(`Using local bundle for ${bundleName}`);
+    //////////////////// BUFFED
+    if (!localManifest[bundleName]) {
+      console.log('buffed workaround for missing bundle');
+      cb({ path: path.join(localBase, bundleName) });
+      return;
+    }
+    ///////////////////////////
+
     cb({ path: path.join(localBase, localManifest[bundleName]) });
   });
 
   // Use a local web server to serve source maps in development.
   // This is needed because chromium no longer uses the redirect
   // URL when looking for source maps.
+
   if (!['production', 'test'].includes(process.env.NODE_ENV ?? '')) {
+    console.log('handler server');
     const handler = require('serve-handler');
 
     const server = http.createServer((request, response) => {
@@ -483,8 +510,8 @@ module.exports = async (basePath: string) => {
     });
 
     electron.dialog.showErrorBox(
-      'Streamlabs Desktop',
-      'Streamlabs Desktop failed to start. Please try launching Streamlabs Desktop again. If this issue persists, please visit support.streamlabs.com for help.',
+      'Buffed Desktop',
+      'Buffed Desktop failed to start. Please try launching Buffed Desktop again. If this issue persists, please visit support.streamlabs.com for help.',
     );
   });
 };

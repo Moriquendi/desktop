@@ -1,13 +1,13 @@
 <template>
-<div class="UpdaterWindow">
-  <div>
-    <i class="UpdaterWindow-icon fas fa-sync-alt fa-spin"/>
-    {{ message }}
+  <div class="UpdaterWindow">
+    <div>
+      <i class="UpdaterWindow-icon fas fa-sync-alt fa-spin" />
+      {{ message }}
+    </div>
+    <div class="UpdaterWindow-subMessage">
+      {{ subMessage }}
+    </div>
   </div>
-  <div class="UpdaterWindow-subMessage">
-    {{ subMessage }}
-  </div>
-</div>
 </template>
 
 <script>
@@ -17,7 +17,7 @@ export default {
   data() {
     return {
       message: 'Downloading Updates',
-      subMessage: 'Streamlabs Desktop is downloading updates. This can take several minutes.',
+      subMessage: 'Buffed Desktop is downloading updates. This can take several minutes.',
     };
   },
 };

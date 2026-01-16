@@ -14,7 +14,7 @@ export function GeneralSettings() {
     <div>
       <LanguageSettings />
       <ExtraSettings />
-      <ObsGenericSettingsForm />
+      {/* <ObsGenericSettingsForm /> */}
     </div>
   );
 }
@@ -65,11 +65,15 @@ function ExtraSettings() {
     isRecordingOrStreaming,
     recordingMode,
     updateStreamInfoOnLive,
+    autoLaunchEnabled,
+    autoStreamEnabled,
     isSimpleOutputMode,
   } = useVuex(() => ({
     isRecordingOrStreaming: StreamingService.isStreaming || StreamingService.isRecording,
     recordingMode: RecordingModeService.views.isRecordingModeEnabled,
     updateStreamInfoOnLive: CustomizationService.state.updateStreamInfoOnLive,
+    autoLaunchEnabled: CustomizationService.state.autoLaunchEnabled,
+    autoStreamEnabled: CustomizationService.state.autoStreamEnabled,
     isSimpleOutputMode: SettingsService.views.isSimpleOutputMode,
   }));
 
@@ -123,33 +127,46 @@ function ExtraSettings() {
   return (
     <>
       <ObsSettingsSection>
-        {isLoggedIn && !isFacebook && !isYoutube && (
+        <CheckboxInput
+          label={$t('Auto Capture: automatically start when game is detected')}
+          value={autoStreamEnabled}
+          onChange={val => CustomizationService.actions.setAutoStreamEnabled(val)}
+          name="auto_stream"
+        />
+        <CheckboxInput
+          label={$t('Launch Buffed on startup')}
+          value={autoLaunchEnabled}
+          onChange={val => CustomizationService.setAutoLaunchEnabled(val)}
+          name="auto_launch"
+        />
+
+        {/* {isLoggedIn && !isFacebook && !isYoutube && (
           <CheckboxInput
             value={updateStreamInfoOnLive}
             onChange={val => CustomizationService.setUpdateStreamInfoOnLive(val)}
             label={$t('Confirm stream title and game before going live')}
             name="stream_info_udpate"
           />
-        )}
+        )} */}
         <CheckboxInput
           label={$t('Disable hardware acceleration (requires restart)')}
           value={disableHA}
           onChange={disableHardwareAcceleration}
           name="disable_ha"
         />
-        <CheckboxInput
+        {/* <CheckboxInput
           label={$t('Disable live streaming features (Recording Only mode)')}
           value={recordingMode}
           onChange={RecordingModeService.actions.setRecordingMode}
-        />
+        /> */}
 
-        <div className="actions">
+        {/* <div className="actions">
           <div className="input-container">
             <button className="button button--default" onClick={restartStreamlabelsSession}>
               {$t('Restart Stream Labels')}
             </button>
           </div>
-        </div>
+        </div> */}
       </ObsSettingsSection>
 
       <ObsSettingsSection>
@@ -167,11 +184,11 @@ function ExtraSettings() {
             </div>
           )}
 
-          <div className="input-container">
+          {/* <div className="input-container">
             <button className="button button--default" onClick={importFromObs}>
               {$t('OBS Import')}
             </button>
-          </div>
+          </div> */}
         </div>
       </ObsSettingsSection>
     </>

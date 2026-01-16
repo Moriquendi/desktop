@@ -30,7 +30,7 @@ const MAX_SOURCES_COUNT = 40;
  * unzip a sample of a large scene collection to the SceneCollection folder
  */
 function unzipLargeSceneCollection(t: TExecutionContext) {
-  const cacheDir = path.resolve(t.context.cacheDir, 'slobs-client');
+  const cacheDir = path.resolve(t.context.cacheDir, 'buffed-client');
   const sceneCollectionPath = path.resolve(cacheDir, 'SceneCollections');
   fs.removeSync(sceneCollectionPath);
 

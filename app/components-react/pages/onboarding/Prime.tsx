@@ -16,7 +16,7 @@ export function Prime() {
     tableProps = {
       tableHeaders: [
         { text: $t('Themes and Overlays'), icon: 'icon-themes' },
-        { text: $t('Streamlabs Desktop'), icon: 'icon-desktop' },
+        { text: $t('Buffed Desktop'), icon: 'icon-desktop' },
         { text: $t('Highlighter'), icon: 'icon-slice' },
         { text: $t('Collab Cam'), icon: 'icon-team-2' },
         { text: $t('Tipping'), icon: 'icon-donation-settings' },

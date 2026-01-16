@@ -76,6 +76,12 @@ export default class SourceProperties extends Vue {
       this.usageStatisticsService.actions.recordFeatureUsage('DShowConfigureVideo');
     }
 
+    console.log(`>>>. Bproperties Call:`)
+    console.log(properties)
+    console.log(changedIndex)
+    console.log(this.sourceId)
+    console.log('--------')
+
     this.editorCommandsService.executeCommand('EditSourcePropertiesCommand', this.sourceId, [
       properties[changedIndex],
     ]);

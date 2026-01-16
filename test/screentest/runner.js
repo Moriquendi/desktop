@@ -1,4 +1,7 @@
-require('dotenv').config();
+import Utils from './services/utils';
+if (Utils.env.NODE_ENV !== 'production') {
+  require('dotenv').config();
+}
 const rimraf = require('rimraf');
 const fs = require('fs');
 const path = require('path');

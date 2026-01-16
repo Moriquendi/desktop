@@ -652,7 +652,7 @@ function SourceSelector() {
     <>
       <StudioControls />
       <ItemsTree />
-      {nodeData.some(node => node.isFolder) && (
+      {/* {nodeData.some(node => node.isFolder) && (
         <HelpTip
           title={$t('Folder Expansion')}
           dismissableKey={EDismissable.SourceSelectorFolders}
@@ -666,7 +666,7 @@ function SourceSelector() {
             <i slot="icon" className="fa fa-folder" />
           </Translate>
         </HelpTip>
-      )}
+      )} */}
     </>
   );
 }
@@ -694,7 +694,7 @@ function StudioControls() {
         <i className="icon-add-circle icon-button icon-button--lg" onClick={addSource} />
       </Tooltip>
 
-      <Tooltip title={$t('Toggle Selective Recording')} placement="bottomRight">
+      {/* <Tooltip title={$t('Toggle Selective Recording')} placement="bottomRight">
         <i
           className={cx('icon-smart-record icon-button icon-button--lg', {
             active: selectiveRecordingEnabled,
@@ -702,10 +702,10 @@ function StudioControls() {
           })}
           onClick={toggleSelectiveRecording}
         />
-      </Tooltip>
-      <Tooltip title={addGroupTooltip} placement="bottomRight">
+      </Tooltip> */}
+      {/* <Tooltip title={addGroupTooltip} placement="bottomRight">
         <i className="icon-add-folder icon-button icon-button--lg" onClick={addFolder} />
-      </Tooltip>
+      </Tooltip> */}
     </div>
   );
 }
@@ -747,6 +747,7 @@ function ItemsTree() {
       <Scrollable
         className={cx(styles.scenesContainer, styles.sourcesContainer)}
         onContextMenu={(e: React.MouseEvent) => showContextMenu('', e)}
+        style={{ backgroundColor: 'transparent' }}
       >
         {showTreeMask && <div className={styles.treeMask} data-name="treeMask" />}
         <Tree

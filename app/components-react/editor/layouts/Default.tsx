@@ -13,14 +13,22 @@ export function Default(p: React.PropsWithChildren<LayoutProps>) {
   );
 
   return (
-    <div className={styles.rows} ref={componentRef}>
+    <div
+      className={styles.columns}
+      // ref={componentRef}
+    >
       <div
-        className={styles.cell}
-        style={{ height: `${100 - (resizes.bar1 + resizes.bar2!) * 100}%` }}
+        className={styles.buffedCell}
+        style={{
+          height: '100%',
+          // width: '50%',
+          // backgroundColor: 'green',
+        }}
+        // style={{ height: `${100 - (resizes.bar1 + resizes.bar2!) * 100}%` }}
       >
         {p.children?.['1'] || <></>}
       </div>
-      <ResizeBar
+      {/* <ResizeBar
         position="top"
         value={bars.bar1}
         onInput={(value: number) => setBar('bar1', value)}
@@ -33,25 +41,42 @@ export function Default(p: React.PropsWithChildren<LayoutProps>) {
         >
           {p.children?.['2'] || <></>}
         </div>
-      </ResizeBar>
-      <ResizeBar
+      </ResizeBar> */}
+      {/* <ResizeBar
         position="top"
         value={bars.bar2}
         onInput={(value: number) => setBar('bar2', value)}
         max={calculateMax(mins.rest + mins.bar1)}
         min={mins.bar2}
+      > */}
+      {/* <p>Helloooo</p> */}
+
+      <div
+        className={styles.buffedCell}
+        style={{
+          height: '100%',
+        }}
+        // style={{ height: `${resizes.bar2! * 100}%`, padding: '0 8px' }}
       >
-        <div
-          className={styles.segmented}
-          style={{ height: `${resizes.bar2! * 100}%`, padding: '0 8px' }}
-        >
-          {['3', '4', '5'].map(slot => (
-            <div key={slot} className={cx(styles.cell, 'no-top-padding')}>
-              {p.children?.[slot] || <></>}
-            </div>
-          ))}
-        </div>
-      </ResizeBar>
+        {p.children?.['2'] || <></>}
+        {/* {['2'].map(slot => (
+          <div key={slot} className={cx(styles.cell, 'no-top-padding')}>
+            {p.children?.[slot] || <></>}
+          </div>
+        ))} */}
+      </div>
+
+      {/* <div
+        className={styles.segmented}
+        style={{ height: `${resizes.bar2! * 100}%`, padding: '0 8px' }}
+      >
+        {['3', '4', '5'].map(slot => (
+          <div key={slot} className={cx(styles.cell, 'no-top-padding')}>
+            {p.children?.[slot] || <></>}
+          </div>
+        ))}
+      </div> */}
+      {/* </ResizeBar> */}
     </div>
   );
 }

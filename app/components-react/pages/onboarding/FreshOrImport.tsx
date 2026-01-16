@@ -29,7 +29,7 @@ export function FreshOrImport() {
       title: $t('Start Fresh'),
       color: '--teal',
       description: $t(
-        'Start with a clean copy of Streamlabs Desktop and configure your settings from scratch',
+        'Start with a clean copy of Buffed Desktop and configure your settings from scratch',
       ),
       image: <KevinSvg />,
       onClick: next,

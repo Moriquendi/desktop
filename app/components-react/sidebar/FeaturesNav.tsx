@@ -8,7 +8,6 @@ import {
   menuTitles,
   compactMenuItemKeys,
 } from 'services/side-nav';
-import { $t } from 'services/i18n';
 import { EAvailableFeatures } from 'services/incremental-rollout';
 import { TAppPage } from 'services/navigation';
 import { useVuex } from 'components-react/hooks';
@@ -20,6 +19,10 @@ import MenuItem from 'components-react/shared/MenuItem';
 import AppsNav from './AppsNav';
 import EditorTabs from './EditorTabs';
 import cx from 'classnames';
+import { HStack } from 'components-react/shared/HStack';
+import { $t } from 'services/i18n';
+import { NavToolsItem } from './NavTools';
+import * as remote from '@electron/remote';
 
 export default function FeaturesNav() {
   function toggleStudioMode() {
@@ -64,6 +67,7 @@ export default function FeaturesNav() {
     UsageStatisticsService,
     SideNavService,
     TransitionsService,
+    SettingsService,
   } = Services;
 
   const {
@@ -98,6 +102,8 @@ export default function FeaturesNav() {
   }));
 
   const menuItems = useMemo(() => {
+    return menu.menuItems;
+
     if (!loggedIn) {
       return menu.menuItems.filter(menuItem =>
         loggedOutMenuItemKeys.includes(menuItem.key as EMenuItemKey),
@@ -111,6 +117,16 @@ export default function FeaturesNav() {
           }
         });
   }, [compactView, menu, loggedIn]);
+
+  function openSettingsWindow(type?: string, category?: string) {
+    UsageStatisticsService.actions.recordClick('SideNav2', type ?? 'settings');
+    SettingsService.actions.showSettings(category);
+  }
+
+  function openHelp() {
+    UsageStatisticsService.actions.recordClick('SideNav2', 'help');
+    remote.shell.openExternal('https://discord.gg/ysrAn9unC3');
+  }
 
   const layoutEditorItem = useMemo(() => {
     return menu.menuItems.find(menuItem => menuItem.key === EMenuItemKey.LayoutEditor);
@@ -192,6 +208,32 @@ export default function FeaturesNav() {
               </SubMenu>
             );
           }
+        } else if (menuItem.key === EMenuItemKey.AutoStreamStatus) {
+          return <StatusMenuItem />;
+        } else if (menuItem.key === EMenuItemKey.Settings) {
+          return (
+            <NavToolsItem
+              key={menuItem.key}
+              menuItem={menuItem}
+              onClick={() => openSettingsWindow()}
+            />
+          );
+        } else if (menuItem.key === EMenuItemKey.GetHelp) {
+          return (
+            <NavToolsItem
+              key={menuItem.key}
+              menuItem={menuItem}
+              icon={
+                <i className={menuItem?.icon} />
+                // <div>
+                //   <Badge count={<i className={cx('icon-pop-out-3', styles.linkBadge)} />}>
+                //     <i className={menuItem?.icon} />
+                //   </Badge>
+                // </div>
+              }
+              onClick={() => openHelp()}
+            />
+          );
         } else if (menuItem.hasOwnProperty('subMenuItems')) {
           // display submenu if there are submenu items
           return (
@@ -355,3 +397,30 @@ const HighlighterIcon = () => (
     </defs>
   </svg>
 );
+
+function StatusMenuItem() {
+  const tooltip = $t(
+    'When enabled, Buffed will automatically start capturing your game when you launch it. You can change this in settings.',
+  );
+
+  const { CustomizationService } = Services;
+
+  const { isAutoStreamEnabled } = useVuex(() => ({
+    isAutoStreamEnabled: CustomizationService.state.autoStreamEnabled,
+  }));
+
+  return (
+    <MenuItem title={tooltip} style={{ cursor: 'default' }}>
+      <HStack spacing={2} style={{ flexGrow: 1 }}>
+        {$t('Auto Capture: ')}
+
+        {isAutoStreamEnabled && <span style={{ color: '#30D158' }}>{$t('ON')}</span>}
+        {!isAutoStreamEnabled && <span style={{ color: '#FF453A' }}>{$t('OFF')}</span>}
+        <div style={{ flexGrow: 1 }} />
+        {/* <Tooltip title={tooltip} placement="topLeft" style={{ zIndex: 999 }}>
+          <i className="icon-question" />
+        </Tooltip> */}
+      </HStack>
+    </MenuItem>
+  );
+}

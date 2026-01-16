@@ -376,6 +376,15 @@ export class SourceSelector extends ReactComponent {}
 
 @Component({
   props: {
+    name: { default: 'SourceAndMixerSelector' },
+    wrapperStyles: { default: () => ({ height: '100%' }) },
+    mins: { default: () => ({ x: 200, y: 120 }) },
+  },
+})
+export class SourceAndMixerSelector extends ReactComponent {}
+
+@Component({
+  props: {
     name: { default: 'SideNav' },
     wrapperStyles: { default: () => ({ height: '100%' }) },
   },
@@ -437,7 +446,7 @@ export class StudioEditor extends ReactComponent {}
     name: { default: 'StudioFooter' },
     wrapperStyles: {
       default: () => ({
-        'grid-row': '2 / span 1',
+        'grid-row': '2 / span 2',
         display: 'flex',
         'min-width': 0,
       }),
